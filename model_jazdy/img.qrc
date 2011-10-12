@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tank2.png</file>
+        <file>tank_wieza.png</file>
+        <file>tank_korpus.png</file>
+    </qresource>
+</RCC>
