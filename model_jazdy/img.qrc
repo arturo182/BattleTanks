@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>tank_wieza.png</file>
+        <file>tank_korpus.png</file>
+        <file>target.png</file>
+        <file>eksplozja.png</file>
+        <file>eksplozja2.png</file>
+        <file>eksplozja3.png</file>
+        <file>eksplozja4.png</file>
+        <file>eksplozja5.png</file>
+        <file>target3.png</file>
+        <file>ring.png</file>
+    </qresource>
+</RCC>
