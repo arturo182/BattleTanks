@@ -1,3 +1,9 @@
 SOURCES += \
-    main.cpp
+    main.cpp \
+    silnik.cpp
+
+HEADERS += \
+    silnik.h
+
+
 
