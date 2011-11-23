@@ -1,3 +1,5 @@
+DESTDIR = bin
+
 SOURCES += \
     main.cpp \
     silnik.cpp
