@@ -4,6 +4,7 @@
 class BazaDanych{
 	public:
 		BazaDanych();
+		bool polacz();
 };
 
 #endif // BAZADANYCH_H

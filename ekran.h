@@ -6,9 +6,9 @@
 class Ekran: public QWidget{
 	Q_OBJECT
 	
-	private:
-	
 	public:
+		QPixmap buforObrazu;
+		
 		Ekran();
 };
 

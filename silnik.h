@@ -3,26 +3,28 @@
 
 #include <QTime>
 #include <QTimer>
+#include "urzadzeniewejscia.h"
 #include "ekran.h"
-#include "menu.h"
-#include "plansza.h"
-#include "logika.h"
 #include "bazadanych.h"
+#include "plansza.h"
+#include "menu.h"
+#include "logika.h"
+#include "tryb.h"
 
 class Silnik: public QObject{
 	Q_OBJECT
 	
 	private:
+		UrzadzenieWejscia urzadzenieWejscia;
 		Ekran ekran;
-		Menu menu;
-		Plansza plansza;
-		Logika logika;
 		BazaDanych bazaDanych;
-		QTime czas;
+		Plansza plansza;
+		Menu menu;
+		Logika logika;
+		
+		Tryb tryb;
 		QTimer timer;
-		enum{
-			MENU, ROZGRYWKA
-		} tryb;
+		QTime czasOstatniegoOdswiezenia;
 		
 		void odswiezMenu(int);
 		void odswiezRozgrywke(int);

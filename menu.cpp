@@ -1,4 +1,7 @@
 #include "menu.h"
 
-Menu::Menu(){
+Menu::Menu(Ekran& ekran, BazaDanych& bazaDanych, Plansza& plansza):
+	ekran(ekran),
+	bazaDanych(bazaDanych),
+	plansza(plansza){
 }

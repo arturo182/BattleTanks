@@ -1,4 +1,5 @@
 #include "plansza.h"
 
-Plansza::Plansza(){
+Plansza::Plansza(Ekran& ekran):
+	ekran(ekran){
 }
