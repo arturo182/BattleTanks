@@ -10,7 +10,8 @@ UrzadzenieWejscia::~UrzadzenieWejscia(){
 		SDL_JoystickClose(this->urzadzenie);
 		delete[] this->przyciskiPolozenie;
 		delete[] this->przyciskiWcisniete;
-		delete[] this->nawigatory;
+		delete[] this->nawigatoryPolozenie;
+		delete[] this->nawigatoryWcisniete;
 		delete[] this->dzojstiki;
 	}
 	SDL_Quit();
@@ -27,11 +28,15 @@ bool UrzadzenieWejscia::otworz(int numerUrzadzenia){
 	
 	this->przyciskiPolozenie = new bool[this->iloscPrzyciskow];
 	this->przyciskiWcisniete = new bool[this->iloscPrzyciskow];
-	this->nawigatory = new int[this->iloscNawigatorow];
+	this->nawigatoryPolozenie = new int[this->iloscNawigatorow];
+	this->nawigatoryWcisniete = new int[this->iloscNawigatorow];
 	this->dzojstiki = new short int[this->iloscDzojstikow];
 	
 	for(int i = 0; i < this->iloscPrzyciskow; i++)
 		this->przyciskiPolozenie[i] = this->przyciskiWcisniete[i] = false;
+		
+	for(int i = 0; i < this->iloscNawigatorow; i++)
+		this->nawigatoryPolozenie[i] = this->nawigatoryWcisniete[i] = 0;
 	
 	return true;
 }
@@ -42,17 +47,19 @@ void UrzadzenieWejscia::odswiez(){
 	
 	SDL_JoystickUpdate();
 	
+	bool polozenie;
 	for(int i = 0; i < this->iloscPrzyciskow; i++){
-		if(!SDL_JoystickGetButton(this->urzadzenie, i))
-			this->przyciskiPolozenie[i] = this->przyciskiWcisniete[i] = false;
-		else if(!this->przyciskiPolozenie[i])
-			this->przyciskiPolozenie[i] = true;
-		else if(!this->przyciskiWcisniete[i])
-			this->przyciskiWcisniete[i] = true;
+		polozenie = SDL_JoystickGetButton(this->urzadzenie, i);
+		this->przyciskiWcisniete[i] = this->przyciskiPolozenie[i] && polozenie;
+		this->przyciskiPolozenie[i] = polozenie;
 	}
 	
-	for(int i = 0; i < this->iloscNawigatorow; i++)
-		this->nawigatory[i] = SDL_JoystickGetHat(this->urzadzenie, i);
+	int status;
+	for(int i = 0; i < this->iloscNawigatorow; i++){
+		status = SDL_JoystickGetHat(this->urzadzenie, i);
+		this->nawigatoryWcisniete[i] = this->nawigatoryPolozenie[i] & status;
+		this->nawigatoryPolozenie[i] = status;
+	}
 	
 	for(int i = 0; i < this->iloscDzojstikow; i++)
 		this->dzojstiki[i] = SDL_JoystickGetAxis(this->urzadzenie, i);
@@ -70,9 +77,15 @@ bool UrzadzenieWejscia::statusPrzyciskWcisniecie(int numerPrzycisku) const{
 	return false;
 }
 
-int UrzadzenieWejscia::statusNawigator(int numerNawigatora) const{
+int UrzadzenieWejscia::statusNawigatorPolozenie(int numerNawigatora) const{
 	if(this->urzadzenie != 0 && numerNawigatora < this->iloscNawigatorow)
-		return this->nawigatory[numerNawigatora];
+		return this->nawigatoryPolozenie[numerNawigatora];
+	return 0;
+}
+
+int UrzadzenieWejscia::statusNawigatorWcisniecie(int numerNawigatora) const{
+	if(this->urzadzenie != 0 && numerNawigatora < this->iloscNawigatorow)
+		return this->nawigatoryPolozenie[numerNawigatora] ^ this->nawigatoryWcisniete[numerNawigatora];
 	return 0;
 }
 

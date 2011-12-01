@@ -30,15 +30,15 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 	double predkoscGasienicyPrawej = -this->urzadzenieWejscia.statusDzojstik(3);
 	
 	int rotacjaWiezy = 0;
-	if(this->urzadzenieWejscia.statusNawigator(0) & LEWO || this->urzadzenieWejscia.statusPrzyciskPolozenie(6))
+	if(this->urzadzenieWejscia.statusNawigatorPolozenie(0) & LEWO || this->urzadzenieWejscia.statusPrzyciskPolozenie(6))
 		rotacjaWiezy++;
-	if(this->urzadzenieWejscia.statusNawigator(0) & PRAWO || this->urzadzenieWejscia.statusPrzyciskPolozenie(7))
+	if(this->urzadzenieWejscia.statusNawigatorPolozenie(0) & PRAWO || this->urzadzenieWejscia.statusPrzyciskPolozenie(7))
 		rotacjaWiezy--;
 	
 	int zmianaZasiegu = 0;
-	if(this->urzadzenieWejscia.statusNawigator(0) & GORA)
+	if(this->urzadzenieWejscia.statusNawigatorPolozenie(0) & GORA)
 		zmianaZasiegu++;
-	if(this->urzadzenieWejscia.statusNawigator(0) & DOL)
+	if(this->urzadzenieWejscia.statusNawigatorPolozenie(0) & DOL)
 		zmianaZasiegu--;
 	
 	int zmianaBroni = 0;

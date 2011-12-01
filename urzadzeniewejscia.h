@@ -20,7 +20,8 @@ class UrzadzenieWejscia{
 		int iloscDzojstikow;
 		bool* przyciskiPolozenie;
 		bool* przyciskiWcisniete;
-		int* nawigatory;
+		int* nawigatoryPolozenie;
+		int* nawigatoryWcisniete;
 		short int* dzojstiki;
 		
 	public:
@@ -30,8 +31,9 @@ class UrzadzenieWejscia{
 		void odswiez();
 		bool statusPrzyciskPolozenie(int) const;
 		bool statusPrzyciskWcisniecie(int) const;
+		int statusNawigatorPolozenie(int) const;
+		int statusNawigatorWcisniecie(int) const;
 		double statusDzojstik(int) const;
-		int statusNawigator(int) const;
 };
 
 #endif // URZADZENIEWEJSCIA_H
