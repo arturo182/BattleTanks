@@ -5,11 +5,11 @@
 #include <QPainter>
 
 class Obiekt{
-	protected:
+	public:
+		static double skala;
 		QPointF pozycja;
 		
-	public:
-		Obiekt();
+		Obiekt(QPointF);
 		virtual void rysuj(QPainter&) const = 0;
 };
 

@@ -11,6 +11,8 @@ class Menu{
 		BazaDanych& bazaDanych;
 		Plansza& plansza;
 		
+		void zaladujSpecyfikecjeObiektow();
+		
 	public:
 		Menu(Ekran&, BazaDanych&, Plansza&);
 		void rysuj() const;

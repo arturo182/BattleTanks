@@ -1,4 +1,6 @@
 #include "obiekt.h"
 
-Obiekt::Obiekt(){
-}
+double Obiekt::skala;
+
+Obiekt::Obiekt(QPointF pozycja):
+	pozycja(pozycja){}

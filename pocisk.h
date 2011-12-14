@@ -5,7 +5,8 @@
 
 class Pocisk: public Obiekt{
 	public:
-		Pocisk();
+		Pocisk(QPointF);
+		void rysuj(QPainter&) const;
 };
 
 #endif // POCISK_H

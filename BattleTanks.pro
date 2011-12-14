@@ -15,7 +15,10 @@ SOURCES += \
     pojazd.cpp \
     animacja.cpp \
     pocisk.cpp \
-    urzadzeniewejscia.cpp
+    urzadzeniewejscia.cpp \
+    tekstura.cpp \
+    specyfikacjapojazdu.cpp \
+    specyfikacjaanimacji.cpp
 
 HEADERS += \
     silnik.h \
@@ -29,8 +32,29 @@ HEADERS += \
     animacja.h \
     pocisk.h \
     tryb.h \
-    urzadzeniewejscia.h
+    urzadzeniewejscia.h \
+    tekstura.h \
+    specyfikacjapojazdu.h \
+    specyfikacjaanimacji.h
 	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

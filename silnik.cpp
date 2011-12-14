@@ -3,7 +3,7 @@
 #include <windows.h>	//	WINDOWS.H
 
 Silnik::Silnik():
-	plansza(this->ekran),
+	plansza(this->ekran, 1080),
 	menu(this->ekran, this->bazaDanych, this->plansza),
 	logika(this->plansza){
 	connect(&this->timer, SIGNAL(timeout()), this, SLOT(odswiez()));
