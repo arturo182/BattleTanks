@@ -1,14 +1,14 @@
 #ifndef LOGIKA_H
 #define LOGIKA_H
 
-#include "plansza.h"
+class Plansza;
 
 class Logika{
 	private:
-		Plansza& plansza;
+		Plansza* plansza;
 		
 	public:
-		Logika(Plansza&);
+		Logika(Plansza*);
 		void odswiez(double, double, int, int, int, bool);
 		
 	friend class Pojazd;

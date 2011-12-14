@@ -1,7 +1,8 @@
 #include "logika.h"
+#include "plansza.h"
 #include <QDebug>	//	DEBUG
 
-Logika::Logika(Plansza& plansza):
+Logika::Logika(Plansza* plansza):
 	plansza(plansza){
 }
 

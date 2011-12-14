@@ -31,12 +31,12 @@ HEADERS += \
     pojazd.h \
     animacja.h \
     pocisk.h \
-    tryb.h \
     urzadzeniewejscia.h \
     tekstura.h \
     specyfikacjapojazdu.h \
     specyfikacjaanimacji.h
 	
+
 
 
 

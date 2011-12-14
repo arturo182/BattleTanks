@@ -20,7 +20,11 @@ Tekstura::~Tekstura(){
 }
 
 void Tekstura::przeskaluj(double skala){
-	this->teksturaPrzeskalowana = this->teksturaOryginalna.scaled(skala * this->teksturaOryginalna.size());
+	this->teksturaPrzeskalowana = this->teksturaOryginalna.scaled(
+		skala * this->teksturaOryginalna.size(),
+		Qt::IgnoreAspectRatio,
+		Qt::SmoothTransformation
+	);
 }
 
 void Tekstura::przeskalujWszystko(double skala){

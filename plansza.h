@@ -3,16 +3,17 @@
 
 #include <QPixmap>
 #include <QList>
-#include "ekran.h"
 #include "specyfikacjapojazdu.h"
 #include "specyfikacjaanimacji.h"
 #include "pojazd.h"
 #include "pocisk.h"
 #include "animacja.h"
 
+class Ekran;
+
 class Plansza{
 	private:
-		Ekran& ekran;
+		Ekran* ekran;
 		const int widokWysokosc;
 		QList<SpecyfikacjaPojazdu> specyfikacjePojazdow;
 		QList<SpecyfikacjaAnimacji> specyfikacjeAnimacji;
@@ -25,7 +26,7 @@ class Plansza{
 		QList<Animacja> bonusy;
 		
 	public:
-		Plansza(Ekran&, int);
+		Plansza(Ekran*, int);
 		void dodajSpecyfikacje(const SpecyfikacjaPojazdu&);
 		void dodajSpecyfikacje(const SpecyfikacjaAnimacji&);
 		bool zaladuj(QString);

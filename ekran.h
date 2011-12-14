@@ -10,6 +10,10 @@ class Ekran: public QWidget{
 		QPixmap buforObrazu;
 		
 		Ekran();
+		void ustawRozdzielczosc(QSize);
+	
+	private:
+		void paintEvent(QPaintEvent*);
 };
 
 #endif // EKRAN_H

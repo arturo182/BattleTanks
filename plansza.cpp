@@ -1,6 +1,7 @@
 #include "plansza.h"
+#include "ekran.h"
 
-Plansza::Plansza(Ekran& ekran, int widokWysokosc):
+Plansza::Plansza(Ekran* ekran, int widokWysokosc):
 	ekran(ekran),
 	widokWysokosc(widokWysokosc),
 	mapa(0),
@@ -15,6 +16,16 @@ void Plansza::dodajSpecyfikacje(const SpecyfikacjaAnimacji& specyfikacja){
 	this->specyfikacjeAnimacji.append(specyfikacja);
 }
 
+bool Plansza::zaladuj(QString nazwaPlanszy){
+	QPixmap mapa(nazwaPlanszy + ".png");
+	
+	if(mapa.isNull())
+		return false;
+	this->mapa = new Tekstura(mapa);
+	
+	return true;
+}
+
 void Plansza::czysc(){
 	delete this->mapa;
 	this->mapa = 0;
@@ -26,12 +37,8 @@ void Plansza::czysc(){
 	this->bonusy.clear();
 }
 
-bool Plansza::zaladuj(QString nazwaPlanszy){
-	QPixmap mapa(nazwaPlanszy + ".png");
+void Plansza::rysuj() const{
+	//	rysowanie na ekranie :P
 	
-	if(mapa.isNull())
-		return false;
-	this->mapa = new Tekstura(mapa);
-	
-	return true;
+	this->ekran->update();
 }

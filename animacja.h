@@ -2,14 +2,15 @@
 #define ANIMACJA_H
 
 #include "obiekt.h"
-#include "specyfikacjaanimacji.h"
+
+class SpecyfikacjaAnimacji;
 
 class Animacja: public Obiekt{
 	private:
-		const SpecyfikacjaAnimacji& specyfikacja;
+		const SpecyfikacjaAnimacji* specyfikacja;
 		
 	public:
-		Animacja(const SpecyfikacjaAnimacji&, QPointF);
+		Animacja(SpecyfikacjaAnimacji*, QPointF);
 		void rysuj(QPainter&) const;
 };
 

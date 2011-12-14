@@ -5,13 +5,6 @@
 
 #undef main
 
-enum Nawigator{
-	GORA = SDL_HAT_UP,
-	DOL = SDL_HAT_DOWN,
-	PRAWO = SDL_HAT_RIGHT,
-	LEWO = SDL_HAT_LEFT
-};
-
 class UrzadzenieWejscia{
 	private:
 		SDL_Joystick* urzadzenie;
@@ -25,6 +18,13 @@ class UrzadzenieWejscia{
 		short int* dzojstiki;
 		
 	public:
+		enum Nawigator{
+			GORA = SDL_HAT_UP,
+			DOL = SDL_HAT_DOWN,
+			PRAWO = SDL_HAT_RIGHT,
+			LEWO = SDL_HAT_LEFT
+		};
+		
 		UrzadzenieWejscia();
 		~UrzadzenieWejscia();
 		bool otworz(int);

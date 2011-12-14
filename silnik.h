@@ -3,24 +3,30 @@
 
 #include <QTime>
 #include <QTimer>
-#include "urzadzeniewejscia.h"
-#include "ekran.h"
-#include "bazadanych.h"
-#include "plansza.h"
-#include "menu.h"
-#include "logika.h"
-#include "tryb.h"
+
+class UrzadzenieWejscia;
+class Ekran;
+class BazaDanych;
+class Plansza;
+class Menu;
+class Logika;
 
 class Silnik: public QObject{
 	Q_OBJECT
 	
+	public:
+		enum Tryb{
+			MENU,
+			ROZGRYWKA
+		};
+		
 	private:
-		UrzadzenieWejscia urzadzenieWejscia;
-		Ekran ekran;
-		BazaDanych bazaDanych;
-		Plansza plansza;
-		Menu menu;
-		Logika logika;
+		UrzadzenieWejscia* urzadzenieWejscia;
+		Ekran* ekran;
+		BazaDanych* bazaDanych;
+		Plansza* plansza;
+		Menu* menu;
+		Logika* logika;
 		
 		Tryb tryb;
 		QTimer timer;
@@ -34,6 +40,7 @@ class Silnik: public QObject{
 		
 	public:
 		Silnik();
+		~Silnik();
 		void uruchom();
 };
 

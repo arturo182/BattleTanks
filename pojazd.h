@@ -2,15 +2,16 @@
 #define POJAZD_H
 
 #include "obiekt.h"
-#include "specyfikacjapojazdu.h"
+
+class SpecyfikacjaPojazdu;
 
 class Pojazd: public Obiekt{
 	private:
-		const SpecyfikacjaPojazdu& specyfikacja;
+		const SpecyfikacjaPojazdu* specyfikacja;
 		int zdrowie;
 		
 	public:
-		Pojazd(const SpecyfikacjaPojazdu&, QPointF);
+		Pojazd(SpecyfikacjaPojazdu*, QPointF);
 		void rysuj(QPainter&) const;
 };
 
