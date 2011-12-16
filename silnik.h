@@ -27,7 +27,6 @@ class Silnik: public QObject{
 		Plansza* plansza;
 		Menu* menu;
 		Logika* logika;
-		
 		Tryb tryb;
 		QTimer timer;
 		QTime czasOstatniegoOdswiezenia;

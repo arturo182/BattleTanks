@@ -10,7 +10,7 @@ Silnik::Silnik(){
 	this->urzadzenieWejscia = new UrzadzenieWejscia;
 	this->ekran = new Ekran;
 	this->bazaDanych = new BazaDanych;
-	this->plansza = new Plansza(this->ekran, 1080, 300);
+	this->plansza = new Plansza(this->ekran, 1080, 400);
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
 	

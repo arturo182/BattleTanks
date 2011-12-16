@@ -9,10 +9,18 @@ class BazaDanych;
 class Plansza;
 
 class Menu{
+	public:
+		enum Tryb{
+			TEST1,
+			TEST2,
+			TEST3
+		};
+		
 	private:
 		Ekran* ekran;
 		BazaDanych* bazaDanych;
 		Plansza* plansza;
+		Tryb tryb;
 		
 	public:
 		enum Akcja{
