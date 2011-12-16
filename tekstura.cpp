@@ -19,7 +19,7 @@ Tekstura::~Tekstura(){
 	Tekstura::tekstury.removeOne(this);
 }
 
-void Tekstura::przeskaluj(double skala){
+void Tekstura::przeskaluj(float skala){
 	this->teksturaPrzeskalowana = this->teksturaOryginalna.scaled(
 		skala * this->teksturaOryginalna.size(),
 		Qt::IgnoreAspectRatio,
@@ -27,7 +27,7 @@ void Tekstura::przeskaluj(double skala){
 	);
 }
 
-void Tekstura::przeskalujWszystko(double skala){
+void Tekstura::przeskalujWszystko(float skala){
 	for(QList<Tekstura*>::iterator i = Tekstura::tekstury.begin(); i != Tekstura::tekstury.end(); i++)
 		(*i)->przeskaluj(skala);
 }

@@ -6,9 +6,10 @@
 class SpecyfikacjaAnimacji{
 	private:
 		Tekstura tekstury;
-		QSize iloscKlatek;
 		
 	public:
+		QSize iloscKlatek;
+		
 		SpecyfikacjaAnimacji(const QPixmap&, QSize);
 	
 	friend class Animacja;

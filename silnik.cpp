@@ -5,19 +5,23 @@
 #include "plansza.h"
 #include "menu.h"
 #include "logika.h"
-#include <windows.h>	//	WINDOWS.H
 
 Silnik::Silnik(){
 	this->urzadzenieWejscia = new UrzadzenieWejscia;
 	this->ekran = new Ekran;
 	this->bazaDanych = new BazaDanych;
-	this->plansza = new Plansza(this->ekran, 1080);
+	this->plansza = new Plansza(this->ekran, 1080, 300);
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
 	
 	connect(&this->timer, SIGNAL(timeout()), this, SLOT(odswiez()));
 	this->urzadzenieWejscia->otworz(0);
 	this->bazaDanych->polacz();
+	
+	this->ekran->ustawRozdzielczosc(QSize(500, 500));
+	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
+	this->zaladujSpecyfikecjeObiektow();
+	
 	//	dopiac kontrole uruchomienia poszczegolnych elementow
 }
 
@@ -28,6 +32,33 @@ Silnik::~Silnik(){
 	delete this->plansza;
 	delete this->menu;
 	delete this->logika;
+}
+
+void Silnik::zaladujSpecyfikecjeObiektow(){
+	//	dodac specyfikacje obiektow do planszy
+	
+	//	DEMO
+	
+	QString nazwaPojazdu = "pojazdTestowy";
+	this->plansza->dodajSpecyfikacje(
+		SpecyfikacjaPojazdu(
+			QPixmap(nazwaPojazdu + "Korpus.png"),	//	teksturaKorpus
+			QPixmap(nazwaPojazdu + "Wieza.png"),	//	teksturaWieza
+			20,		//	przesuniecieOsiDlaKorpusu
+			40,		//	przesuniecieOsiDlaWiezy
+			200,	//	predkoscMaksymalnaPojazdu
+			2.0,	//	predkoscRotacjiWiezy
+			100		//	wytrzymalosc
+		)
+	);
+	
+	QString nazwaAnimacji = "animacjaTestowa";
+	this->plansza->dodajSpecyfikacje(
+		SpecyfikacjaAnimacji(
+			QPixmap(nazwaAnimacji + ".png"),	//	tekstury
+			QSize(4, 4)	//	iloscKlatek
+		)
+	);
 }
 
 void Silnik::odswiezMenu(int milisekundy){
@@ -48,13 +79,13 @@ void Silnik::odswiezMenu(int milisekundy){
 	else
 		akcja = Menu::BRAK;
 	
-	this->tryb = this->menu->odswiez(akcja);
+	this->tryb = this->menu->odswiez(milisekundy, akcja);
 	this->menu->rysuj();
 }
 
 void Silnik::odswiezRozgrywke(int milisekundy){
-	double predkoscGasienicyLewej = -this->urzadzenieWejscia->statusDzojstik(1);
-	double predkoscGasienicyPrawej = -this->urzadzenieWejscia->statusDzojstik(3);
+	float predkoscGasienicyLewej = -this->urzadzenieWejscia->statusDzojstik(1);
+	float predkoscGasienicyPrawej = -this->urzadzenieWejscia->statusDzojstik(3);
 	
 	int rotacjaWiezy = 0;
 	if(this->urzadzenieWejscia->statusNawigatorPolozenie(0) & UrzadzenieWejscia::LEWO || this->urzadzenieWejscia->statusPrzyciskPolozenie(6))
@@ -82,7 +113,7 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(5) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(1))
 	);
 	
-	this->logika->odswiez(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaZasiegu, zmianaBroni, wystrzal);
+	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaZasiegu, zmianaBroni, wystrzal);
 	
 	//	sprawdzic czy koniec gry
 	
@@ -107,17 +138,11 @@ void Silnik::odswiez(){
 	}
 	
 	this->czasOstatniegoOdswiezenia = czasAktualny;
-	
-	Sleep(100);	//	SLEEP
 }
 
 void Silnik::uruchom(){
 	this->tryb = MENU;
 	this->czasOstatniegoOdswiezenia = QTime::currentTime();
 	this->timer.start();
-	
-	//	ROZDZIELCZOSC DOMYSLNA
-	this->ekran->ustawRozdzielczosc(QSize(20, 15));
-	
 	this->ekran->show();
 }

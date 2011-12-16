@@ -6,11 +6,11 @@
 
 class Obiekt{
 	public:
-		static double skala;
+		static float skala;
 		QPointF pozycja;
 		
 		Obiekt(QPointF);
-		virtual void rysuj(QPainter&) const = 0;
+		virtual void rysuj(QPainter&, QPoint) const = 0;
 };
 
 #endif // OBIEKT_H

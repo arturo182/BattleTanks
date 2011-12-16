@@ -6,13 +6,15 @@
 class SpecyfikacjaPojazdu;
 
 class Pojazd: public Obiekt{
-	private:
+	public:
 		const SpecyfikacjaPojazdu* specyfikacja;
+		float zwrotKorpusu;
+		float zwrotWiezy;
+		float odlegloscCelu;
 		int zdrowie;
 		
-	public:
-		Pojazd(SpecyfikacjaPojazdu*, QPointF);
-		void rysuj(QPainter&) const;
+		Pojazd(SpecyfikacjaPojazdu*, QPointF, float);
+		void rysuj(QPainter&, QPoint) const;
 };
 
 #endif // POJAZD_H

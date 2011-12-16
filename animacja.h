@@ -6,12 +6,11 @@
 class SpecyfikacjaAnimacji;
 
 class Animacja: public Obiekt{
-	private:
+	public:
 		const SpecyfikacjaAnimacji* specyfikacja;
 		
-	public:
 		Animacja(SpecyfikacjaAnimacji*, QPointF);
-		void rysuj(QPainter&) const;
+		void rysuj(QPainter&, QPoint) const;
 };
 
 #endif // ANIMACJA_H

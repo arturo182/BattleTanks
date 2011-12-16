@@ -89,8 +89,8 @@ int UrzadzenieWejscia::statusNawigatorWcisniecie(int numerNawigatora) const{
 	return 0;
 }
 
-double UrzadzenieWejscia::statusDzojstik(int numerDzojstika) const{
+float UrzadzenieWejscia::statusDzojstik(int numerDzojstika) const{
 	if(this->urzadzenie != 0 && numerDzojstika < this->iloscDzojstikow)
-		return double(this->dzojstiki[numerDzojstika]) / 0x8000;
-	return 0.0;
+		return float(this->dzojstiki[numerDzojstika]) / 0x8000;
+	return 0.0F;
 }

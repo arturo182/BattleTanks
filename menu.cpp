@@ -6,16 +6,15 @@
 Menu::Menu(Ekran* ekran, BazaDanych* bazaDanych, Plansza* plansza):
 	ekran(ekran),
 	bazaDanych(bazaDanych),
-	plansza(plansza){
-	this->zaladujSpecyfikecjeObiektow();
-}
+	plansza(plansza){}
 
-Silnik::Tryb Menu::odswiez(Akcja akcja){
+Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 	//	obsluga akcji
 	
-	if(akcja == WYBIERZ)
+	if(akcja == WYBIERZ){
+		this->plansza->zaladuj("planszaTestowa");
 		return Silnik::ROZGRYWKA;
-	else
+	}else
 		return Silnik::MENU;
 }
 
@@ -25,35 +24,11 @@ void Menu::rysuj() const{
 	//	TEST
 	
 	QPainter painter(&this->ekran->buforObrazu);
+	painter.fillRect(this->ekran->buforObrazu.rect(), Qt::black);
+	painter.setPen(Qt::red);
 	painter.setBrush(Qt::red);
 	painter.drawRect(QRect(5, 5, 5, 5));
 	painter.end();
 	
 	this->ekran->update();
-}
-
-void Menu::zaladujSpecyfikecjeObiektow(){
-	//	dodac specyfikacje obiektow do planszy
-	
-	
-	//	DEMO
-	
-	QString nazwaPojazdu = "pojazdTestowy";
-	this->plansza->dodajSpecyfikacje(
-		SpecyfikacjaPojazdu(
-			QPixmap(nazwaPojazdu + "Korpus.png"),	//	teksturaKorpus
-			QPixmap(nazwaPojazdu + "Wieza.png"),	//	teksturaWieza
-			50,		//	przesuniecieWiezy
-			100,	//	predkoscMaksymalna
-			100		//	wytrzymalosc
-		)
-	);
-	
-	QString nazwaAnimacji = "animacjaTestowa";
-	this->plansza->dodajSpecyfikacje(
-		SpecyfikacjaAnimacji(
-			QPixmap(nazwaAnimacji + ".png"),	//	tekstury
-			QSize(4, 4)	//	iloscKlatek
-		)
-	);
 }

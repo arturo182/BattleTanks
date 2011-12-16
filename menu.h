@@ -1,6 +1,7 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <QPoint>
 #include "silnik.h"
 
 class Ekran;
@@ -12,8 +13,6 @@ class Menu{
 		Ekran* ekran;
 		BazaDanych* bazaDanych;
 		Plansza* plansza;
-		
-		void zaladujSpecyfikecjeObiektow();
 		
 	public:
 		enum Akcja{
@@ -27,7 +26,7 @@ class Menu{
 		};
 		
 		Menu(Ekran*, BazaDanych*, Plansza*);
-		Silnik::Tryb odswiez(Akcja);
+		Silnik::Tryb odswiez(int, Akcja);
 		void rysuj() const;
 };
 

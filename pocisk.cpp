@@ -3,5 +3,5 @@
 Pocisk::Pocisk(QPointF pozycja):
 	Obiekt(pozycja){}
 
-void Pocisk::rysuj(QPainter& painter) const{
+void Pocisk::rysuj(QPainter& painter, QPoint widok) const{
 }

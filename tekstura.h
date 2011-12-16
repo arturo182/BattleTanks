@@ -14,8 +14,8 @@ class Tekstura{
 		Tekstura(const QPixmap&);
 		Tekstura(const Tekstura&);
 		~Tekstura();
-		void przeskaluj(double);
-		static void przeskalujWszystko(double);
+		void przeskaluj(float);
+		static void przeskalujWszystko(float);
 };
 
 #endif // TEKSTURA_H

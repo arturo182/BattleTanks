@@ -32,6 +32,7 @@ class Silnik: public QObject{
 		QTimer timer;
 		QTime czasOstatniegoOdswiezenia;
 		
+		void zaladujSpecyfikecjeObiektow();
 		void odswiezMenu(int);
 		void odswiezRozgrywke(int);
 		

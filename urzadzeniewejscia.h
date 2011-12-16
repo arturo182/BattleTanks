@@ -33,7 +33,7 @@ class UrzadzenieWejscia{
 		bool statusPrzyciskWcisniecie(int) const;
 		int statusNawigatorPolozenie(int) const;
 		int statusNawigatorWcisniecie(int) const;
-		double statusDzojstik(int) const;
+		float statusDzojstik(int) const;
 };
 
 #endif // URZADZENIEWEJSCIA_H

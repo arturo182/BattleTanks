@@ -7,12 +7,16 @@ class SpecyfikacjaPojazdu{
 	private:
 		Tekstura teksturaKorpus;
 		Tekstura teksturaWieza;
-		int przesuniecieWiezy;
-		int predkoscMaksymalna;
-		int wytrzymalosc;
 		
 	public:
-		SpecyfikacjaPojazdu(const QPixmap&, const QPixmap&, int, int, int);
+		QSize rozmiar;
+		int przesuniecieOsiDlaKorpusu;
+		int przesuniecieOsiDlaWiezy;
+		int predkoscMaksymalnaPojazdu;
+		float predkoscRotacjiWiezy;
+		int wytrzymalosc;
+		
+		SpecyfikacjaPojazdu(const QPixmap&, const QPixmap&, int, int, int, float, int);
 	
 	friend class Pojazd;
 };

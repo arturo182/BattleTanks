@@ -3,7 +3,7 @@
 
 Ekran::Ekran():
 	QWidget(){
-	this->setWindowState(Qt::WindowFullScreen);
+	//this->setWindowState(Qt::WindowFullScreen);
 }
 
 void Ekran::ustawRozdzielczosc(QSize rozdzielczosc){

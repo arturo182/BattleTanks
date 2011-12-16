@@ -15,9 +15,11 @@ class Plansza{
 	private:
 		Ekran* ekran;
 		const int widokWysokosc;
+		const int margines;
 		QList<SpecyfikacjaPojazdu> specyfikacjePojazdow;
 		QList<SpecyfikacjaAnimacji> specyfikacjeAnimacji;
 		Tekstura* mapa;
+		QPoint widok;
 		//	przeszkody
 		Pojazd* pojazdGracza;
 		QList<Pojazd> pojazdyObce;
@@ -25,13 +27,22 @@ class Plansza{
 		QList<Animacja> animacje;
 		QList<Animacja> bonusy;
 		
+		void odswiezWidok();
+		
 	public:
-		Plansza(Ekran*, int);
+		Plansza(Ekran*, int, int);
+		inline int wysokoscWidoku() const;
 		void dodajSpecyfikacje(const SpecyfikacjaPojazdu&);
 		void dodajSpecyfikacje(const SpecyfikacjaAnimacji&);
 		bool zaladuj(QString);
 		void czysc();
-		void rysuj() const;
+		void rysuj();
+	
+	friend class Logika;
 };
+
+inline int Plansza::wysokoscWidoku() const{
+	return this->widokWysokosc;
+}
 
 #endif // PLANSZA_H
