@@ -1,8 +1,15 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include <QTextOption>
+#include <QPainter>
 #include <QPoint>
 #include "silnik.h"
+
+namespace Phonon
+{
+  class MediaObject;
+}
 
 class QTreeWidget;
 
@@ -10,10 +17,13 @@ class BazaDanych;
 class Plansza;
 class Ekran;
 
-class Menu{
+class Menu: public QObject{
+  Q_OBJECT
+
   public:
 	enum Tryb{
 	  WYBOR_PROFILU,
+	  TWORZENIE_PROFILU,
 	  MENU_GLOWNE,
 	  WYBOR_TRYBU,
 	  WYBOR_MAPY,
@@ -30,6 +40,10 @@ class Menu{
 	int pozycja;
 	int zaznaczenie;
 	int idGracza;
+	QString nowyProfil;
+	QStringList alfabet;
+	bool shift;
+	Phonon::MediaObject *muzyka;
 
   public:
 	enum Akcja{
@@ -46,6 +60,13 @@ class Menu{
 	Menu(Ekran*, BazaDanych*, Plansza*);
 	Silnik::Tryb odswiez(int, Akcja);
 	void rysuj() const;
+	void ladujMuzyke();
+
+  private slots:
+	void zapetlMuzyke();
+
+  private:
+	void cieniowanyTekst(QPainter &painter, const QRectF &r, const QString &text, const QTextOption &o = QTextOption()) const;
 };
 
 #endif // MENU_H

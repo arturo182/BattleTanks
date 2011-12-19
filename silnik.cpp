@@ -23,7 +23,7 @@ Silnik::Silnik(){
   connect(&this->timer, SIGNAL(timeout()), this, SLOT(odswiez()));
   this->urzadzenieWejscia->otworz(0);
 
-
+  this->menu->ladujMuzyke();
 
   this->ekran->ustawJakosc(this->bazaDanych->ustawienie("jakosc", "niska").toString());
   Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
