@@ -10,6 +10,7 @@ class Obiekt{
 		QPointF pozycja;
 		
 		Obiekt(QPointF);
+		virtual ~Obiekt();
 		virtual void rysuj(QPainter&, QPoint) const = 0;
 };
 

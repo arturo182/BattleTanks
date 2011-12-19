@@ -9,7 +9,8 @@ class SpecyfikacjaPojazdu{
 		Tekstura teksturaWieza;
 		
 	public:
-		QSize rozmiar;
+		QSize rozmiarKorpus;
+		QSize rozmiarWieza;
 		int przesuniecieOsiDlaKorpusu;
 		int przesuniecieOsiDlaWiezy;
 		int predkoscMaksymalnaPojazdu;

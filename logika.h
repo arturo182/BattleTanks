@@ -18,9 +18,9 @@ class Logika{
 		Logika(Plansza*);
 		void odswiez(int, float, float, int, int, int, bool);
 		
-	friend class Pojazd;
+/*	friend class Pojazd;
 	friend class Pocisk;
-	friend class Animacja;
+	friend class Animacja;*/
 };
 
 #endif // LOGIKA_H

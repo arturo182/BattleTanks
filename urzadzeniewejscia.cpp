@@ -1,3 +1,4 @@
+#include <cmath>
 #include "urzadzeniewejscia.h"
 
 UrzadzenieWejscia::UrzadzenieWejscia():
@@ -90,7 +91,10 @@ int UrzadzenieWejscia::statusNawigatorWcisniecie(int numerNawigatora) const{
 }
 
 float UrzadzenieWejscia::statusDzojstik(int numerDzojstika) const{
-	if(this->urzadzenie != 0 && numerDzojstika < this->iloscDzojstikow)
-		return float(this->dzojstiki[numerDzojstika]) / 0x8000;
+	if(this->urzadzenie != 0 && numerDzojstika < this->iloscDzojstikow){
+		float status = float(this->dzojstiki[numerDzojstika]) / 0x8000;
+		if(fabs(status) > DZOJSTIK_EPSILON)
+			return status;
+	}
 	return 0.0F;
 }
