@@ -4,12 +4,14 @@
 #include <QPixmap>
 #include <QList>
 #include "specyfikacjapojazdu.h"
+#include "specyfikacjapocisku.h"
 #include "specyfikacjaanimacji.h"
-#include "pojazd.h"
-#include "pocisk.h"
 #include "animacja.h"
 
 class Ekran;
+class PojazdGracza;
+class PojazdObcy;
+class Pocisk;
 
 class Plansza{
 	private:
@@ -17,13 +19,14 @@ class Plansza{
 		const int widokWysokosc;
 		const int margines;
 		QList<SpecyfikacjaPojazdu> specyfikacjePojazdow;
+		QList<SpecyfikacjaPocisku> specyfikacjePociskow;
 		QList<SpecyfikacjaAnimacji> specyfikacjeAnimacji;
 		Tekstura* mapa;
 		QPoint widok;
-		//	przeszkody
-		Pojazd* pojazdGracza;
-		QList<Pojazd> pojazdyObce;
-		QList<Pocisk> pociski;
+		QList<QPolygon> przeszkody;
+		PojazdGracza* pojazdGracza;
+		QList<PojazdObcy*> pojazdyObce;
+		QList<Pocisk*> pociski;
 		QList<Animacja> animacje;
 		QList<Animacja> bonusy;
 		
@@ -33,6 +36,7 @@ class Plansza{
 		Plansza(Ekran*, int, int);
 		inline int wysokoscWidoku() const;
 		void dodajSpecyfikacje(const SpecyfikacjaPojazdu&);
+		void dodajSpecyfikacje(const SpecyfikacjaPocisku&);
 		void dodajSpecyfikacje(const SpecyfikacjaAnimacji&);
 		bool zaladuj(QString);
 		void czysc();

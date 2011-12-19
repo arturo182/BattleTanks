@@ -2,6 +2,8 @@
 #include <QVector2D>
 #include "logika.h"
 #include "plansza.h"
+#include "pojazdgracza.h"
+#include "pocisk.h"
 
 Logika::Logika(Plansza* plansza):
 	plansza(plansza){
@@ -13,15 +15,28 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 	this->przemiesc(*this->plansza->pojazdGracza, predkoscGasienicyLewej, predkoscGasienicyPrawej, czas);
 	
 	if(rotacjaWiezy != 0)
-		this->plansza->pojazdGracza->zwrotWiezy = fmod(this->plansza->pojazdGracza->zwrotWiezy + rotacjaWiezy * this->plansza->pojazdGracza->specyfikacja->predkoscRotacjiWiezy * czas, 2.0 * M_PI);
+		this->plansza->pojazdGracza->zwrotWiezyWzgledemKorpusuKat = fmod(this->plansza->pojazdGracza->zwrotWiezyWzgledemKorpusuKat + rotacjaWiezy * this->plansza->pojazdGracza->specyfikacja->predkoscRotacjiWiezy * czas, 2.0 * M_PI);
 	
-/*	qDebug()
-	<< "L: " << predkoscGasienicyLewej
-	<< "R: " << predkoscGasienicyPrawej
-	<< "W: " << rotacjaWiezy
-	<< "D: " << zmianaZasiegu
-	<< "B: " << zmianaBroni
-	<< "F: " << wystrzal;*/
+	this->plansza->pojazdGracza->odswiezWektory();
+	
+	if(wystrzal){
+		QVector2D wektorPrzesuniecieLufy = this->plansza->pojazdGracza->zwrotWiezyWektor * (this->plansza->pojazdGracza->specyfikacja->przesuniecieOsiDlaWiezy + (this->plansza->pojazdGracza->specyfikacja->rozmiarWieza.height() + this->plansza->specyfikacjePociskow[this->plansza->pojazdGracza->aktualnaBron].rozmiar.height()) / 2.0) - this->plansza->pojazdGracza->zwrotKorpusuWektor * this->plansza->pojazdGracza->specyfikacja->przesuniecieOsiDlaKorpusu;
+		this->plansza->pociski.append(
+			new Pocisk(
+				&this->plansza->specyfikacjePociskow[this->plansza->pojazdGracza->aktualnaBron],
+				true,
+				this->plansza->pojazdGracza->pozycja + wektorPrzesuniecieLufy.toPointF(),
+				this->plansza->pojazdGracza->zwrotWiezyWektor,
+				500
+			)
+		);
+	}
+	
+	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
+		if((*i)->przemiesc(milisekundy)){
+			delete *i;
+			this->plansza->pociski.removeOne(*i);
+		}
 }
 
 bool Logika::sprawdzKolizje(QSize rozmiar, QPointF pozycja, float zwrot) const{
@@ -36,30 +51,29 @@ bool Logika::przemiesc(Pojazd& pojazd, float predkoscGasienicyLewej, float predk
 	float nowyZwrot;
 	
 	if(predkoscGasienicyLewej == predkoscGasienicyPrawej){
-		nowaPozycja = pojazd.pozycja + QPointF(cos(pojazd.zwrotKorpusu), -sin(pojazd.zwrotKorpusu)) * pojazd.specyfikacja->predkoscMaksymalnaPojazdu * predkoscGasienicyLewej * czas;
-		nowyZwrot = pojazd.zwrotKorpusu;
+		nowaPozycja = pojazd.pozycja + pojazd.zwrotKorpusuWektor.toPointF() * pojazd.specyfikacja->predkoscMaksymalnaPojazdu * predkoscGasienicyLewej * czas;
+		nowyZwrot = pojazd.zwrotKorpusuKat;
 	}else{
 		float drogaGasienicyLewej = pojazd.specyfikacja->predkoscMaksymalnaPojazdu * predkoscGasienicyLewej * czas;
 		float drogaGasienicyPrawej = pojazd.specyfikacja->predkoscMaksymalnaPojazdu * predkoscGasienicyPrawej * czas;
 		float drogaPojazdu = (drogaGasienicyLewej + drogaGasienicyPrawej) / 2.0;
-		float promienSkretu = pojazd.specyfikacja->rozmiar.width() * drogaPojazdu / (drogaGasienicyPrawej - drogaGasienicyLewej);
+		float promienSkretu = pojazd.specyfikacja->rozmiarKorpus.width() * drogaPojazdu / (drogaGasienicyPrawej - drogaGasienicyLewej);
 		float katSkretu = drogaPojazdu / promienSkretu;
 		
-		QVector2D wektorZwrotZnormalizowany(cos(pojazd.zwrotKorpusu), sin(pojazd.zwrotKorpusu));
 		QVector2D wektorPrzesuniecieWzgledne(promienSkretu * (1.0 - cos(katSkretu)), promienSkretu * sin(katSkretu));
 		QVector2D wektorPrzesuniecieBezwzgledne(
-			wektorZwrotZnormalizowany.x() * wektorPrzesuniecieWzgledne.y() + wektorZwrotZnormalizowany.y() * wektorPrzesuniecieWzgledne.x(),
-			wektorZwrotZnormalizowany.y() * wektorPrzesuniecieWzgledne.y() - wektorZwrotZnormalizowany.x() * wektorPrzesuniecieWzgledne.x()
+			pojazd.zwrotKorpusuWektor.x() * wektorPrzesuniecieWzgledne.y() + pojazd.zwrotKorpusuWektor.y() * wektorPrzesuniecieWzgledne.x(),
+			pojazd.zwrotKorpusuWektor.y() * wektorPrzesuniecieWzgledne.y() - pojazd.zwrotKorpusuWektor.x() * wektorPrzesuniecieWzgledne.x()
 		);
 		
-		nowaPozycja = pojazd.pozycja + QPointF(wektorPrzesuniecieBezwzgledne.x(), -wektorPrzesuniecieBezwzgledne.y());
-		nowyZwrot = fmod(pojazd.zwrotKorpusu + katSkretu, 2.0 * M_PI);
+		nowaPozycja = pojazd.pozycja + wektorPrzesuniecieBezwzgledne.toPointF();
+		nowyZwrot = fmod(pojazd.zwrotKorpusuKat + katSkretu, 2.0 * M_PI);
 	}
 	
-	if(this->sprawdzKolizje(pojazd.specyfikacja->rozmiar, nowaPozycja, nowyZwrot))
+	if(this->sprawdzKolizje(pojazd.specyfikacja->rozmiarKorpus, nowaPozycja, nowyZwrot))
 		return false;
 		
 	pojazd.pozycja = nowaPozycja;
-	pojazd.zwrotKorpusu = nowyZwrot;
+	pojazd.zwrotKorpusuKat = nowyZwrot;
 	return true;
 }

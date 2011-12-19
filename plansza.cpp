@@ -1,5 +1,10 @@
+#include <QFile>
+#include <QDataStream>
 #include "plansza.h"
 #include "ekran.h"
+#include "pojazdgracza.h"
+#include "pojazdobcy.h"
+#include "pocisk.h"
 
 Plansza::Plansza(Ekran* ekran, int widokWysokosc, int margines):
 	ekran(ekran),
@@ -12,29 +17,63 @@ void Plansza::dodajSpecyfikacje(const SpecyfikacjaPojazdu& specyfikacja){
 	this->specyfikacjePojazdow.append(specyfikacja);
 }
 
+void Plansza::dodajSpecyfikacje(const SpecyfikacjaPocisku& specyfikacja){
+	this->specyfikacjePociskow.append(specyfikacja);
+}
+
 void Plansza::dodajSpecyfikacje(const SpecyfikacjaAnimacji& specyfikacja){
 	this->specyfikacjeAnimacji.append(specyfikacja);
 }
 
 bool Plansza::zaladuj(QString nazwaPlanszy){
-	QPixmap mapa(nazwaPlanszy + ".png");
+	QPixmap mapaTekstura(nazwaPlanszy + ".png");
 	
-	if(mapa.isNull())
+	if(mapaTekstura.isNull())
 		return false;
-	this->mapa = new Tekstura(mapa);
-	
+	this->mapa = new Tekstura(mapaTekstura);
 	this->widok = Obiekt::skala * QPoint(0, 0);
-	this->pojazdGracza = new Pojazd(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0);
 	
+	QFile mapaSpecyfikacjaPlik(nazwaPlanszy + ".dat");
+	if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly)){
+		delete this->mapa;
+		return false;
+	}
+	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
+	
+	//	typ mapy
+	
+	int iloscPrzeszkod, iloscWierzcholkow;
+	QPoint wierzcholek;
+	
+	mapaSpecyfikacjaDane >> iloscPrzeszkod;
+	for(int i = 0; i < iloscPrzeszkod; i++){
+		mapaSpecyfikacjaDane >> iloscWierzcholkow;
+		
+		QPolygon przeszkoda(iloscWierzcholkow);
+		for(int j = 0; j < iloscWierzcholkow; j++){
+			mapaSpecyfikacjaDane >> wierzcholek;
+			przeszkoda.setPoint(j, wierzcholek);
+		}
+		this->przeszkody.append(przeszkoda);
+	}
+	
+	this->pojazdGracza = new PojazdGracza(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0, this->specyfikacjePociskow.size(), 0);
+	
+	mapaSpecyfikacjaPlik.close();
 	return true;
 }
 
 void Plansza::czysc(){
 	delete this->mapa;
 	this->mapa = 0;
+	this->przeszkody.clear();
 	delete this->pojazdGracza;
 	this->pojazdGracza = 0;
+	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
+		delete *i;
 	this->pojazdyObce.clear();
+	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
+		delete *i;
 	this->pociski.clear();
 	this->animacje.clear();
 	this->bonusy.clear();
@@ -52,6 +91,9 @@ void Plansza::rysuj(){
 	);
 	
 	this->pojazdGracza->rysuj(painter, this->widok);
+	
+	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
+		(*i)->rysuj(painter, this->widok);
 	
 	painter.end();
 	this->ekran->update();

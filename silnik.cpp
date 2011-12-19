@@ -12,7 +12,7 @@
 Silnik::Silnik(){
   this->urzadzenieWejscia = new UrzadzenieWejscia;
   this->ekran = new Ekran;
-  this->ekran->ustawRozdzielczosc(QSize(800, 600));
+  this->ekran->ustawRozdzielczosc(QSize(1024,  768));
 
   this->bazaDanych = new BazaDanych;
   this->plansza = new Plansza(this->ekran, 1080, 400);
@@ -58,6 +58,17 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 	  100		//	wytrzymalosc
 	)
   );
+
+	QString nazwaPocisku = "pociskTestowy";
+	this->plansza->dodajSpecyfikacje(
+		SpecyfikacjaPocisku(
+			QPixmap(nazwaPocisku + ".png"),	//	tekstura
+			800,	//	dystansMaksymalny
+			700,	//	predkosc
+			30,		//	silaRazenie
+			200		//	promienRazenie
+		)
+	);
 
   QString nazwaAnimacji = "animacjaTestowa";
   this->plansza->dodajSpecyfikacje(
