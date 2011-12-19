@@ -2,16 +2,25 @@
 #include "ekran.h"
 
 Ekran::Ekran():
-	QWidget(){
-	//this->setWindowState(Qt::WindowFullScreen);
+  QWidget(){
+  //this->setWindowState(Qt::WindowFullScreen);
 }
 
-void Ekran::ustawRozdzielczosc(QSize rozdzielczosc){
-	this->buforObrazu = QPixmap(rozdzielczosc);
+void Ekran::ustawRozdzielczosc(const QSize &rozdzielczosc){
+  this->buforObrazu = QPixmap(rozdzielczosc);
+}
+
+void Ekran::ustawJakosc(const QString &jakosc)
+{
+  this->jakosc = jakosc;
 }
 
 void Ekran::paintEvent(QPaintEvent*){
-	QPainter painter(this);
-	painter.drawPixmap(this->rect(), this->buforObrazu);
-	painter.end();
+  QPainter painter(this);
+
+  if(this->jakosc == "wysoka")
+	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+
+  painter.drawPixmap(this->rect(), this->buforObrazu);
+  painter.end();
 }

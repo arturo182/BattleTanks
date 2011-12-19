@@ -3,6 +3,8 @@ DESTDIR = bin
 LIBS += \
     -lSDL
 
+QT += sql
+
 SOURCES += \
     main.cpp \
     silnik.cpp \
@@ -35,35 +37,3 @@ HEADERS += \
     tekstura.h \
     specyfikacjapojazdu.h \
     specyfikacjaanimacji.h
-	
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
