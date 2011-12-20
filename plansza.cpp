@@ -57,7 +57,7 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		this->przeszkody.append(przeszkoda);
 	}
 	
-	this->pojazdGracza = new PojazdGracza(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0, this->specyfikacjePociskow.size(), 0);
+	this->pojazdGracza = new PojazdGracza(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0.0, this->specyfikacjePociskow.size(), 0);
 	
 	mapaSpecyfikacjaPlik.close();
 	return true;
