@@ -28,7 +28,10 @@ class Menu: public QObject{
 	  WYBOR_TRYBU,
 	  WYBOR_MAPY,
 	  REKORDY,
-	  USTAWIENIA
+	  USTAWIENIA_POMOC,
+	  USTAWIENIA,
+	  AUTORZY,
+	  POMOC
 	};
 
   private:
@@ -53,6 +56,7 @@ class Menu: public QObject{
 	  LEWO,
 	  WYBIERZ,
 	  WYBIERZ2,
+	  USUN,
 	  COFNIJ,
 	  BRAK
 	};
@@ -67,6 +71,7 @@ class Menu: public QObject{
 
   private:
 	void cieniowanyTekst(QPainter &painter, const QRectF &r, const QString &text, const QTextOption &o = QTextOption()) const;
+	void wczytajProfile();
 };
 
 #endif // MENU_H

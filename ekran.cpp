@@ -18,8 +18,8 @@ void Ekran::ustawJakosc(const QString &jakosc)
 void Ekran::paintEvent(QPaintEvent*){
   QPainter painter(this);
 
-//  if(this->jakosc == "wysoka")
-//	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+  if(this->jakosc == "wysoka")
+	painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
 
   painter.drawPixmap(this->rect(), this->buforObrazu);
   painter.end();

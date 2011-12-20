@@ -90,6 +90,8 @@ void Silnik::odswiezMenu(int milisekundy){
 	akcja = Menu::PRAWO;
   else if(urzadzenieWejscia->statusNawigatorWcisniecie(0) & UrzadzenieWejscia::LEWO)
 	akcja = Menu::LEWO;
+  else if(urzadzenieWejscia->statusPrzyciskWcisniecie(0))
+	akcja = Menu::USUN;
   else if(urzadzenieWejscia->statusPrzyciskWcisniecie(1))
 	akcja = Menu::WYBIERZ;
   else if(urzadzenieWejscia->statusPrzyciskWcisniecie(2))
