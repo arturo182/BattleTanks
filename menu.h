@@ -46,6 +46,7 @@ class Menu: public QObject{
 	QString nowyProfil;
 	QStringList alfabet;
 	bool shift;
+	QPixmap tloPixmapa;
 	Phonon::MediaObject *muzyka;
 
   public:

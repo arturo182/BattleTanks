@@ -28,6 +28,8 @@ Menu::Menu(Ekran* ekran, BazaDanych* bazaDanych, Plansza* plansza):
   this->drzewko->setStyleSheet("background-color: transparent; font-size: 12pt;");
   this->drzewko->resize(this->ekran->buforObrazu.width() / 3, this->ekran->buforObrazu.height() / 2);
 
+  this->tloPixmapa = QPixmap(qApp->applicationDirPath() + "/tlo_menu.png");
+
   wczytajProfile();
 
   for(int i = 0; i <= 9; i++)
@@ -303,10 +305,11 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
   return Silnik::MENU;
 }
 
-void Menu::rysuj() const{
+void Menu::
+rysuj() const{
   //	rysowanie na ekranie :P
   QPainter painter(&this->ekran->buforObrazu);
-  painter.fillRect(this->ekran->buforObrazu.rect(), Qt::red);
+  painter.drawTiledPixmap(this->ekran->buforObrazu.rect(), this->tloPixmapa);
   painter.setPen(Qt::white);
 
   QFont tytul = painter.font();
