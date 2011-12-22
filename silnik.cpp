@@ -63,7 +63,7 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 	this->plansza->dodajSpecyfikacje(
 		SpecyfikacjaPocisku(
 			QPixmap(nazwaPocisku + ".png"),	//	tekstura
-			1000,	//	dystansMaksymalny
+			1000,	//	zasieg
 			600,	//	predkosc
 			30,		//	silaRazenie
 			200		//	promienRazenie

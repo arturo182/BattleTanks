@@ -1,9 +1,9 @@
 #include "specyfikacjapocisku.h"
 
-SpecyfikacjaPocisku::SpecyfikacjaPocisku(const QPixmap& tekstura, int dystansMaksymalny, int predkosc, int silaRazenie, int promienRazenie):
+SpecyfikacjaPocisku::SpecyfikacjaPocisku(const QPixmap& tekstura, int zasieg, int predkosc, int silaRazenie, int promienRazenie):
 	tekstura(tekstura),
 	rozmiar(this->tekstura.size()),
-	dystansMaksymalny(dystansMaksymalny),
+	zasieg(zasieg),
 	predkosc(predkosc),
 	silaRazenie(silaRazenie),
 	promienRazenie(promienRazenie){}

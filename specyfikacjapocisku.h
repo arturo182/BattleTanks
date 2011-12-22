@@ -9,7 +9,7 @@ class SpecyfikacjaPocisku{
 		
 	public:
 		QSize rozmiar;
-		int dystansMaksymalny;
+		int zasieg;
 		int predkosc;
 		int silaRazenie;
 		int promienRazenie;
