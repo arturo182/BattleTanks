@@ -6,11 +6,12 @@
 Pocisk::Pocisk(SpecyfikacjaPocisku* specyfikacja, bool pociskGracza, QPointF punktStartowy, QVector2D wektorKierunku, float dystansCalkowity):
 	Obiekt(punktStartowy),
 	specyfikacja(specyfikacja),
+	status(true),
 	pociskGracza(pociskGracza),
 	punktStartowy(punktStartowy),
 	wektorKierunku(wektorKierunku),
 	dystansCalkowity(dystansCalkowity),
-	czasLotuMilisekundy(0){
+	czasMilisekundy(0){
 	QTransform transformacja;
 	
 	transformacja.rotateRadians(M_PI_2 + atan2(this->wektorKierunku.y(), this->wektorKierunku.x()));
@@ -21,21 +22,24 @@ Pocisk::~Pocisk(){
 	delete this->tekstura;
 }
 
-bool Pocisk::przemiesc(int milisekundy){
-	float dystansAktualny;
-	
-	this->czasLotuMilisekundy += milisekundy;
-	dystansAktualny = this->specyfikacja->predkosc * float(this->czasLotuMilisekundy) / 1000.0;
-	if(dystansAktualny < this->dystansCalkowity){
+void Pocisk::odswiez(int milisekundy){
+	if(!this->status)
+		return;
+		
+	this->czasMilisekundy += milisekundy;
+	float dystansAktualny = this->specyfikacja->predkosc * float(this->czasMilisekundy) / 1000.0;
+	if(dystansAktualny < this->dystansCalkowity)
 		this->pozycja = this->punktStartowy + dystansAktualny * this->wektorKierunku.toPointF();
-		return false;
-	}else{
+	else{
 		this->pozycja = this->punktStartowy + this->dystansCalkowity * this->wektorKierunku.toPointF();
-		return true;
+		this->status = false;
 	}
 }
 
 void Pocisk::rysuj(QPainter& painter, QPoint widok) const{
+	if(!this->status)
+		return;
+		
 	painter.drawPixmap(
 		Obiekt::skala * this->pozycja - widok - QPointF(this->tekstura->teksturaPrzeskalowana.width() / 2.0, this->tekstura->teksturaPrzeskalowana.height() / 2.0),
 		this->tekstura->teksturaPrzeskalowana

@@ -9,8 +9,10 @@ class SpecyfikacjaAnimacji{
 		
 	public:
 		QSize iloscKlatek;
+		int czasTrwaniaMilisekundy;
+		bool powtarzaj;
 		
-		SpecyfikacjaAnimacji(const QPixmap&, QSize);
+		SpecyfikacjaAnimacji(const QPixmap&, QSize, int, bool = false);
 	
 	friend class Animacja;
 };

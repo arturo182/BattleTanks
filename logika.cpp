@@ -19,6 +19,12 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 	
 	this->plansza->pojazdGracza->odswiezWektory();
 	
+	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
+		(*i)->odswiez(milisekundy);
+		
+	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
+		(*i)->odswiez(milisekundy);
+		
 	if(wystrzal){
 		QVector2D wektorPrzesuniecieLufy = this->plansza->pojazdGracza->zwrotWiezyWektor * (this->plansza->pojazdGracza->specyfikacja->przesuniecieOsiDlaWiezy + (this->plansza->pojazdGracza->specyfikacja->rozmiarWieza.height() + this->plansza->specyfikacjePociskow[this->plansza->pojazdGracza->aktualnaBron].rozmiar.height()) / 2.0) - this->plansza->pojazdGracza->zwrotKorpusuWektor * this->plansza->pojazdGracza->specyfikacja->przesuniecieOsiDlaKorpusu;
 		this->plansza->pociski.append(
@@ -32,8 +38,20 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 		);
 	}
 	
+	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
+		if(!(*i)->sprawdzStatus()){
+			delete *i;
+			this->plansza->animacje.removeOne(*i);
+		}
+	
 	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
-		if((*i)->przemiesc(milisekundy)){
+		if(!(*i)->sprawdzStatus()){
+			this->plansza->animacje.append(
+				new Animacja(
+					&this->plansza->specyfikacjeAnimacji[0],
+					(*i)->pozycja
+				)
+			);
 			delete *i;
 			this->plansza->pociski.removeOne(*i);
 		}

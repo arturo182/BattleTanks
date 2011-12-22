@@ -92,6 +92,9 @@ void Plansza::rysuj(){
 	
 	this->pojazdGracza->rysuj(painter, this->widok);
 	
+	for(QList<Animacja*>::iterator i = this->animacje.begin(); i != this->animacje.end(); i++)
+		(*i)->rysuj(painter, this->widok);
+	
 	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
 		(*i)->rysuj(painter, this->widok);
 	

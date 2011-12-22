@@ -27,8 +27,8 @@ class Plansza{
 		PojazdGracza* pojazdGracza;
 		QList<PojazdObcy*> pojazdyObce;
 		QList<Pocisk*> pociski;
-		QList<Animacja> animacje;
-		QList<Animacja> bonusy;
+		QList<Animacja*> animacje;
+		QList<Animacja*> bonusy;
 		
 		void odswiezWidok();
 		

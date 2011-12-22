@@ -9,5 +9,4 @@ SpecyfikacjaPojazdu::SpecyfikacjaPojazdu(const QPixmap& teksturaKorpus, const QP
 	przesuniecieOsiDlaWiezy(przesuniecieOsiDlaWiezy),
 	predkoscMaksymalnaPojazdu(predkoscMaksymalnaPojazdu),
 	predkoscRotacjiWiezy(predkoscRotacjiWiezy),
-	wytrzymalosc(wytrzymalosc){
-}
+	wytrzymalosc(wytrzymalosc){}
