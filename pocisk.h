@@ -17,14 +17,14 @@ class Pocisk: public Obiekt{
 		QVector2D wektorKierunku;
 		float dystansCalkowity;
 		int czasMilisekundy;
-	
+
 	public:
 		Pocisk(SpecyfikacjaPocisku*, bool, QPointF, QVector2D, float);
 		~Pocisk();
 		void odswiez(int);
 		inline bool sprawdzStatus() const;
 		void rysuj(QPainter&, QPoint) const;
-	
+
 	friend class Logika;
 };
 

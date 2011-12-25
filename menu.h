@@ -56,7 +56,7 @@ class Menu: public QObject{
 	  PRAWO,
 	  LEWO,
 	  WYBIERZ,
-	  WYBIERZ2,
+	  WYBIERZ_ALT,
 	  USUN,
 	  COFNIJ,
 	  BRAK

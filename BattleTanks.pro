@@ -17,13 +17,14 @@ SOURCES += \
 	pojazd.cpp \
 	animacja.cpp \
 	pocisk.cpp \
-	urzadzeniewejscia.cpp \
 	tekstura.cpp \
 	specyfikacjapojazdu.cpp \
 	specyfikacjaanimacji.cpp \
 	pojazdgracza.cpp \
 	pojazdobcy.cpp \
-	specyfikacjapocisku.cpp
+	specyfikacjapocisku.cpp \
+    gamepad.cpp \
+    klawiatura.cpp
 
 HEADERS += \
 	silnik.h \
@@ -42,4 +43,6 @@ HEADERS += \
 	specyfikacjaanimacji.h \
 	pojazdgracza.h \
 	pojazdobcy.h \
-	specyfikacjapocisku.h
+	specyfikacjapocisku.h \
+    gamepad.h \
+    klawiatura.h

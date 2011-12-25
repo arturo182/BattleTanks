@@ -1,5 +1,6 @@
 #include "silnik.h"
-#include "urzadzeniewejscia.h"
+#include "gamepad.h"
+#include "klawiatura.h"
 #include "ekran.h"
 #include "bazadanych.h"
 #include "plansza.h"
@@ -10,18 +11,25 @@
 #include <QDebug>
 
 Silnik::Silnik(){
-	this->urzadzenieWejscia = new UrzadzenieWejscia;
-	this->ekran = new Ekran;
-	this->ekran->ustawRozdzielczosc(QSize(512,  384));
-
 	this->bazaDanych = new BazaDanych;
-	this->plansza = new Plansza(this->ekran, 1080, 400);
 	this->bazaDanych->polacz();
+
+	if(this->bazaDanych->ustawienie("sterowanie", "gamepad").toString() == "gamepad")
+		this->urzadzenieWejscia = new Gamepad;
+	else
+		this->urzadzenieWejscia = new Klawiatura;
+
+	this->ekran = new Ekran;
+	QSize rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", QSize(800, 600)).toSize();
+	this->ekran->ustawRozdzielczosc(rozdzielczosc);
+
+	this->plansza = new Plansza(this->ekran, 1080, 400);
+
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
 
 	connect(&this->timer, SIGNAL(timeout()), this, SLOT(odswiez()));
-	this->urzadzenieWejscia->otworz(0);
+	this->urzadzenieWejscia->otworz();
 
 	this->menu->ladujMuzyke();
 
@@ -33,12 +41,16 @@ Silnik::Silnik(){
 }
 
 Silnik::~Silnik(){
-	delete this->urzadzenieWejscia;
+	this->timer.stop();
+
+	delete this->logika;
+	delete this->menu;
+	delete this->plansza;
 	delete this->ekran;
 	delete this->bazaDanych;
-	delete this->plansza;
-	delete this->menu;
-	delete this->logika;
+
+	//to robi krzak na koncu programu, do dalszego zbadania
+	//delete this->urzadzenieWejscia;
 }
 
 void Silnik::zaladujSpecyfikacjeObiektow(){
@@ -83,21 +95,21 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 void Silnik::odswiezMenu(int milisekundy){
 	Menu::Akcja akcja;
 
-	if(urzadzenieWejscia->statusNawigatorWcisniecie(0) & UrzadzenieWejscia::GORA)
+	if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::GORA)
 		akcja = Menu::GORA;
-	else if(urzadzenieWejscia->statusNawigatorWcisniecie(0) & UrzadzenieWejscia::DOL)
+	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::DOL)
 		akcja = Menu::DOL;
-	else if(urzadzenieWejscia->statusNawigatorWcisniecie(0) & UrzadzenieWejscia::PRAWO)
+	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::PRAWO)
 		akcja = Menu::PRAWO;
-	else if(urzadzenieWejscia->statusNawigatorWcisniecie(0) & UrzadzenieWejscia::LEWO)
+	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::LEWO)
 		akcja = Menu::LEWO;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(0))
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::USUN))
 		akcja = Menu::USUN;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(1))
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ))
 		akcja = Menu::WYBIERZ;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(2))
-		akcja = Menu::WYBIERZ2;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(3))
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ_ALT))
+		akcja = Menu::WYBIERZ_ALT;
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::COFNIJ))
 		akcja = Menu::COFNIJ;
 	else
 		akcja = Menu::BRAK;
@@ -107,33 +119,33 @@ void Silnik::odswiezMenu(int milisekundy){
 }
 
 void Silnik::odswiezRozgrywke(int milisekundy){
-	float predkoscGasienicyLewej = -this->urzadzenieWejscia->statusDzojstik(1);
-	float predkoscGasienicyPrawej = -this->urzadzenieWejscia->statusDzojstik(3);
+	float predkoscGasienicyLewej = -this->urzadzenieWejscia->statusDzojstik(UrzadzenieWejscia::LEWY_PIONOWY);
+	float predkoscGasienicyPrawej = -this->urzadzenieWejscia->statusDzojstik(UrzadzenieWejscia::PRAWY_PIONOWY);
 
 	int rotacjaWiezy = 0;
-	if(this->urzadzenieWejscia->statusNawigatorPolozenie(0) & UrzadzenieWejscia::LEWO || this->urzadzenieWejscia->statusPrzyciskPolozenie(6))
+	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::LEWO || this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WIEZA_LEWO))
 		rotacjaWiezy++;
-	if(this->urzadzenieWejscia->statusNawigatorPolozenie(0) & UrzadzenieWejscia::PRAWO || this->urzadzenieWejscia->statusPrzyciskPolozenie(7))
+	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::PRAWO || this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WIEZA_PRAWO))
 		rotacjaWiezy--;
 
 	int zmianaZasiegu = 0;
-	if(this->urzadzenieWejscia->statusNawigatorPolozenie(0) & UrzadzenieWejscia::GORA)
+	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::GORA)
 		zmianaZasiegu++;
-	if(this->urzadzenieWejscia->statusNawigatorPolozenie(0) & UrzadzenieWejscia::DOL)
+	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::DOL)
 		zmianaZasiegu--;
 
 	int zmianaBroni = 0;
 	if(
-		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(2) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(4)) ||
-		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(4) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(2))
+		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::BRON_PLUS) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::BRON_PLUS2)) ||
+		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::BRON_PLUS2) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::BRON_PLUS))
 	)
 		zmianaBroni++;
-	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(0))
+	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::BRON_MINUS))
 		zmianaBroni--;
 
 	bool wystrzal = (
-		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(1) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(5)) ||
-		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(5) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(1))
+		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYSTRZAL) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WYSTRZAL2)) ||
+		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYSTRZAL2) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WYSTRZAL))
 	);
 
 	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaZasiegu, zmianaBroni, wystrzal);
