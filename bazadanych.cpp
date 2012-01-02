@@ -87,3 +87,19 @@ QVariant BazaDanych::ustawienie(const QString &nazwa, const QVariant &wartoscDom
 
 	return (wartosc.isNull()) ? wartoscDomyslna : wartosc;
 }
+
+void BazaDanych::zapiszUstawienie(const QString &nazwa, const QVariant &wartosc)
+{
+	QSqlQuery query;
+	query.prepare("UPDATE ustawienia SET wartosc = :wartosc WHERE nazwa = :nazwa");
+	query.bindValue(":nazwa", nazwa);
+	query.bindValue(":wartosc", wartosc);
+	query.exec();
+
+	if(!query.numRowsAffected()) {
+		query.prepare("INSERT INTO ustawienia(nazwa, wartosc) VALUES (:nazwa, :wartosc)");
+		query.bindValue(":nazwa", nazwa);
+		query.bindValue(":wartosc", wartosc);
+		query.exec();
+	}
+}

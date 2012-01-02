@@ -7,6 +7,7 @@
 #include "menu.h"
 #include "logika.h"
 
+#include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
 
@@ -20,8 +21,8 @@ Silnik::Silnik(){
 		this->urzadzenieWejscia = new Klawiatura;
 
 	this->ekran = new Ekran;
-	QSize rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", QSize(800, 600)).toSize();
-	this->ekran->ustawRozdzielczosc(rozdzielczosc);
+	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "800x600").toString();
+	this->ekran->ustawRozdzielczosc(qStringToSize(rozdzielczosc));
 
 	this->plansza = new Plansza(this->ekran, 1080, 400);
 
@@ -57,6 +58,20 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 	//	dodac specyfikacje obiektow do planszy
 
 	//	DEMO
+	QSqlQuery pojazdy("SELECT * FROM pojazdy");
+	while(pojazdy.next()) {
+		QString nazwaPojazdu = pojazdy.value(1).toString();
+
+		this->plansza->dodajSpecyfikacje(SpecyfikacjaPojazdu(
+			QPixmap("dane/pojazdy/" + nazwaPojazdu + "Korpus.png"),
+			QPixmap("dane/pojazdy/" + nazwaPojazdu + "Wieza.png"),
+			pojazdy.value(2).toFloat(),
+			pojazdy.value(3).toFloat(),
+			pojazdy.value(4).toFloat(),
+			pojazdy.value(5).toFloat(),
+			pojazdy.value(6).toInt()
+		));
+	}
 
 	QString nazwaPojazdu = "pojazdTestowy";
 	this->plansza->dodajSpecyfikacje(
@@ -93,7 +108,7 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 }
 
 void Silnik::odswiezMenu(int milisekundy){
-	Menu::Akcja akcja;
+	Menu::Akcja akcja = Menu::BRAK;
 
 	if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::GORA)
 		akcja = Menu::GORA;
@@ -111,8 +126,6 @@ void Silnik::odswiezMenu(int milisekundy){
 		akcja = Menu::WYBIERZ_ALT;
 	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::COFNIJ))
 		akcja = Menu::COFNIJ;
-	else
-		akcja = Menu::BRAK;
 
 	this->tryb = this->menu->odswiez(milisekundy, akcja);
 	this->menu->rysuj();

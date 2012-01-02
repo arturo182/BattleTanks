@@ -12,6 +12,7 @@ class BazaDanych{
 	QMap<int, QString> profile() const;
 
 	QVariant ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna = QVariant()) const;
+	void zapiszUstawienie(const QString &nazwa, const QVariant &wartosc);
 };
 
 #endif // BAZADANYCH_H

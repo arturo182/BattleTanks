@@ -17,6 +17,9 @@ class BazaDanych;
 class Plansza;
 class Ekran;
 
+QString qSizeToString(const QSize &size);
+QSize qStringToSize(const QString &str);
+
 class Menu: public QObject{
   Q_OBJECT
 
@@ -48,6 +51,10 @@ class Menu: public QObject{
 	bool shift;
 	QPixmap tloPixmapa;
 	Phonon::MediaObject *muzyka;
+	int glosnosc;
+	QString rozdzielczosc;
+	QString jakosc;
+	QString sterowanie;
 
   public:
 	enum Akcja{
@@ -72,7 +79,10 @@ class Menu: public QObject{
 
   private:
 	void cieniowanyTekst(QPainter &painter, const QRectF &r, const QString &text, const QTextOption &o = QTextOption()) const;
+	void przyciskUstawien(QPainter &painter, const QRectF &r, const QString &text, bool wstecz = true, bool dalej = true) const;
 	void wczytajProfile();
+	void wczytajUstawienia();
+	void zapiszUstawienia();
 };
 
 #endif // MENU_H
