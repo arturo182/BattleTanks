@@ -179,6 +179,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 		}
 	} else if(this->tryb == USTAWIENIA) {
 		if(akcja == COFNIJ) {
+			this->wczytajUstawienia();
 			this->pozycja = 1;
 			this->tryb = USTAWIENIA_POMOC;
 		} else if(akcja == WYBIERZ) {

@@ -3,3 +3,6 @@
 /debug
 /Makefile*
 /*/*.exe
+/edytor/Makefile*
+/edytor/release
+/edytor/debug

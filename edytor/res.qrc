@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ikony/disk.png</file>
+        <file>ikony/folder.png</file>
+        <file>ikony/page_white.png</file>
+        <file>ikony/cancel.png</file>
+        <file>ikony/picture.png</file>
+        <file>ikony/shape_square_add.png</file>
+        <file>ikony/shape_square_delete.png</file>
+        <file>ikony/zoom_in.png</file>
+        <file>ikony/zoom_out.png</file>
+        <file>ikony/shape_square.png</file>
+    </qresource>
+</RCC>

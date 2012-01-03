@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>734</width>
+    <height>418</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>[*]BTEdytorMap</string>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QGraphicsView" name="graphicsView"/>
+    </item>
+    <item row="0" column="0">
+     <widget class="QTreeWidget" name="treeWidget">
+      <property name="maximumSize">
+       <size>
+        <width>200</width>
+        <height>16777215</height>
+       </size>
+      </property>
+      <property name="indentation">
+       <number>16</number>
+      </property>
+      <property name="headerHidden">
+       <bool>true</bool>
+      </property>
+      <column>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </column>
+      <item>
+       <property name="text">
+        <string>Plansza</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>734</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuPlik">
+    <property name="title">
+     <string>Plik</string>
+    </property>
+    <addaction name="actionNowaPlansza"/>
+    <addaction name="actionWczytaj"/>
+    <addaction name="actionZapisz"/>
+    <addaction name="separator"/>
+    <addaction name="actionWyjdz"/>
+   </widget>
+   <widget class="QMenu" name="menuPlansza">
+    <property name="title">
+     <string>Plansza</string>
+    </property>
+    <addaction name="actionTlo"/>
+    <addaction name="separator"/>
+    <addaction name="actionDodaj"/>
+    <addaction name="actionUsun"/>
+   </widget>
+   <widget class="QMenu" name="menuWidok">
+    <property name="title">
+     <string>Widok</string>
+    </property>
+    <addaction name="actionPrzybliz"/>
+    <addaction name="actionOddal"/>
+   </widget>
+   <addaction name="menuPlik"/>
+   <addaction name="menuWidok"/>
+   <addaction name="menuPlansza"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="iconSize">
+    <size>
+     <width>16</width>
+     <height>16</height>
+    </size>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionNowaPlansza"/>
+   <addaction name="actionWczytaj"/>
+   <addaction name="actionZapisz"/>
+   <addaction name="separator"/>
+   <addaction name="actionTlo"/>
+   <addaction name="actionDodaj"/>
+   <addaction name="actionUsun"/>
+   <addaction name="separator"/>
+   <addaction name="actionPrzybliz"/>
+   <addaction name="actionOddal"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionWczytaj">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/folder.png</normaloff>:/ikony/folder.png</iconset>
+   </property>
+   <property name="text">
+    <string>Wczytaj</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+O</string>
+   </property>
+  </action>
+  <action name="actionWyjdz">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/cancel.png</normaloff>:/ikony/cancel.png</iconset>
+   </property>
+   <property name="text">
+    <string>Wyjdź</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+Q</string>
+   </property>
+  </action>
+  <action name="actionZapisz">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/disk.png</normaloff>:/ikony/disk.png</iconset>
+   </property>
+   <property name="text">
+    <string>Zapisz</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+S</string>
+   </property>
+  </action>
+  <action name="actionNowaPlansza">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/page_white.png</normaloff>:/ikony/page_white.png</iconset>
+   </property>
+   <property name="text">
+    <string>Nowa plansza</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+N</string>
+   </property>
+  </action>
+  <action name="actionDodaj">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/shape_square_add.png</normaloff>:/ikony/shape_square_add.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dodaj</string>
+   </property>
+  </action>
+  <action name="actionUsun">
+   <property name="enabled">
+    <bool>false</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/shape_square_delete.png</normaloff>:/ikony/shape_square_delete.png</iconset>
+   </property>
+   <property name="text">
+    <string>Usuń</string>
+   </property>
+  </action>
+  <action name="actionTlo">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/picture.png</normaloff>:/ikony/picture.png</iconset>
+   </property>
+   <property name="text">
+    <string>Tło</string>
+   </property>
+  </action>
+  <action name="actionPrzybliz">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/zoom_in.png</normaloff>:/ikony/zoom_in.png</iconset>
+   </property>
+   <property name="text">
+    <string>Przybliż</string>
+   </property>
+  </action>
+  <action name="actionOddal">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/zoom_out.png</normaloff>:/ikony/zoom_out.png</iconset>
+   </property>
+   <property name="text">
+    <string>Oddal</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
+ <connections>
+  <connection>
+   <sender>actionWczytaj</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>wczytajPlansze()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>285</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionNowaPlansza</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>nowaPlansza()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionWyjdz</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionTlo</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>wybierzTlo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionUsun</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>usunZaznaczony()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZapisz</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>zapiszPlansze()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>wczytajPlansze()</slot>
+  <slot>nowaPlansza()</slot>
+  <slot>wybierzTlo()</slot>
+  <slot>usunZaznaczony()</slot>
+  <slot>zapiszPlansze()</slot>
+ </slots>
+</ui>

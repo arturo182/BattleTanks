@@ -26,29 +26,29 @@ void Plansza::dodajSpecyfikacje(const SpecyfikacjaAnimacji& specyfikacja){
 }
 
 bool Plansza::zaladuj(QString nazwaPlanszy){
-	QPixmap mapaTekstura(nazwaPlanszy + ".png");
-	
+	QPixmap mapaTekstura("dane/plansze/" + nazwaPlanszy + ".png");
+
 	if(mapaTekstura.isNull())
 		return false;
 	this->mapa = new Tekstura(mapaTekstura);
 	this->widok = Obiekt::skala * QPoint(0, 0);
-	
-	QFile mapaSpecyfikacjaPlik(nazwaPlanszy + ".dat");
+
+	QFile mapaSpecyfikacjaPlik("dane/plansze/" + nazwaPlanszy + ".dat");
 	if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly)){
 		delete this->mapa;
 		return false;
 	}
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
-	
+
 	//	typ mapy
-	
+
 	int iloscPrzeszkod, iloscWierzcholkow;
 	QPoint wierzcholek;
-	
+
 	mapaSpecyfikacjaDane >> iloscPrzeszkod;
 	for(int i = 0; i < iloscPrzeszkod; i++){
 		mapaSpecyfikacjaDane >> iloscWierzcholkow;
-		
+
 		QPolygon przeszkoda(iloscWierzcholkow);
 		for(int j = 0; j < iloscWierzcholkow; j++){
 			mapaSpecyfikacjaDane >> wierzcholek;
@@ -56,9 +56,9 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		}
 		this->przeszkody.append(przeszkoda);
 	}
-	
+
 	this->pojazdGracza = new PojazdGracza(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0.0, this->specyfikacjePociskow.size(), 0);
-	
+
 	mapaSpecyfikacjaPlik.close();
 	return true;
 }
@@ -81,30 +81,30 @@ void Plansza::czysc(){
 
 void Plansza::rysuj(){
 	QPainter painter(&this->ekran->buforObrazu);
-	
+
 	this->odswiezWidok();
-	
+
 	painter.drawPixmap(
 		QPoint(0, 0),
 		this->mapa->teksturaPrzeskalowana,
 		QRect(this->widok, this->ekran->buforObrazu.size())
 	);
-	
+
 	this->pojazdGracza->rysuj(painter, this->widok);
-	
+
 	for(QList<Animacja*>::iterator i = this->animacje.begin(); i != this->animacje.end(); i++)
 		(*i)->rysuj(painter, this->widok);
-	
+
 	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
 		(*i)->rysuj(painter, this->widok);
-	
+
 	painter.end();
 	this->ekran->update();
 }
 
 void Plansza::odswiezWidok(){
 	int margines = Obiekt::skala * this->margines;
-	
+
 	if(Obiekt::skala * this->pojazdGracza->pozycja.x() - this->widok.x() < margines){
 		if(Obiekt::skala * this->pojazdGracza->pozycja.x() > margines)
 			this->widok.setX(Obiekt::skala * this->pojazdGracza->pozycja.x() - margines);
@@ -116,7 +116,7 @@ void Plansza::odswiezWidok(){
 		else
 			this->widok.setX(this->mapa->teksturaPrzeskalowana.width() - this->ekran->buforObrazu.width());
 	}
-	
+
 	if(Obiekt::skala * this->pojazdGracza->pozycja.y() - this->widok.y() < margines){
 		if(Obiekt::skala * this->pojazdGracza->pozycja.y() > margines)
 			this->widok.setY(Obiekt::skala * this->pojazdGracza->pozycja.y() - margines);

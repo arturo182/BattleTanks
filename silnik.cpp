@@ -57,7 +57,6 @@ Silnik::~Silnik(){
 void Silnik::zaladujSpecyfikacjeObiektow(){
 	//	dodac specyfikacje obiektow do planszy
 
-	//	DEMO
 	QSqlQuery pojazdy("SELECT * FROM pojazdy");
 	while(pojazdy.next()) {
 		QString nazwaPojazdu = pojazdy.value(1).toString();
@@ -73,29 +72,16 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 		));
 	}
 
-	QString nazwaPojazdu = "pojazdTestowy";
-	this->plansza->dodajSpecyfikacje(
-		SpecyfikacjaPojazdu(
-			QPixmap(nazwaPojazdu + "Korpus.png"),	//	teksturaKorpus
-			QPixmap(nazwaPojazdu + "Wieza.png"),	//	teksturaWieza
-			5 * 20 / 8,		//	przesuniecieOsiDlaKorpusu
-			5 * 40 / 8,		//	przesuniecieOsiDlaWiezy
-			5 * 200 / 8,		//	predkoscMaksymalnaPojazdu
-			2.0,	//	predkoscRotacjiWiezy
-			100		//	wytrzymalosc
-		)
-	);
-
-	QString nazwaPocisku = "pociskTestowy";
-	this->plansza->dodajSpecyfikacje(
-		SpecyfikacjaPocisku(
-			QPixmap(nazwaPocisku + ".png"),	//	tekstura
-			1000,	//	zasieg
-			600,	//	predkosc
-			30,		//	silaRazenie
-			200		//	promienRazenie
-		)
-	);
+	QSqlQuery pociski("SELECT * FROM pociski");
+	while(pociski.next()) {
+		this->plansza->dodajSpecyfikacje(SpecyfikacjaPocisku(
+			QPixmap("dane/pociski/" + pociski.value(1).toString() + ".png"),
+			pociski.value(3).toInt(),
+			pociski.value(4).toInt(),
+			pociski.value(5).toInt(),
+			pociski.value(6).toInt()
+		));
+	}
 
 	QString nazwaAnimacji = "animacjaTestowa";
 	this->plansza->dodajSpecyfikacje(
