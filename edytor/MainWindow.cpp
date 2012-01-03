@@ -2,22 +2,29 @@
 #include "ui_MainWindow.h"
 
 #include "Przeszkoda.h"
+#include "Scena.h"
 
 #include <QGraphicsPolygonItem>
+#include <QInputDialog>
 #include <QFileDialog>
 #include <QMessageBox>
-#include <QDebug>
 #include <QKeyEvent>
+#include <qmath.h>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):
 	QMainWindow(parent),
 	ui(new Ui::MainWindow)
 {
 	this->ui->setupUi(this);
-	this->ui->graphicsView->setScene(new QGraphicsScene);
+	this->ui->graphicsView->setScene(new Scena);
 	this->plikPlanszy = "";
 
+
+	this->ustawTryb(Scena::ZAZNACZANIE);
+
 	connect(this->ui->graphicsView->scene(), SIGNAL(selectionChanged()), this, SLOT(zaznaczGalaz()));
+	connect(this->ui->graphicsView->scene(), SIGNAL(changed(QList<QRectF>)), this, SLOT(scenaZmieniona()));
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +48,7 @@ void MainWindow::nowaPlansza()
 		this->ui->graphicsView->scene()->clear();
 		this->tabelaElementow.clear();
 		this->plikPlanszy = "";
+		this->setWindowModified(false);
 	}
 }
 
@@ -78,6 +86,7 @@ void MainWindow::wczytajPlansze()
 		mapaSpecyfikacjaPlik.close();
 
 		this->plikPlanszy = nazwaPliku;
+		this->setWindowModified(false);
 	}
 }
 
@@ -131,6 +140,11 @@ void MainWindow::usunZaznaczony()
 	}
 }
 
+void MainWindow::scenaZmieniona()
+{
+	this->setWindowModified(true);
+}
+
 void MainWindow::dodajPrzeszkode(const QPolygon &poly)
 {
 	Przeszkoda *item = new Przeszkoda(poly);
@@ -177,10 +191,6 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 
 	QFileInfo plik(nazwaPliku);
 
-	if(this->ui->graphicsView->items().count())
-		if(QGraphicsPixmapItem *tlo = qgraphicsitem_cast<QGraphicsPixmapItem*>(this->ui->graphicsView->items().first()))
-			tlo->pixmap().save(plik.absolutePath() + "/" + plik.completeBaseName() + ".png");
-
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 	mapaSpecyfikacjaDane << this->ui->graphicsView->items().count() - 1;
 
@@ -193,8 +203,13 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 				QPoint wierzcholek;
 				for(int j = 0; j < poly->polygon().count(); j++) {
 					poly->polygon().toPolygon().point(j, &wierzcholek.rx(), &wierzcholek.ry());
+					wierzcholek += poly->pos().toPoint();
 					mapaSpecyfikacjaDane << wierzcholek;
 				}
+			}
+		} else if(item->type() == QGraphicsPixmapItem::Type) {
+			if(QGraphicsPixmapItem *tlo = static_cast<QGraphicsPixmapItem*>(item)) {
+				tlo->pixmap().save(plik.absolutePath() + "/" + plik.completeBaseName() + ".png");
 			}
 		}
 	}
@@ -202,8 +217,24 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 	mapaSpecyfikacjaPlik.close();
 
 	this->plikPlanszy = nazwaPliku;
+	this->setWindowModified(false);
 
 	return true;
+}
+
+void MainWindow::ustawTryb(Scena::Tryby tryb)
+{
+	this->tryb = tryb;
+
+	this->ui->actionZaznaczanie->setChecked(tryb == Scena::ZAZNACZANIE);
+	this->ui->actionPrzesuwanieWidoku->setChecked(tryb == Scena::PRZESUWANIE_WIDOKU);
+	this->ui->actionPrzesuwanie->setChecked(tryb == Scena::PRZESUWANIE_PRZESZKODY);
+	this->ui->actionEdycjaWierzcholkow->setChecked(tryb == Scena::EDYCJA_WIERZCHOLKOW);
+
+	this->ui->graphicsView->setDragMode((tryb == Scena::PRZESUWANIE_WIDOKU) ? QGraphicsView::ScrollHandDrag : QGraphicsView::NoDrag);
+
+	this->ui->graphicsView->scene()->setProperty("tryb", tryb);
+	this->ui->graphicsView->scene()->update();
 }
 
 void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
@@ -213,5 +244,59 @@ void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTre
 			this->ui->graphicsView->scene()->clearSelection();
 			this->tabelaElementow.value(current)->setSelected(true);
 		}
+	}
+}
+
+void MainWindow::on_actionPrzybliz_triggered()
+{
+	this->ui->graphicsView->scale(1.15, 1.15);
+}
+
+void MainWindow::on_actionOddal_triggered()
+{
+	this->ui->graphicsView->scale(1.0 / 1.15, 1.0 / 1.15);
+}
+
+void MainWindow::on_actionPrzesuwanie_triggered()
+{
+	this->ustawTryb(Scena::PRZESUWANIE_PRZESZKODY);
+}
+
+void MainWindow::on_actionEdycjaWierzcholkow_triggered()
+{
+	this->ustawTryb(Scena::EDYCJA_WIERZCHOLKOW);
+}
+
+void MainWindow::on_actionZaznaczanie_triggered()
+{
+	this->ustawTryb(Scena::ZAZNACZANIE);
+}
+
+void MainWindow::on_actionPrzesuwanieWidoku_triggered()
+{
+	this->ustawTryb(Scena::PRZESUWANIE_WIDOKU);
+}
+
+void MainWindow::on_actionOryginalnyRozmiar_triggered()
+{
+  this->ui->graphicsView->resetTransform();
+}
+
+void MainWindow::on_actionDodaj_triggered()
+{
+	bool ok = false;
+	int boki = QInputDialog::getInt(this, "Podaj ilosc bokow", "Ilosc bokow:", 3, 3, 100, 1, &ok);
+	if(ok) {
+		QPointF srodek(0, 0);
+		double r = 100.0;
+		QPolygonF poly;
+		float alfa;
+
+		for(int i = 0; i < boki; i++) {
+			alfa = 2.0 * M_PI * i / boki;
+			poly.push_back(srodek + r * QPointF(qSin(alfa), -qCos(alfa)));
+		}
+
+		this->dodajPrzeszkode(poly.toPolygon());
 	}
 }

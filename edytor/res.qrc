@@ -10,5 +10,10 @@
         <file>ikony/zoom_in.png</file>
         <file>ikony/zoom_out.png</file>
         <file>ikony/shape_square.png</file>
+        <file>ikony/arrow_nsew.png</file>
+        <file>ikony/shape_handles.png</file>
+        <file>ikony/cursor.png</file>
+        <file>ikony/hand.png</file>
+        <file>ikony/zoom_actual.png</file>
     </qresource>
 </RCC>

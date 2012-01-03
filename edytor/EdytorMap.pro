@@ -9,7 +9,8 @@ SOURCES += main.cpp\
     Przeszkoda.cpp
 
 HEADERS  += MainWindow.h \
-    Przeszkoda.h
+    Przeszkoda.h \
+    Scena.h
 
 FORMS    += MainWindow.ui
 

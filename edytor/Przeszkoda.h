@@ -12,6 +12,7 @@ class Przeszkoda : public QGraphicsPolygonItem
 
 		QRectF boundingRect() const;
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
+		int type() const { return Type; }
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
