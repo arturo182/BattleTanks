@@ -16,7 +16,7 @@ class Klawiatura : public QObject, public UrzadzenieWejscia
 		int nawigator;
 		int nawigatorPolozenie;
 		int nawigatorWcisniete;
-		float dzojstiki[2];
+		int dzojstiki[2];
 
 	private:
 		Przycisk keyNaPrzycisk(int key);

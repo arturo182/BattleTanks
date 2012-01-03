@@ -35,6 +35,7 @@ class UrzadzenieWejscia{
 			WYSTRZAL2,
 
 			//menu
+			PAUZA,
 			COFNIJ,
 			USUN,
 			WYBIERZ,

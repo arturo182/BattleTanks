@@ -16,8 +16,8 @@ Klawiatura::Klawiatura():
 		this->przyciskiWcisniete[i] = false;
 	}
 
-	this->dzojstiki[0] = 0.0f;
-	this->dzojstiki[1] = 0.0f;
+	this->dzojstiki[0] = 0;
+	this->dzojstiki[1] = 0;
 }
 
 Klawiatura::~Klawiatura()
@@ -75,9 +75,9 @@ int Klawiatura::statusNawigatorWcisniecie() const
 float Klawiatura::statusDzojstik(Dzojstik dzojstik) const
 {
 	if(dzojstik == LEWY_PIONOWY)
-		return this->dzojstiki[0];
+		return this->dzojstiki[0] / 10.0;
 	else if(dzojstik == PRAWY_PIONOWY)
-		return this->dzojstiki[1];
+		return this->dzojstiki[1] / 10.0;
 
 	return 0.0f;
 }
@@ -112,20 +112,20 @@ bool Klawiatura::eventFilter(QObject *obj, QEvent *ev)
 				//gąsiennice
 				} else if(event->key() == Qt::Key_Q) {
 					if(ev->type() == QEvent::KeyPress)
-						if(this->dzojstiki[0] > -1.0)
-							this->dzojstiki[0] -= 0.1;
+						if(this->dzojstiki[0] > -10)
+							this->dzojstiki[0] -= 1;
 				} else if(event->key() == Qt::Key_E) {
 					if(ev->type() == QEvent::KeyPress)
-						if(this->dzojstiki[1] > -1.0)
-							this->dzojstiki[1] -= 0.1;
+						if(this->dzojstiki[1] > -10)
+							this->dzojstiki[1] -= 1;
 				} else if(event->key() == Qt::Key_A) {
 					if(ev->type() == QEvent::KeyPress)
-						if(this->dzojstiki[0] < 1.0)
-							this->dzojstiki[0] += 0.1;
+						if(this->dzojstiki[0] < 10)
+							this->dzojstiki[0] += 1;
 				} else if(event->key() == Qt::Key_D) {
 					if(ev->type() == QEvent::KeyPress)
-						if(this->dzojstiki[1] < 1.0)
-							this->dzojstiki[1] += 0.1;
+						if(this->dzojstiki[1] < 10)
+							this->dzojstiki[1] += 1;
 				} else {
 					//inne klawisze
 					int przycisk = keyNaPrzycisk(event->key());
@@ -163,6 +163,8 @@ UrzadzenieWejscia::Przycisk Klawiatura::keyNaPrzycisk(int key)
 		return BRON_MINUS;
 	else if(key == Qt::Key_3)
 		return BRON_PLUS;
+	else if(key == Qt::Key_Escape)
+		return PAUZA;
 
 	return NIEZNANY;
 }

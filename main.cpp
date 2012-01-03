@@ -9,5 +9,13 @@ int main(int argc, char* argv[]){
 	Silnik silnik;
 	silnik.uruchom();
 
-	return app.exec();
+	forever {
+		app.processEvents();
+		silnik.odswiez();
+
+		if(silnik.czyWyjsc())
+			break;
+	}
+
+	return 0;
 }

@@ -139,7 +139,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 
 				this->tryb = REKORDY;
 			} else if(pozycja == 4) {
-				qApp->quit();
+				return Silnik::WYJSCIE;
 			}
 		} else if(akcja == GORA) {
 			this->pozycja--;
@@ -276,7 +276,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 				wczytajProfile();
 			}
 		} else if(akcja == COFNIJ) {
-			qApp->quit();
+			return Silnik::WYJSCIE;
 		}
 	} else if(this->tryb == TWORZENIE_PROFILU) {
 		if(akcja == PRAWO) {
@@ -453,7 +453,6 @@ void Menu::rysuj() const{
 		QPoint offset((szerokoscEkranu - this->drzewko->width()) * 0.5, wysokoscEkranu * 0.18);
 
 		this->drzewko->setFocus();
-		painter.end();
 		this->drzewko->render(&painter, offset);
 
 		painter.setFont(czcionkaNormalna);

@@ -42,6 +42,8 @@ int Gamepad::przyciskNaNumer(UrzadzenieWejscia::Przycisk przycisk) const
 		return 1;
 	else if(przycisk == WYBIERZ_ALT)
 		return 2;
+	else if(przycisk == PAUZA)
+		return 10;
 
 	return -1;
 }

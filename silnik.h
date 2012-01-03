@@ -17,7 +17,9 @@ class Silnik: public QObject{
 	public:
 		enum Tryb{
 			MENU,
-			ROZGRYWKA
+			ROZGRYWKA,
+			PAUZA,
+			WYJSCIE
 		};
 
 	private:
@@ -28,20 +30,21 @@ class Silnik: public QObject{
 		Menu* menu;
 		Logika* logika;
 		Tryb tryb;
-		QTimer timer;
 		QTime czasOstatniegoOdswiezenia;
-	
+
 		void zaladujSpecyfikacjeObiektow();
 		void odswiezMenu(int);
 		void odswiezRozgrywke(int);
+		void odswiezPauze(int);
 
-	private slots:
+	public slots:
 		void odswiez();
 
 	public:
 		Silnik();
 		~Silnik();
 		void uruchom();
+		bool czyWyjsc() const;
 };
 
 #endif // SILNIK_H

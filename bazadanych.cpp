@@ -23,19 +23,30 @@ bool BazaDanych::polacz(){
 
 	// sprawdzamy czy tabele w bazie danych istnieją
 	if(!db.tables().count()) {
-		db.exec("CREATE TABLE bronie ("
-		"  bron_id integer PRIMARY KEY NOT NULL, "
-		"  rodzaj smallint, "
-		"  promienRazenie integer, "
-		"  silaRazenie integer, "
-		"  zasieg integer, "
-		"  predkosc integer "
+		db.exec("CREATE TABLE pociski ("
+		"  pocisk_id       integer PRIMARY KEY NOT NULL, "
+		"  nazwa           varchar(255), "
+		"  rodzaj          smallint, "
+		"  zasieg          integer, "
+		"  predkosc        integer, "
+		"  silaRazenie     integer, "
+		"  promienRazenie  integer "
 		");");
 
 		db.exec("CREATE TABLE mapy ("
 		"  mapa_id integer PRIMARY KEY NOT NULL, "
 		"  tryb smallint, "
 		"  plik varchar(255) "
+		");");
+
+		db.exec("CREATE TABLE pojazdy ("
+		"  pojazd_id             integer PRIMARY KEY NOT NULL, "
+		"  nazwa                 varchar(255), "
+		"  przesuniecieOsKorpus  float(6,2), "
+		"  przesuniencieOsWieza  float(6,2), "
+		"  predkoscMaksymalna    float(6,2), "
+		"  predkoscWiezy         float(6,2), "
+		"  wytrzymalosc          integer "
 		");");
 
 		db.exec("CREATE TABLE profile ("

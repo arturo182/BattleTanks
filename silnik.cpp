@@ -29,7 +29,6 @@ Silnik::Silnik(){
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
 
-	connect(&this->timer, SIGNAL(timeout()), this, SLOT(odswiez()));
 	this->urzadzenieWejscia->otworz();
 
 	this->menu->ladujMuzyke();
@@ -42,8 +41,6 @@ Silnik::Silnik(){
 }
 
 Silnik::~Silnik(){
-	this->timer.stop();
-
 	delete this->logika;
 	delete this->menu;
 	delete this->plansza;
@@ -118,6 +115,11 @@ void Silnik::odswiezMenu(int milisekundy){
 }
 
 void Silnik::odswiezRozgrywke(int milisekundy){
+	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA)) {
+		this->tryb = PAUZA;
+		return;
+	}
+
 	float predkoscGasienicyLewej = -this->urzadzenieWejscia->statusDzojstik(UrzadzenieWejscia::LEWY_PIONOWY);
 	float predkoscGasienicyPrawej = -this->urzadzenieWejscia->statusDzojstik(UrzadzenieWejscia::PRAWY_PIONOWY);
 
@@ -154,6 +156,19 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 	this->plansza->rysuj();
 }
 
+void Silnik::odswiezPauze(int milisekundy)
+{
+	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA)) {
+		this->tryb = ROZGRYWKA;
+		return;
+	}
+
+	this->plansza->rysuj();
+
+	QPainter painter(&this->ekran->buforObrazu);
+	painter.drawText(this->ekran->buforObrazu.rect(), "!!PAUZA!!", QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
+}
+
 void Silnik::odswiez(){
 	QTime czasAktualny = QTime::currentTime();
 	int milisekundy = this->czasOstatniegoOdswiezenia.msecsTo(czasAktualny);
@@ -169,7 +184,17 @@ void Silnik::odswiez(){
 		case ROZGRYWKA:
 			this->odswiezRozgrywke(milisekundy);
 			break;
+		case PAUZA:
+			this->odswiezPauze(milisekundy);
+			break;
+		default:
+			break;
 	}
+
+	int fps = 1000 / milisekundy;
+	QPainter painter(&this->ekran->buforObrazu);
+	painter.setFont(QFont("Trebuchet MS", 24));
+	painter.drawText(QRectF(0, 0, this->ekran->buforObrazu.width(), 100), QString("FPS: %1").arg(fps), QTextOption(Qt::AlignRight));
 
 	this->czasOstatniegoOdswiezenia = czasAktualny;
 }
@@ -177,6 +202,10 @@ void Silnik::odswiez(){
 void Silnik::uruchom(){
 	this->tryb = MENU;
 	this->czasOstatniegoOdswiezenia = QTime::currentTime();
-	this->timer.start();
 	this->ekran->show();
+}
+
+bool Silnik::czyWyjsc() const
+{
+	return this->tryb == WYJSCIE;
 }
