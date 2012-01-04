@@ -161,6 +161,12 @@ void Silnik::odswiezPauze(int milisekundy)
 	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA)) {
 		this->tryb = ROZGRYWKA;
 		return;
+	} else if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::COFNIJ)) {
+		this->tryb = MENU;
+		return;
+	} else if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ)) {
+		this->tryb = WYJSCIE;
+		return;
 	}
 
 	this->plansza->rysuj();

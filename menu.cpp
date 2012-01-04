@@ -2,6 +2,7 @@
 #include "ekran.h"
 #include "bazadanych.h"
 #include "plansza.h"
+#include "dzwiek.h"
 
 #include <QStyleOptionQ3ListView>
 #include <Phonon/MediaObject>
@@ -84,26 +85,34 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 
 	if(this->tryb == WYBOR_TRYBU) {
 		if(akcja == WYBIERZ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
 			this->tryb = WYBOR_MAPY;
 		} else if(akcja == GORA) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja = 1;
 		} else if(akcja == DOL) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja = 2;
 		} else if(akcja == COFNIJ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
 	} else if(this->tryb == WYBOR_MAPY) {
 		this->muzyka->stop();
 		this->plansza->zaladuj("planszaTestowa");
+		this->tryb = MENU_GLOWNE;
 		return Silnik::ROZGRYWKA;
 	} else if(this->tryb == REKORDY) {
 		if(akcja == COFNIJ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
 	} else if(this->tryb == MENU_GLOWNE) {
 		if(akcja == WYBIERZ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+
 			if(this->pozycja == 1) {
 				this->pozycja = 1;
 				this->tryb = WYBOR_TRYBU;
@@ -142,11 +151,13 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 				return Silnik::WYJSCIE;
 			}
 		} else if(akcja == GORA) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja--;
 
 			if(this->pozycja < 1)
 				this->pozycja = 4;
 		} else if(akcja == DOL) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja++;
 
 			if(this->pozycja > 4)
@@ -154,6 +165,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 		}
 	} else if(this->tryb == USTAWIENIA_POMOC) {
 		if(akcja == WYBIERZ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+
 			if(this->pozycja == 1) {
 				this->pozycja = 1;
 				this->wczytajUstawienia();
@@ -169,34 +182,41 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 				this->tryb = MENU_GLOWNE;
 			}
 		} else if(akcja == GORA) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja--;
 
 			if(this->pozycja < 1)
 				this->pozycja = 4;
 		} else if(akcja == DOL) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja++;
 
 			if(this->pozycja > 4)
 				this->pozycja = 1;
 		} else if(akcja == COFNIJ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
 	} else if(this->tryb == USTAWIENIA) {
 		if(akcja == COFNIJ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->wczytajUstawienia();
 			this->pozycja = 1;
 			this->tryb = USTAWIENIA_POMOC;
 		} else if(akcja == WYBIERZ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->zapiszUstawienia();
 			this->pozycja = 1;
 			this->tryb = USTAWIENIA_POMOC;
 		} else if(akcja == GORA) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja--;
 
 			if(this->pozycja < 1)
 				this->pozycja = 4;
 		} else if(akcja == DOL) {
+			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
 			this->pozycja++;
 
 			if(this->pozycja > 4)
@@ -240,8 +260,10 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 		Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
 		wyjscie->setVolume(this->glosnosc / 10.0);
 	} else if(this->tryb == AUTORZY) {
-		if(akcja == COFNIJ)
+		if(akcja == COFNIJ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->tryb = USTAWIENIA_POMOC;
+		}
 	} else if(this->tryb == POMOC) {
 		if(akcja == WYBIERZ)
 			this->pozycja++;
@@ -252,11 +274,14 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 		}
 	} else if(this->tryb == WYBOR_PROFILU) {
 		if(akcja == WYBIERZ && this->drzewko->topLevelItemCount()){
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+
 			this->idGracza = this->drzewko->currentItem()->text(1).toInt();
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 			this->muzyka->play();
 		} else if(akcja == WYBIERZ_ALT) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->nowyProfil = "";
 			this->tryb = TWORZENIE_PROFILU;
 			this->pozycja = 1;
@@ -280,6 +305,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 		}
 	} else if(this->tryb == TWORZENIE_PROFILU) {
 		if(akcja == PRAWO) {
+			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+
 			if(this->pozycja == 10)
 				this->pozycja = 37;
 			else if(this->pozycja == 20)
@@ -299,6 +326,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 			else
 				this->pozycja++;
 		} else if(akcja == LEWO) {
+			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+
 			if(this->pozycja == 1)
 				this->pozycja = 37;
 			else if(this->pozycja == 11)
@@ -318,6 +347,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 			else
 				this->pozycja--;
 		} else if(akcja == DOL) {
+			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+
 			if(this->pozycja == 27)
 				this->pozycja = 7;
 			else if(this->pozycja == 28)
@@ -333,6 +364,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 			else
 				this->pozycja += 10;
 		} else if(akcja == GORA) {
+			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+
 			if(this->pozycja == 7)
 				this->pozycja = 27;
 			else if(this->pozycja == 8)
@@ -348,6 +381,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 			else
 				this->pozycja -= 10;
 		} else if(akcja == WYBIERZ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_karetka.mp3");
+
 			if(this->pozycja <= this->alfabet.count()) {
 				if(this->nowyProfil.length() < 80) {
 					QString litera = this->alfabet[this->pozycja-1];
@@ -373,6 +408,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 					wczytajProfile();
 				}
 
+				Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
 				this->tryb = WYBOR_PROFILU;
 			}
 		}

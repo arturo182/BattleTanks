@@ -24,7 +24,8 @@ SOURCES += \
 	pojazdobcy.cpp \
 	specyfikacjapocisku.cpp \
     gamepad.cpp \
-    klawiatura.cpp
+    klawiatura.cpp \
+    dzwiek.cpp
 
 HEADERS += \
 	silnik.h \
@@ -45,4 +46,5 @@ HEADERS += \
 	pojazdobcy.h \
 	specyfikacjapocisku.h \
     gamepad.h \
-    klawiatura.h
+    klawiatura.h \
+    dzwiek.h

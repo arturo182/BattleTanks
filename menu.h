@@ -58,7 +58,7 @@ class Menu: public QObject{
 
   public:
 	enum Akcja{
-	  GORA,
+	  GORA = 0,
 	  DOL,
 	  PRAWO,
 	  LEWO,

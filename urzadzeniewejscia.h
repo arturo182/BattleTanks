@@ -33,9 +33,9 @@ class UrzadzenieWejscia{
 			WIEZA_PRAWO,
 			WYSTRZAL,
 			WYSTRZAL2,
+			PAUZA,
 
 			//menu
-			PAUZA,
 			COFNIJ,
 			USUN,
 			WYBIERZ,
