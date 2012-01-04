@@ -172,6 +172,7 @@ void Silnik::odswiezPauze(int milisekundy)
 	this->plansza->rysuj();
 
 	QPainter painter(&this->ekran->buforObrazu);
+	painter.fillRect(this->ekran->buforObrazu.rect(), QColor(0, 0, 0, 128));
 	painter.drawText(this->ekran->buforObrazu.rect(), "!!PAUZA!!", QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
 }
 
