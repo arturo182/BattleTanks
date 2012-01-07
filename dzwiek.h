@@ -10,6 +10,7 @@ class Dzwiek: public QObject
 
 	public:
 		Dzwiek(const QString &nazwaPliku);
+		~Dzwiek();
 
 		void odtworz();
 

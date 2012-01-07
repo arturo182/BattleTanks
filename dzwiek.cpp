@@ -8,6 +8,11 @@ Dzwiek::Dzwiek(const QString &nazwaPliku):
 	connect(this->media, SIGNAL(finished()), SIGNAL(zakonczony()));
 }
 
+Dzwiek::~Dzwiek()
+{
+	delete this->media;
+}
+
 void Dzwiek::odtworz()
 {
 	this->media->play();
