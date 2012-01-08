@@ -5,17 +5,17 @@
 
 class Ekran: public QWidget{
 	Q_OBJECT
-	
+
 	private:
 		QString jakosc;
-	
+
 	public:
 		QPixmap buforObrazu;
-		
-		Ekran();
+
+		Ekran(const QSize &, const QString &);
 		void ustawRozdzielczosc(const QSize&);
 		void ustawJakosc(const QString &);
-	
+
 	private:
 		void paintEvent(QPaintEvent*);
 };

@@ -3,6 +3,7 @@
 #include "klawiatura.h"
 #include "ekran.h"
 #include "bazadanych.h"
+#include "dzwiek.h"
 #include "plansza.h"
 #include "menu.h"
 #include "logika.h"
@@ -20,21 +21,22 @@ Silnik::Silnik(){
 	else
 		this->urzadzenieWejscia = new Klawiatura;
 
-	this->ekran = new Ekran;
 	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "800x600").toString();
-	this->ekran->ustawRozdzielczosc(qStringToSize(rozdzielczosc));
+	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
+	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
 
 	this->plansza = new Plansza(this->ekran, 1080, 400);
+
+	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
 
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
 
 	this->urzadzenieWejscia->otworz();
+	Dzwiek::glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
 
 	this->menu->ladujMuzyke();
 
-	this->ekran->ustawJakosc(this->bazaDanych->ustawienie("jakosc", "niska").toString());
-	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
 	this->zaladujSpecyfikacjeObiektow();
 
 	//	dopiac kontrole uruchomienia poszczegolnych elementow

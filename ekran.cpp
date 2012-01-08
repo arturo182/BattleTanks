@@ -1,8 +1,10 @@
 #include <QPainter>
 #include "ekran.h"
 
-Ekran::Ekran():
-	QWidget(){
+Ekran::Ekran(const QSize &rozdzielczosc, const QString &jakosc):
+	QWidget(),
+	jakosc(jakosc),
+	buforObrazu(QPixmap(rozdzielczosc)){
 	this->setWindowState(Qt::WindowFullScreen);
 	this->setCursor(Qt::BlankCursor);
 }

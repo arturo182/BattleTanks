@@ -9,6 +9,9 @@ class Dzwiek: public QObject
 	Q_OBJECT
 
 	public:
+		static int glosnosc;
+
+	public:
 		Dzwiek(const QString &nazwaPliku);
 		~Dzwiek();
 

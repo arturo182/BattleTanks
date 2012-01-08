@@ -73,16 +73,56 @@ bool BazaDanych::polacz(){
 	return true;
 }
 
-QMap<int, QString> BazaDanych::profile() const
+QStringList BazaDanych::profile() const
 {
-	QSqlQuery query("SELECT * FROM profile ORDER BY nazwa ASC;");
+	QSqlQuery query("SELECT * FROM profile ORDER BY LOWER(nazwa) ASC;");
 
-	QMap<int, QString> profile;
+	QStringList profile;
 	while(query.next()) {
-		profile.insert(query.value(0).toInt(), query.value(1).toString());
+		profile << query.value(1).toString();
 	}
 
 	return profile;
+}
+
+int BazaDanych::idProfilu(const QString &nazwa) const
+{
+	QSqlQuery query;
+	query.prepare("SELECT * FROM profile where nazwa = :nazwa");
+	query.bindValue(":nazwa", nazwa);
+	query.exec();
+	query.next();
+
+	return query.value(0).toInt();
+}
+
+QList<QStringList> BazaDanych::rekordy() const
+{
+	QSqlQuery query("SELECT "
+					"  profile.nazwa, "
+					"  mapy.plik, "
+					"  rekordy.wynik "
+					"FROM "
+					"  rekordy "
+					"  INNER JOIN profile ON (rekordy.profil_id = profile.profil_id) "
+					"  INNER JOIN mapy ON (rekordy.mapa_id = mapy.mapa_id) "
+					"ORDER BY "
+					"  wynik DESC;");
+
+	QList<QStringList> rekordy;
+
+	while(query.next()) {
+		QStringList rekord;
+
+		rekord << query.value(0).toString();
+		rekord << query.value(1).toString();
+		rekord << query.value(2).toString();
+
+
+		rekordy << rekord;
+	}
+
+	return rekordy;
 }
 
 QVariant BazaDanych::ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna) const

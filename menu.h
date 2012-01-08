@@ -11,8 +11,6 @@ namespace Phonon
   class MediaObject;
 }
 
-class QTreeWidget;
-
 class BazaDanych;
 class Plansza;
 class Ekran;
@@ -38,7 +36,6 @@ class Menu: public QObject{
 	};
 
   private:
-	QTreeWidget *drzewko;
 	Ekran* ekran;
 	BazaDanych* bazaDanych;
 	Plansza* plansza;
@@ -48,8 +45,12 @@ class Menu: public QObject{
 	int idGracza;
 	QString nowyProfil;
 	QStringList alfabet;
+	QStringList profile;
+	QList<QStringList> rekordy;
 	bool shift;
 	QPixmap tloPixmapa;
+	QPixmap logoPixmapa;
+	QPixmap trybyPixmapa[4];
 	Phonon::MediaObject *muzyka;
 	int glosnosc;
 	QString rozdzielczosc;
@@ -80,7 +81,11 @@ class Menu: public QObject{
   private:
 	void cieniowanyTekst(QPainter &painter, const QRectF &r, const QString &text, const QTextOption &o = QTextOption()) const;
 	void przyciskUstawien(QPainter &painter, const QRectF &r, const QString &text, bool wstecz = true, bool dalej = true) const;
+	void listaWyboru(QPainter &painter, const QRectF &r, const QStringList &elementy, int zaznaczenie = 1) const;
+	void tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QStringList> &rekordy, int strona = 1) const;
 	void wczytajProfile();
+	void wczytajRekordy();
+	void wczytajGrafiki();
 	void wczytajUstawienia();
 	void zapiszUstawienia();
 };

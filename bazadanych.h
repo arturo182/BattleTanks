@@ -9,7 +9,10 @@ class BazaDanych{
 	BazaDanych();
 	bool polacz();
 
-	QMap<int, QString> profile() const;
+	QStringList profile() const;
+	int idProfilu(const QString &nazwa) const;
+
+	QList<QStringList> rekordy() const;
 
 	QVariant ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna = QVariant()) const;
 	void zapiszUstawienie(const QString &nazwa, const QVariant &wartosc);
