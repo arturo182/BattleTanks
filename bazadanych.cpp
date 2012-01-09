@@ -125,6 +125,27 @@ QList<QStringList> BazaDanych::rekordy() const
 	return rekordy;
 }
 
+QList<QStringList> BazaDanych::mapy(int tryb) const
+{
+	QSqlQuery query;
+	query.prepare("SELECT * FROM mapy WHERE tryb = :tryb ORDER BY LOWER(plik) ASC");
+	query.bindValue(":tryb", tryb);
+	query.exec();
+
+	QList<QStringList> mapy;
+	while(query.next()) {
+		QStringList mapa;
+
+		mapa << query.value(0).toString();
+		mapa << query.value(1).toString();
+		mapa << query.value(2).toString();
+
+		mapy << mapa;
+	}
+
+	return mapy;
+}
+
 QVariant BazaDanych::ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna) const
 {
 	QSqlQuery query;

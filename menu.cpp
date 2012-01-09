@@ -53,23 +53,11 @@ shift(false){
 }
 
 Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
-/*	if(tryb == WYBOR_MAPY || tryb == REKORDY) {
-		if(akcja == GORA) {
-			this->zaznaczenie--;
-
-			if(this->zaznaczenie < 0)
-				this->zaznaczenie = this->drzewko->topLevelItemCount() - 1;
-		} else if(akcja == DOL) {
-			this->zaznaczenie++;
-
-			if(this->zaznaczenie >= this->drzewko->topLevelItemCount())
-				this->zaznaczenie = 0;
-		}
-	}*/
-
 	if(this->tryb == WYBOR_TRYBU) {
 		if(akcja == WYBIERZ) {
 			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
+			this->trybGry = this->pozycja;
+			this->wczytajMapy();
 			this->tryb = WYBOR_MAPY;
 		} else if(akcja == LEWO) {
 			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
@@ -83,11 +71,23 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
 			this->tryb = MENU_GLOWNE;
 		}
 	} else if(this->tryb == WYBOR_MAPY) {
-		this->muzyka->stop();
-		this->plansza->zaladuj("planszaTestowa");
-		this->tryb = MENU_GLOWNE;
-		this->pozycja = 1;
-		return Silnik::ROZGRYWKA;
+		if(akcja == WYBIERZ) {
+			this->muzyka->stop();
+			this->plansza->zaladuj("planszaTestowa");
+			this->tryb = MENU_GLOWNE;
+			this->pozycja = 1;
+			return Silnik::ROZGRYWKA;
+		} else if(akcja == COFNIJ) {
+			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
+			this->pozycja = 1;
+			this->tryb = WYBOR_TRYBU;
+		} else if(akcja == LEWO) {
+			if(this->pozycja > 1)
+				this->pozycja--;
+		} else if(akcja == PRAWO) {
+			if(this->pozycja < this->mapy.count())
+				this->pozycja++;
+		}
 	} else if(this->tryb == REKORDY) {
 		if(akcja == COFNIJ) {
 			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
@@ -528,6 +528,48 @@ void Menu::rysuj() const{
 		this->cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.25 + this->trybyPixmapa[1].height(), szerokoscEkranu, 100), opis, QTextOption(Qt::AlignHCenter));
 
 		this->cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Dalej [%1]   Wróć [%2]").arg((sterowanie == "gamepad")?"Przycisk 2":"Enter").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+	} else if(this->tryb == WYBOR_MAPY) {
+		painter.setFont(czcionkaTytulu);
+		this->cieniowanyTekst(painter, obszarTytulu, "Mapa:", QTextOption(Qt::AlignHCenter));
+
+		QPixmap pixmapy[3];
+		if(this->pozycja > 1) {
+			pixmapy[0].load(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-2).at(2)));
+			pixmapy[0] = pixmapy[0].scaled(
+				Obiekt::skala * pixmapy[0].size(),
+				Qt::IgnoreAspectRatio,
+				Qt::SmoothTransformation
+			);
+		}
+
+		pixmapy[1] = QPixmap(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-1).at(2)));
+		pixmapy[1] = pixmapy[1].scaled(
+			Obiekt::skala * pixmapy[1].size(),
+			Qt::IgnoreAspectRatio,
+			Qt::SmoothTransformation
+		);
+
+		if(this->pozycja < this->mapy.count()) {
+			pixmapy[2].load(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja).at(2)));
+			pixmapy[2] = pixmapy[2].scaled(
+				Obiekt::skala * pixmapy[2].size(),
+				Qt::IgnoreAspectRatio,
+				Qt::SmoothTransformation
+			);
+		}
+
+		if(!pixmapy[0].isNull()) {
+			painter.drawPixmap(QPointF(szerokoscEkranu * 0.5 - pixmapy[0].width() * 1.6, wysokoscEkranu * 0.5 - pixmapy[0].height() * 0.5), pixmapy[0]);
+		}
+
+		if(!pixmapy[1].isNull()) {
+			painter.drawPixmap(QPointF(szerokoscEkranu * 0.5 - pixmapy[1].width() * 0.5, wysokoscEkranu * 0.5 - pixmapy[1].height() * 0.5), pixmapy[1]);
+		}
+
+		if(!pixmapy[2].isNull()) {
+			painter.drawPixmap(QPointF(szerokoscEkranu * 0.5 + pixmapy[2].width() * 0.6, wysokoscEkranu * 0.5 - pixmapy[2].height() * 0.5), pixmapy[2]);
+		}
+
 	} else if(this->tryb == USTAWIENIA_POMOC) {
 		painter.drawPixmap(QPoint(szerokoscEkranu * 0.5 - this->logoPixmapa.width() * 0.5, wysokoscEkranu * 0.05), this->logoPixmapa);
 		painter.setFont(czcionkaTytulu);
@@ -824,6 +866,11 @@ void Menu::wczytajGrafiki()
 		Qt::IgnoreAspectRatio,
 		Qt::SmoothTransformation
 	);
+}
+
+void Menu::wczytajMapy()
+{
+	this->mapy = this->bazaDanych->mapy(this->trybGry);
 }
 
 void Menu::wczytajUstawienia()

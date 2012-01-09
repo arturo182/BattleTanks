@@ -43,9 +43,11 @@ class Menu: public QObject{
 	int pozycja;
 	int zaznaczenie;
 	int idGracza;
+	int trybGry;
 	QString nowyProfil;
 	QStringList alfabet;
 	QStringList profile;
+	QList<QStringList> mapy;
 	QList<QStringList> rekordy;
 	bool shift;
 	QPixmap tloPixmapa;
@@ -86,6 +88,7 @@ class Menu: public QObject{
 	void wczytajProfile();
 	void wczytajRekordy();
 	void wczytajGrafiki();
+	void wczytajMapy();
 	void wczytajUstawienia();
 	void zapiszUstawienia();
 };
