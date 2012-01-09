@@ -5,11 +5,12 @@
 #include <QTimer>
 
 class UrzadzenieWejscia;
-class Ekran;
 class BazaDanych;
 class Plansza;
-class Menu;
 class Logika;
+class Ekran;
+class Pauza;
+class Menu;
 
 class Silnik: public QObject{
 	Q_OBJECT
@@ -21,6 +22,18 @@ class Silnik: public QObject{
 			PAUZA,
 			WYJSCIE
 		};
+		enum Akcja{
+			GORA = 0,
+			DOL,
+			PRAWO,
+			LEWO,
+			WYBIERZ,
+			WYBIERZ_ALT,
+			USUN,
+			COFNIJ,
+			START,
+			BRAK
+		};
 
 	private:
 		UrzadzenieWejscia* urzadzenieWejscia;
@@ -28,14 +41,19 @@ class Silnik: public QObject{
 		BazaDanych* bazaDanych;
 		Plansza* plansza;
 		Menu* menu;
+		Pauza* pauza;
 		Logika* logika;
 		Tryb tryb;
 		QTime czasOstatniegoOdswiezenia;
+		int ramki;
+		int milisekundy;
+		int fps;
 
 		void zaladujSpecyfikacjeObiektow();
 		void odswiezMenu(int);
 		void odswiezRozgrywke(int);
 		void odswiezPauze(int);
+		Akcja aktualnaAkcja() const;
 
 	public slots:
 		void odswiez();

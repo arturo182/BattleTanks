@@ -25,7 +25,9 @@ SOURCES += \
         specyfikacjapocisku.cpp \
     gamepad.cpp \
     klawiatura.cpp \
-    dzwiek.cpp
+    dzwiek.cpp \
+    pauza.cpp \
+    widzety.cpp
 
 HEADERS += \
         silnik.h \
@@ -47,6 +49,8 @@ HEADERS += \
         specyfikacjapocisku.h \
     gamepad.h \
     klawiatura.h \
-    dzwiek.h
+    dzwiek.h \
+    pauza.h \
+    widzety.h
 
 RC_FILE     = res.rc

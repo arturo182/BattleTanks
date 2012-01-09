@@ -38,6 +38,7 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		delete this->mapa;
 		return false;
 	}
+
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 
 	//	typ mapy
@@ -66,20 +67,29 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 void Plansza::czysc(){
 	delete this->mapa;
 	this->mapa = 0;
-	this->przeszkody.clear();
+
 	delete this->pojazdGracza;
 	this->pojazdGracza = 0;
-	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
-		delete *i;
+
+	this->przeszkody.clear();
+
+	qDeleteAll(this->pojazdyObce);
 	this->pojazdyObce.clear();
-	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
-		delete *i;
+
+	qDeleteAll(this->pociski);
 	this->pociski.clear();
+
+	qDeleteAll(this->animacje);
 	this->animacje.clear();
+
+	qDeleteAll(this->bonusy);
 	this->bonusy.clear();
 }
 
 void Plansza::rysuj(){
+	if(!this->mapa || !this->pojazdGracza)
+		return;
+
 	QPainter painter(&this->ekran->buforObrazu);
 
 	this->odswiezWidok();

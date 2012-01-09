@@ -60,20 +60,8 @@ class Menu: public QObject{
 	QString sterowanie;
 
   public:
-	enum Akcja{
-	  GORA = 0,
-	  DOL,
-	  PRAWO,
-	  LEWO,
-	  WYBIERZ,
-	  WYBIERZ_ALT,
-	  USUN,
-	  COFNIJ,
-	  BRAK
-	};
-
 	Menu(Ekran*, BazaDanych*, Plansza*);
-	Silnik::Tryb odswiez(int, Akcja);
+	Silnik::Tryb odswiez(int, Silnik::Akcja);
 	void rysuj() const;
 	void ladujMuzyke();
 
@@ -81,10 +69,6 @@ class Menu: public QObject{
 	void zapetlMuzyke();
 
   private:
-	void cieniowanyTekst(QPainter &painter, const QRectF &r, const QString &text, const QTextOption &o = QTextOption()) const;
-	void przyciskUstawien(QPainter &painter, const QRectF &r, const QString &text, bool wstecz = true, bool dalej = true) const;
-	void listaWyboru(QPainter &painter, const QRectF &r, const QStringList &elementy, int zaznaczenie = 1) const;
-	void tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QStringList> &rekordy, int strona = 1) const;
 	void wczytajProfile();
 	void wczytajRekordy();
 	void wczytajGrafiki();

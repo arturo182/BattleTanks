@@ -1,18 +1,21 @@
 #include "silnik.h"
-#include "gamepad.h"
 #include "klawiatura.h"
-#include "ekran.h"
 #include "bazadanych.h"
-#include "dzwiek.h"
 #include "plansza.h"
-#include "menu.h"
+#include "gamepad.h"
 #include "logika.h"
+#include "dzwiek.h"
+#include "ekran.h"
+#include "pauza.h"
+#include "menu.h"
 
 #include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
 
-Silnik::Silnik(){
+Silnik::Silnik():
+ramki(0),
+milisekundy(0){
 	this->bazaDanych = new BazaDanych;
 	this->bazaDanych->polacz();
 
@@ -21,7 +24,7 @@ Silnik::Silnik(){
 	else
 		this->urzadzenieWejscia = new Klawiatura;
 
-	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "800x600").toString();
+	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
 	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
 	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
 
@@ -30,6 +33,7 @@ Silnik::Silnik(){
 	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
 
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
+	this->pauza = new Pauza(this->ekran, this->plansza);
 	this->logika = new Logika(this->plansza);
 
 	this->urzadzenieWejscia->otworz();
@@ -93,27 +97,10 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 }
 
 void Silnik::odswiezMenu(int milisekundy){
-	Menu::Akcja akcja = Menu::BRAK;
+	this->tryb = this->menu->odswiez(milisekundy, aktualnaAkcja());
 
-	if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::GORA)
-		akcja = Menu::GORA;
-	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::DOL)
-		akcja = Menu::DOL;
-	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::PRAWO)
-		akcja = Menu::PRAWO;
-	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::LEWO)
-		akcja = Menu::LEWO;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::USUN))
-		akcja = Menu::USUN;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ))
-		akcja = Menu::WYBIERZ;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ_ALT))
-		akcja = Menu::WYBIERZ_ALT;
-	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::COFNIJ))
-		akcja = Menu::COFNIJ;
-
-	this->tryb = this->menu->odswiez(milisekundy, akcja);
-	this->menu->rysuj();
+	if(this->tryb == MENU)
+		this->menu->rysuj();
 }
 
 void Silnik::odswiezRozgrywke(int milisekundy){
@@ -155,27 +142,42 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 
 	//	sprawdzic czy koniec gry
 
-	this->plansza->rysuj();
+	if(this->tryb == ROZGRYWKA)
+		this->plansza->rysuj();
 }
 
 void Silnik::odswiezPauze(int milisekundy)
 {
-	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA)) {
-		this->tryb = ROZGRYWKA;
-		return;
-	} else if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::COFNIJ)) {
-		this->tryb = MENU;
-		return;
-	} else if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ)) {
-		this->tryb = WYJSCIE;
-		return;
+	this->tryb = this->pauza->odswiez(milisekundy, aktualnaAkcja());
+
+	if(this->tryb == PAUZA) {
+		this->plansza->rysuj();
+		this->pauza->rysuj();
 	}
+}
 
-	this->plansza->rysuj();
+Silnik::Akcja Silnik::aktualnaAkcja() const
+{
+	if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::GORA)
+		return Silnik::GORA;
+	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::DOL)
+		return Silnik::DOL;
+	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::PRAWO)
+		return Silnik::PRAWO;
+	else if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::LEWO)
+		return Silnik::LEWO;
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::USUN))
+		return Silnik::USUN;
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ))
+		return Silnik::WYBIERZ;
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYBIERZ_ALT))
+		return Silnik::WYBIERZ_ALT;
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::COFNIJ))
+		return Silnik::COFNIJ;
+	else if(urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA))
+		return Silnik::START;
 
-	QPainter painter(&this->ekran->buforObrazu);
-	painter.fillRect(this->ekran->buforObrazu.rect(), QColor(0, 0, 0, 128));
-	painter.drawText(this->ekran->buforObrazu.rect(), "!!PAUZA!!", QTextOption(Qt::AlignVCenter | Qt::AlignHCenter));
+	return Silnik::BRAK;
 }
 
 void Silnik::odswiez(){
@@ -200,10 +202,22 @@ void Silnik::odswiez(){
 			break;
 	}
 
-	int fps = 1000 / milisekundy;
+	this->ramki++;
+	this->milisekundy += milisekundy;
+
+	if(this->milisekundy >= 1000) {
+		this->fps = this->ramki;
+		this->ramki = 0;
+		this->milisekundy = 0;
+	}
+
 	QPainter painter(&this->ekran->buforObrazu);
-	painter.setFont(QFont("Trebuchet MS", 24));
-	painter.drawText(QRectF(0, 0, this->ekran->buforObrazu.width(), 100), QString("FPS: %1").arg(fps), QTextOption(Qt::AlignRight));
+	painter.setFont(QFont("Consolas", this->ekran->buforObrazu.height() * 0.04));
+
+	QPainterPath path;
+	path.addText(10, painter.fontMetrics().ascent(), painter.font(), QString::number(this->fps));
+	painter.strokePath(path, QPen(Qt::black, 2));
+	painter.fillPath(path, QBrush(Qt::yellow));
 
 	this->czasOstatniegoOdswiezenia = czasAktualny;
 }
