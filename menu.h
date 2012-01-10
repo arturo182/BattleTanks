@@ -61,9 +61,11 @@ class Menu: public QObject{
 
   public:
 	Menu(Ekran*, BazaDanych*, Plansza*);
+
 	Silnik::Tryb odswiez(int, Silnik::Akcja);
 	void rysuj() const;
-	void ladujMuzyke();
+
+	void odtwarzajMuzyke();
 
   private slots:
 	void zapetlMuzyke();
@@ -71,6 +73,7 @@ class Menu: public QObject{
   private:
 	void wczytajProfile();
 	void wczytajRekordy();
+	void wczytajMuzyke();
 	void wczytajGrafiki();
 	void wczytajMapy();
 	void wczytajUstawienia();

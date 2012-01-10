@@ -40,6 +40,7 @@ plansza(plansza),
 tryb(WYBOR_PROFILU),
 pozycja(1),
 shift(false){
+	this->wczytajMuzyke();
 	this->wczytajGrafiki();
 	this->wczytajProfile();
 
@@ -70,10 +71,10 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 	} else if(this->tryb == WYBOR_MAPY) {
 		if(akcja == Silnik::WYBIERZ) {
-			this->muzyka->stop();
 			this->plansza->zaladuj(this->mapy.at(this->pozycja-1).at(2));
 			this->tryb = MENU_GLOWNE;
 			this->pozycja = 1;
+			this->muzyka->stop();
 			return Silnik::ROZGRYWKA;
 		} else if(akcja == Silnik::COFNIJ) {
 			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
@@ -100,6 +101,9 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->pozycja++;
 		}
 	} else if(this->tryb == MENU_GLOWNE) {
+		if(!this->muzyka->state() != Phonon::PlayingState)
+			this->muzyka->play();
+
 		if(akcja == Silnik::WYBIERZ) {
 			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 
@@ -252,7 +256,6 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			this->idGracza = this->bazaDanych->idProfilu(this->profile.at(this->pozycja-1));
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
-			this->muzyka->play();
 		} else if(akcja == Silnik::WYBIERZ_ALT) {
 			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
 			this->nowyProfil = "";
@@ -694,16 +697,9 @@ void Menu::rysuj() const{
 	this->ekran->update();
 }
 
-void Menu::ladujMuzyke()
+void Menu::odtwarzajMuzyke()
 {
-	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, qApp->applicationDirPath() + "/dane/muzyka/menu.mp3");
-	this->muzyka->setTransitionTime(-2000);
-
-	Phonon::Path sciezka = this->muzyka->outputPaths().first();
-	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-	wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
-
-	connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
+	this->muzyka->play();
 }
 
 void Menu::zapetlMuzyke()
@@ -721,6 +717,19 @@ void Menu::wczytajRekordy()
 {
 	this->rekordy = this->bazaDanych->rekordy();
 	this->pozycja = 1;
+}
+
+void Menu::wczytajMuzyke()
+{
+	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, Phonon::MediaSource("dane/muzyka/menu.mp3"));
+	this->muzyka->pause();
+	this->muzyka->setTransitionTime(-2000);
+
+	Phonon::Path sciezka = this->muzyka->outputPaths().first();
+	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+	wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
+
+	connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
 }
 
 void Menu::wczytajGrafiki()

@@ -1,10 +1,12 @@
-#include <QFile>
-#include <QDataStream>
 #include "plansza.h"
 #include "ekran.h"
 #include "pojazdgracza.h"
 #include "pojazdobcy.h"
 #include "pocisk.h"
+
+#include <QDataStream>
+#include <QDebug>
+#include <QFile>
 
 Plansza::Plansza(Ekran* ekran, int widokWysokosc, int margines):
 	ekran(ekran),
@@ -107,6 +109,29 @@ void Plansza::rysuj(){
 
 	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
 		(*i)->rysuj(painter, this->widok);
+
+
+	//minimapa
+	int szerokoscEkranu = this->ekran->buforObrazu.width();
+	int wysokoscEkranu = this->ekran->buforObrazu.height();
+	float skala = (szerokoscEkranu * 0.15) / this->mapa->teksturaOryginalna.width();
+
+	painter.setPen(QPen(Qt::black, 2.0));
+	painter.setBrush(QColor(255, 255, 255, 128));
+	painter.drawRect(QRectF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05, szerokoscEkranu * 0.15, szerokoscEkranu * 0.15));
+
+	painter.setBrush(Qt::black);
+	painter.translate(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05);
+	painter.scale(skala, skala);
+
+	foreach(QPolygon poly, this->przeszkody)
+		painter.drawPolygon(poly);
+
+	painter.resetTransform();
+
+	painter.setBrush(Qt::red);
+	painter.setPen(Qt::NoPen);
+	painter.drawEllipse(QPointF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05) +  QPointF(this->pojazdGracza->pozycja.x() * skala, this->pojazdGracza->pozycja.y() * skala), szerokoscEkranu * 0.003, szerokoscEkranu * 0.003);
 
 	painter.end();
 	this->ekran->update();

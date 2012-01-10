@@ -39,8 +39,6 @@ milisekundy(0){
 	this->urzadzenieWejscia->otworz();
 	Dzwiek::glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
 
-	this->menu->ladujMuzyke();
-
 	this->zaladujSpecyfikacjeObiektow();
 
 	//	dopiac kontrole uruchomienia poszczegolnych elementow
@@ -49,6 +47,7 @@ milisekundy(0){
 Silnik::~Silnik(){
 	delete this->logika;
 	delete this->menu;
+	delete this->pauza;
 	delete this->plansza;
 	delete this->ekran;
 	delete this->bazaDanych;
