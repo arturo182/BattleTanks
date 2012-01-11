@@ -3,6 +3,8 @@
 
 #include "urzadzeniewejscia.h"
 
+#define DZOJSTIK_EPSILON 0.1
+
 class Gamepad : public UrzadzenieWejscia
 {
 	private:

@@ -4,6 +4,8 @@
 #include <QVector2D>
 #include "obiekt.h"
 
+#define MINIMALNA_ODLEGLOSC_CELOWNIKA 200
+
 class SpecyfikacjaPojazdu;
 
 class Pojazd: public Obiekt{
@@ -13,12 +15,13 @@ class Pojazd: public Obiekt{
 		float zwrotWiezyWzgledemKorpusuKat;
 		QVector2D zwrotKorpusuWektor;
 		QVector2D zwrotWiezyWektor;
-		float odlegloscCelu;
+		QPolygonF otoczka;
+		float celownikOdleglosc;
 		int zdrowie;
 		
 		Pojazd(SpecyfikacjaPojazdu*, QPointF, float);
 		virtual ~Pojazd();
-		void odswiezWektory();
+		QPointF punktWylotuLufy() const;
 		void rysuj(QPainter&, QPoint) const;
 };
 

@@ -53,6 +53,11 @@ shift(false){
 }
 
 Silnik::Tryb Menu::odswiez(int milisekundy, Akcja akcja){
+	
+				//	DEBUG
+			this->plansza->zaladuj("planszaTestowa");
+			return Silnik::ROZGRYWKA;
+			
 	if(this->tryb == WYBOR_TRYBU) {
 		if(akcja == WYBIERZ) {
 			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");

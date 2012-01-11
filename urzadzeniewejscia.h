@@ -4,7 +4,6 @@
 #include <SDL/SDL.h>
 
 #undef main
-#define DZOJSTIK_EPSILON 1.0E-2
 
 class UrzadzenieWejscia{
 	public:

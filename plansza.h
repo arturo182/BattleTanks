@@ -8,6 +8,9 @@
 #include "specyfikacjaanimacji.h"
 #include "animacja.h"
 
+#define WYSOKOSC_WIDOKU 1080
+#define MARGINES 400
+
 class Ekran;
 class PojazdGracza;
 class PojazdObcy;
@@ -16,25 +19,24 @@ class Pocisk;
 class Plansza{
 	private:
 		Ekran* ekran;
-		const int widokWysokosc;
-		const int margines;
 		QList<SpecyfikacjaPojazdu> specyfikacjePojazdow;
 		QList<SpecyfikacjaPocisku> specyfikacjePociskow;
 		QList<SpecyfikacjaAnimacji> specyfikacjeAnimacji;
 		Tekstura* mapa;
 		QPoint widok;
-		QList<QPolygon> przeszkody;
+		QList<QPolygonF> przeszkody;
 		PojazdGracza* pojazdGracza;
+		Tekstura celownik;
 		QList<PojazdObcy*> pojazdyObce;
 		QList<Pocisk*> pociski;
 		QList<Animacja*> animacje;
 		QList<Animacja*> bonusy;
 		
 		void odswiezWidok();
+		void rysujCelownik(QPainter&);
 		
 	public:
-		Plansza(Ekran*, int, int);
-		inline int wysokoscWidoku() const;
+		Plansza(Ekran*);
 		void dodajSpecyfikacje(const SpecyfikacjaPojazdu&);
 		void dodajSpecyfikacje(const SpecyfikacjaPocisku&);
 		void dodajSpecyfikacje(const SpecyfikacjaAnimacji&);
@@ -44,9 +46,5 @@ class Plansza{
 	
 	friend class Logika;
 };
-
-inline int Plansza::wysokoscWidoku() const{
-	return this->widokWysokosc;
-}
 
 #endif // PLANSZA_H

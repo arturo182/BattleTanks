@@ -25,9 +25,10 @@ Silnik::Silnik(){
 	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
 	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
 
-	this->plansza = new Plansza(this->ekran, 1080, 400);
+	this->plansza = new Plansza(this->ekran);
 
-	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
+	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);
+	Tekstura::przeskalujWszystko(Obiekt::skala);
 
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
@@ -38,8 +39,6 @@ Silnik::Silnik(){
 	this->menu->ladujMuzyke();
 
 	this->zaladujSpecyfikacjeObiektow();
-
-	//	dopiac kontrole uruchomienia poszczegolnych elementow
 }
 
 Silnik::~Silnik(){

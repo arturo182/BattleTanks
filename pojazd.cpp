@@ -9,18 +9,15 @@ Pojazd::Pojazd(SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja, float zwrotKo
 	specyfikacja(specyfikacja),
 	zwrotKorpusuKat(zwrotKorpusuKat),
 	zwrotWiezyWzgledemKorpusuKat(0.0F),
-	odlegloscCelu(200.0F),
-	zdrowie(this->specyfikacja->wytrzymalosc){
-	this->odswiezWektory();
-}
+	zwrotKorpusuWektor(cos(this->zwrotKorpusuKat), -sin(this->zwrotKorpusuKat)),
+	zwrotWiezyWektor(cos(this->zwrotKorpusuKat + this->zwrotWiezyWzgledemKorpusuKat), -sin(this->zwrotKorpusuKat + this->zwrotWiezyWzgledemKorpusuKat)),
+	celownikOdleglosc(MINIMALNA_ODLEGLOSC_CELOWNIKA),
+	zdrowie(this->specyfikacja->wytrzymalosc){}
 
 Pojazd::~Pojazd(){}
 
-void Pojazd::odswiezWektory(){
-	this->zwrotKorpusuWektor.setX(cos(this->zwrotKorpusuKat));
-	this->zwrotKorpusuWektor.setY(-sin(this->zwrotKorpusuKat));
-	this->zwrotWiezyWektor.setX(cos(this->zwrotKorpusuKat + this->zwrotWiezyWzgledemKorpusuKat));
-	this->zwrotWiezyWektor.setY(sin(-(this->zwrotKorpusuKat + this->zwrotWiezyWzgledemKorpusuKat)));
+QPointF Pojazd::punktWylotuLufy() const{
+	return this->pozycja + (((this->specyfikacja->przesuniecieOsiDlaWiezy + this->specyfikacja->rozmiarWieza.height() / 2.0) * this->zwrotWiezyWektor) - (this->specyfikacja->przesuniecieOsiDlaKorpusu * this->zwrotKorpusuWektor)).toPointF();
 }
 
 void Pojazd::rysuj(QPainter& painter, QPoint widok) const{
@@ -40,4 +37,11 @@ void Pojazd::rysuj(QPainter& painter, QPoint widok) const{
 		Obiekt::skala * (this->pozycja + wektorPrzesuniecieOsiWiezy.toPointF()) - widok - QPoint(teksturaWieza.width() / 2, teksturaWieza.height() / 2),
 		teksturaWieza
 	);
+	
+	//	TEST
+	painter.setPen(Qt::red);
+	painter.setBrush(QColor(0, 0, 255, 128));
+	painter.drawPolygon(this->otoczka.translated(-widok));
+	for(int i = 0; i < 4; i++)
+		painter.drawText(this->otoczka[i] - widok, QString::number(i));
 }
