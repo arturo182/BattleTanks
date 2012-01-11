@@ -1,5 +1,5 @@
-#include "Przeszkoda.h"
-#include "MainWindow.h"
+#include "przeszkoda.h"
+#include "scena.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QGraphicsScene>
@@ -108,7 +108,7 @@ void Przeszkoda::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 			this->setPolygon(poly);
 		}
-	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_PRZESZKODY) {
+	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		this->moveBy(delta.x(), delta.y());
 	}
 }
@@ -123,7 +123,7 @@ void Przeszkoda::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 		if(this->uchwytNaPozycji(pos) > -1)
 			this->setCursor(Qt::CrossCursor);
 
-	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_PRZESZKODY)
+	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU)
 		this->setCursor(Qt::SizeAllCursor);
 
 	//QGraphicsPolygonItem::hoverMoveEvent(event);

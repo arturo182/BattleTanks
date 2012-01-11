@@ -1,7 +1,7 @@
 /********************************************************************************
-** Form generated from reading UI file 'MainWindow.ui'
+** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Tue 3. Jan 19:52:17 2012
+** Created: Wed 11. Jan 01:15:30 2012
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -46,6 +46,7 @@ public:
     QAction *actionPrzesuwanieWidoku;
     QAction *actionZapiszJako;
     QAction *actionOryginalnyRozmiar;
+    QAction *actionDodajPunktRuchu;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QGraphicsView *graphicsView;
@@ -61,90 +62,104 @@ public:
     QWidget *dockWidgetContents;
     QGridLayout *gridLayout_2;
     QTreeWidget *treeWidget;
+    QDockWidget *dockWidget2;
+    QWidget *dockWidgetContents_2;
+    QGridLayout *gridLayout_3;
+    QTreeWidget *treeWidget2;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(734, 418);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/ikona.ico"), QSize(), QIcon::Normal, QIcon::Off);
+        MainWindow->setWindowIcon(icon);
         actionWczytaj = new QAction(MainWindow);
         actionWczytaj->setObjectName(QString::fromUtf8("actionWczytaj"));
-        QIcon icon;
-        icon.addFile(QString::fromUtf8(":/ikony/folder.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionWczytaj->setIcon(icon);
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/ikony/folder.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionWczytaj->setIcon(icon1);
         actionWyjdz = new QAction(MainWindow);
         actionWyjdz->setObjectName(QString::fromUtf8("actionWyjdz"));
-        QIcon icon1;
-        icon1.addFile(QString::fromUtf8(":/ikony/cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionWyjdz->setIcon(icon1);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/ikony/cancel.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionWyjdz->setIcon(icon2);
         actionZapisz = new QAction(MainWindow);
         actionZapisz->setObjectName(QString::fromUtf8("actionZapisz"));
-        QIcon icon2;
-        icon2.addFile(QString::fromUtf8(":/ikony/disk.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionZapisz->setIcon(icon2);
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/ikony/disk.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionZapisz->setIcon(icon3);
         actionNowaPlansza = new QAction(MainWindow);
         actionNowaPlansza->setObjectName(QString::fromUtf8("actionNowaPlansza"));
-        QIcon icon3;
-        icon3.addFile(QString::fromUtf8(":/ikony/page_white.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionNowaPlansza->setIcon(icon3);
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/ikony/page_white.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionNowaPlansza->setIcon(icon4);
         actionDodaj = new QAction(MainWindow);
         actionDodaj->setObjectName(QString::fromUtf8("actionDodaj"));
-        QIcon icon4;
-        icon4.addFile(QString::fromUtf8(":/ikony/shape_square_add.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionDodaj->setIcon(icon4);
+        actionDodaj->setCheckable(true);
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/ikony/shape_square_add.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionDodaj->setIcon(icon5);
         actionUsun = new QAction(MainWindow);
         actionUsun->setObjectName(QString::fromUtf8("actionUsun"));
         actionUsun->setEnabled(false);
-        QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/ikony/shape_square_delete.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionUsun->setIcon(icon5);
+        QIcon icon6;
+        icon6.addFile(QString::fromUtf8(":/ikony/shape_square_delete.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionUsun->setIcon(icon6);
         actionTlo = new QAction(MainWindow);
         actionTlo->setObjectName(QString::fromUtf8("actionTlo"));
-        QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/ikony/picture.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionTlo->setIcon(icon6);
+        QIcon icon7;
+        icon7.addFile(QString::fromUtf8(":/ikony/picture.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionTlo->setIcon(icon7);
         actionPrzybliz = new QAction(MainWindow);
         actionPrzybliz->setObjectName(QString::fromUtf8("actionPrzybliz"));
-        QIcon icon7;
-        icon7.addFile(QString::fromUtf8(":/ikony/zoom_in.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionPrzybliz->setIcon(icon7);
+        QIcon icon8;
+        icon8.addFile(QString::fromUtf8(":/ikony/zoom_in.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionPrzybliz->setIcon(icon8);
         actionOddal = new QAction(MainWindow);
         actionOddal->setObjectName(QString::fromUtf8("actionOddal"));
-        QIcon icon8;
-        icon8.addFile(QString::fromUtf8(":/ikony/zoom_out.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionOddal->setIcon(icon8);
+        QIcon icon9;
+        icon9.addFile(QString::fromUtf8(":/ikony/zoom_out.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionOddal->setIcon(icon9);
         actionPrzesuwanie = new QAction(MainWindow);
         actionPrzesuwanie->setObjectName(QString::fromUtf8("actionPrzesuwanie"));
         actionPrzesuwanie->setCheckable(true);
-        QIcon icon9;
-        icon9.addFile(QString::fromUtf8(":/ikony/arrow_nsew.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionPrzesuwanie->setIcon(icon9);
+        QIcon icon10;
+        icon10.addFile(QString::fromUtf8(":/ikony/arrow_nsew.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionPrzesuwanie->setIcon(icon10);
         actionEdycjaWierzcholkow = new QAction(MainWindow);
         actionEdycjaWierzcholkow->setObjectName(QString::fromUtf8("actionEdycjaWierzcholkow"));
         actionEdycjaWierzcholkow->setCheckable(true);
-        QIcon icon10;
-        icon10.addFile(QString::fromUtf8(":/ikony/shape_handles.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionEdycjaWierzcholkow->setIcon(icon10);
+        QIcon icon11;
+        icon11.addFile(QString::fromUtf8(":/ikony/shape_handles.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionEdycjaWierzcholkow->setIcon(icon11);
         actionZaznaczanie = new QAction(MainWindow);
         actionZaznaczanie->setObjectName(QString::fromUtf8("actionZaznaczanie"));
         actionZaznaczanie->setCheckable(true);
         actionZaznaczanie->setChecked(true);
-        QIcon icon11;
-        icon11.addFile(QString::fromUtf8(":/ikony/cursor.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionZaznaczanie->setIcon(icon11);
+        QIcon icon12;
+        icon12.addFile(QString::fromUtf8(":/ikony/cursor.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionZaznaczanie->setIcon(icon12);
         actionPrzesuwanieWidoku = new QAction(MainWindow);
         actionPrzesuwanieWidoku->setObjectName(QString::fromUtf8("actionPrzesuwanieWidoku"));
         actionPrzesuwanieWidoku->setCheckable(true);
-        QIcon icon12;
-        icon12.addFile(QString::fromUtf8(":/ikony/hand.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionPrzesuwanieWidoku->setIcon(icon12);
+        QIcon icon13;
+        icon13.addFile(QString::fromUtf8(":/ikony/hand.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionPrzesuwanieWidoku->setIcon(icon13);
         actionZapiszJako = new QAction(MainWindow);
         actionZapiszJako->setObjectName(QString::fromUtf8("actionZapiszJako"));
         actionOryginalnyRozmiar = new QAction(MainWindow);
         actionOryginalnyRozmiar->setObjectName(QString::fromUtf8("actionOryginalnyRozmiar"));
-        QIcon icon13;
-        icon13.addFile(QString::fromUtf8(":/ikony/zoom_actual.png"), QSize(), QIcon::Normal, QIcon::Off);
-        actionOryginalnyRozmiar->setIcon(icon13);
+        QIcon icon14;
+        icon14.addFile(QString::fromUtf8(":/ikony/zoom_actual.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionOryginalnyRozmiar->setIcon(icon14);
+        actionDodajPunktRuchu = new QAction(MainWindow);
+        actionDodajPunktRuchu->setObjectName(QString::fromUtf8("actionDodajPunktRuchu"));
+        actionDodajPunktRuchu->setCheckable(true);
+        QIcon icon15;
+        icon15.addFile(QString::fromUtf8(":/ikony/flag_yellow.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionDodajPunktRuchu->setIcon(icon15);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -204,6 +219,24 @@ public:
 
         dockWidget->setWidget(dockWidgetContents);
         MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget);
+        dockWidget2 = new QDockWidget(MainWindow);
+        dockWidget2->setObjectName(QString::fromUtf8("dockWidget2"));
+        dockWidgetContents_2 = new QWidget();
+        dockWidgetContents_2->setObjectName(QString::fromUtf8("dockWidgetContents_2"));
+        gridLayout_3 = new QGridLayout(dockWidgetContents_2);
+        gridLayout_3->setSpacing(6);
+        gridLayout_3->setContentsMargins(0, 0, 0, 0);
+        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
+        treeWidget2 = new QTreeWidget(dockWidgetContents_2);
+        new QTreeWidgetItem(treeWidget2);
+        treeWidget2->setObjectName(QString::fromUtf8("treeWidget2"));
+        treeWidget2->setIndentation(16);
+        treeWidget2->setHeaderHidden(true);
+
+        gridLayout_3->addWidget(treeWidget2, 0, 0, 1, 1);
+
+        dockWidget2->setWidget(dockWidgetContents_2);
+        MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget2);
 
         menuBar->addAction(menuPlik->menuAction());
         menuBar->addAction(menuWidok->menuAction());
@@ -240,6 +273,7 @@ public:
         toolBar->addAction(actionPrzesuwanie);
         toolBar->addAction(actionDodaj);
         toolBar->addAction(actionEdycjaWierzcholkow);
+        toolBar->addAction(actionDodajPunktRuchu);
 
         retranslateUi(MainWindow);
         QObject::connect(actionWczytaj, SIGNAL(triggered()), MainWindow, SLOT(wczytajPlansze()));
@@ -271,7 +305,7 @@ public:
         actionPrzybliz->setShortcut(QApplication::translate("MainWindow", "Ctrl++", 0, QApplication::UnicodeUTF8));
         actionOddal->setText(QApplication::translate("MainWindow", "Oddal", 0, QApplication::UnicodeUTF8));
         actionOddal->setShortcut(QApplication::translate("MainWindow", "Ctrl+-", 0, QApplication::UnicodeUTF8));
-        actionPrzesuwanie->setText(QApplication::translate("MainWindow", "Przesuwanie przeszkody", 0, QApplication::UnicodeUTF8));
+        actionPrzesuwanie->setText(QApplication::translate("MainWindow", "Przesuwanie element\303\263w", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         actionPrzesuwanie->setToolTip(QApplication::translate("MainWindow", "Przesuwanie", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
@@ -291,6 +325,11 @@ public:
         actionZapiszJako->setText(QApplication::translate("MainWindow", "Zapisz jako...", 0, QApplication::UnicodeUTF8));
         actionOryginalnyRozmiar->setText(QApplication::translate("MainWindow", "Oryginalny rozmiar", 0, QApplication::UnicodeUTF8));
         actionOryginalnyRozmiar->setShortcut(QApplication::translate("MainWindow", "Ctrl+0", 0, QApplication::UnicodeUTF8));
+        actionDodajPunktRuchu->setText(QApplication::translate("MainWindow", "Dodaj punkt ruchu", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionDodajPunktRuchu->setToolTip(QApplication::translate("MainWindow", "Dodaj punkt ruchu", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        actionDodajPunktRuchu->setShortcut(QApplication::translate("MainWindow", "Ctrl+5", 0, QApplication::UnicodeUTF8));
         menuPlik->setTitle(QApplication::translate("MainWindow", "Plik", 0, QApplication::UnicodeUTF8));
         menuPlansza->setTitle(QApplication::translate("MainWindow", "Plansza", 0, QApplication::UnicodeUTF8));
         menuWidok->setTitle(QApplication::translate("MainWindow", "Widok", 0, QApplication::UnicodeUTF8));
@@ -305,6 +344,16 @@ public:
         QTreeWidgetItem *___qtreewidgetitem1 = treeWidget->topLevelItem(0);
         ___qtreewidgetitem1->setText(0, QApplication::translate("MainWindow", "Plansza", 0, QApplication::UnicodeUTF8));
         treeWidget->setSortingEnabled(__sortingEnabled);
+
+        dockWidget2->setWindowTitle(QApplication::translate("MainWindow", "Drzewo punkt\303\263w ruchu", 0, QApplication::UnicodeUTF8));
+        QTreeWidgetItem *___qtreewidgetitem2 = treeWidget2->headerItem();
+        ___qtreewidgetitem2->setText(0, QApplication::translate("MainWindow", "1", 0, QApplication::UnicodeUTF8));
+
+        const bool __sortingEnabled1 = treeWidget2->isSortingEnabled();
+        treeWidget2->setSortingEnabled(false);
+        QTreeWidgetItem *___qtreewidgetitem3 = treeWidget2->topLevelItem(0);
+        ___qtreewidgetitem3->setText(0, QApplication::translate("MainWindow", "Plansza", 0, QApplication::UnicodeUTF8));
+        treeWidget2->setSortingEnabled(__sortingEnabled1);
 
     } // retranslateUi
 

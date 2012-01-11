@@ -2,7 +2,11 @@
 /release
 /debug
 /Makefile*
+/object_script*
+/*.pro.user
+/*/*.pro.user
 /*/*.exe
+/*/ui_*
 /edytor/Makefile*
 /edytor/release
 /edytor/debug

@@ -5,14 +5,19 @@ DESTDIR = ../bin
 TEMPLATE = app
 
 SOURCES += main.cpp\
-           MainWindow.cpp \
-    Przeszkoda.cpp
+    scena.cpp \
+    przeszkoda.cpp \
+    mainwindow.cpp \
+    waypoint.cpp
 
-HEADERS  += MainWindow.h \
-    Przeszkoda.h \
-    Scena.h
+HEADERS  += \
+    scena.h \
+    przeszkoda.h \
+    mainwindow.h \
+    waypoint.h
 
-FORMS    += MainWindow.ui
+FORMS    += \
+    mainwindow.ui
 
 RESOURCES += \
     res.qrc

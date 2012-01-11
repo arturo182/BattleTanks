@@ -1,7 +1,7 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include "Scena.h"
+#include "scena.h"
 
 #include <QMainWindow>
 #include <QHash>
@@ -31,6 +31,10 @@ class MainWindow : public QMainWindow{
 		void wybierzTlo();
 		void usunZaznaczony();
 		void scenaZmieniona();
+		void aktualizujTryb();
+		void aktualizujDrzewkoPrzeszkod();
+		void aktualizujDrzewkoWaypointow();
+
 		void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 		void on_actionPrzybliz_triggered();
 		void on_actionOddal_triggered();
@@ -40,9 +44,10 @@ class MainWindow : public QMainWindow{
 		void on_actionPrzesuwanieWidoku_triggered();
 		void on_actionOryginalnyRozmiar_triggered();
 		void on_actionDodaj_triggered();
+		void on_actionDodajPunktRuchu_triggered();
+		void on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 	private:
-		void dodajPrzeszkode(const QPolygon &poly);
 		bool sprawdzZapis();
 		bool zapiszPlik(const QString &nazwaPliku);
 		void ustawTryb(Scena::Tryby tryb);
@@ -50,8 +55,9 @@ class MainWindow : public QMainWindow{
 	private:
 		Ui::MainWindow *ui;
 		QString plikPlanszy;
+		Scena *scena;
 		Scena::Tryby tryb;
-		QHash<QTreeWidgetItem*, class Przeszkoda*> tabelaElementow;
+		QHash<QTreeWidgetItem*, class QGraphicsItem*> tabelaElementow;
 };
 
 #endif // MAINWINDOW_H

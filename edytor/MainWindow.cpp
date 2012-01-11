@@ -1,8 +1,9 @@
-#include "MainWindow.h"
-#include "ui_MainWindow.h"
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
 
-#include "Przeszkoda.h"
-#include "Scena.h"
+#include "przeszkoda.h"
+#include "waypoint.h"
+#include "scena.h"
 
 #include <QGraphicsPolygonItem>
 #include <QInputDialog>
@@ -13,18 +14,20 @@
 #include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent):
-	QMainWindow(parent),
-	ui(new Ui::MainWindow)
+QMainWindow(parent),
+ui(new Ui::MainWindow)
 {
 	this->ui->setupUi(this);
-	this->ui->graphicsView->setScene(new Scena);
+	this->scena = new Scena();
+	this->ui->graphicsView->setScene(this->scena);
 	this->plikPlanszy = "";
-
 
 	this->ustawTryb(Scena::ZAZNACZANIE);
 
-	connect(this->ui->graphicsView->scene(), SIGNAL(selectionChanged()), this, SLOT(zaznaczGalaz()));
-	connect(this->ui->graphicsView->scene(), SIGNAL(changed(QList<QRectF>)), this, SLOT(scenaZmieniona()));
+	connect(this->scena, SIGNAL(selectionChanged()), this, SLOT(zaznaczGalaz()));
+	connect(this->scena, SIGNAL(trybZmieniony()), this, SLOT(aktualizujTryb()));
+	connect(this->scena, SIGNAL(przeszkodaDodana()), this, SLOT(aktualizujDrzewkoPrzeszkod()));
+	connect(this->scena, SIGNAL(waypointDodany()), this, SLOT(aktualizujDrzewkoWaypointow()));
 }
 
 MainWindow::~MainWindow()
@@ -45,7 +48,7 @@ void MainWindow::nowaPlansza()
 	if(this->sprawdzZapis()) {
 		qDeleteAll(this->ui->treeWidget->topLevelItem(0)->takeChildren());
 
-		this->ui->graphicsView->scene()->clear();
+		this->scena->clear();
 		this->tabelaElementow.clear();
 		this->plikPlanszy = "";
 		this->setWindowModified(false);
@@ -60,18 +63,20 @@ void MainWindow::wczytajPlansze()
 	if(!nazwaPliku.isEmpty()) {
 		QFileInfo plik(nazwaPliku);
 
-		this->ui->graphicsView->scene()->addPixmap(QPixmap(plik.absolutePath() + "/" + plik.completeBaseName() + ".png"));
+		this->scena->addPixmap(QPixmap(plik.absolutePath() + "/" + plik.completeBaseName() + ".png"));
 
 		QFile mapaSpecyfikacjaPlik(nazwaPliku);
 		if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly))
 			return;
 
-		int iloscPrzeszkod, iloscWierzcholkow;
+		int iloscElementow, iloscWierzcholkow;
 		QPoint wierzcholek;
 
 		QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
-		mapaSpecyfikacjaDane >> iloscPrzeszkod;
-		for(int i = 0; i < iloscPrzeszkod; i++){
+
+		//przeszkody
+		mapaSpecyfikacjaDane >> iloscElementow;
+		for(int i = 0; i < iloscElementow; i++){
 			mapaSpecyfikacjaDane >> iloscWierzcholkow;
 
 			QPolygon przeszkoda(iloscWierzcholkow);
@@ -80,7 +85,14 @@ void MainWindow::wczytajPlansze()
 				przeszkoda.setPoint(j, wierzcholek);
 			}
 
-			this->dodajPrzeszkode(przeszkoda);
+			this->scena->dodajPrzeszkode(przeszkoda);
+		}
+
+		//waypointy
+		mapaSpecyfikacjaDane >> iloscElementow;
+		for(int i = 0; i < iloscElementow; i++){
+			mapaSpecyfikacjaDane >> wierzcholek;
+			this->scena->dodajWaypoint(wierzcholek);
 		}
 
 		mapaSpecyfikacjaPlik.close();
@@ -100,13 +112,18 @@ bool MainWindow::zapiszPlansze()
 
 void MainWindow::zaznaczGalaz()
 {
-	QList<QGraphicsItem*> zaznaczenie = this->ui->graphicsView->scene()->selectedItems();
+	QList<QGraphicsItem*> zaznaczenie = this->scena->selectedItems();
 	if(zaznaczenie.count()) {
-		if(Przeszkoda *przeszkoda = static_cast<Przeszkoda*>(zaznaczenie.first())) {
+		if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(zaznaczenie.first())) {
 			QTreeWidgetItem *galaz = this->tabelaElementow.key(przeszkoda);
 
 			if(galaz)
 				this->ui->treeWidget->setCurrentItem(galaz);
+		} else if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(zaznaczenie.first())) {
+			QTreeWidgetItem *galaz = this->tabelaElementow.key(waypoint);
+
+			if(galaz)
+				this->ui->treeWidget2->setCurrentItem(galaz);
 		}
 	}
 
@@ -117,25 +134,27 @@ void MainWindow::wybierzTlo()
 {
 	QString nazwaPliku = QFileDialog::getOpenFileName(this, "Wybierz tło", "", "Pliki graficzne (*.bmp;*.png;*.jpg;*.jpeg)");
 	if(!nazwaPliku.isEmpty()) {
-		if(this->ui->graphicsView->scene()->items().count()) {
-			if(QGraphicsPixmapItem *item = qgraphicsitem_cast<QGraphicsPixmapItem*>(this->ui->graphicsView->scene()->items().first()))
+		if(this->scena->items().count()) {
+			if(QGraphicsPixmapItem *item = qgraphicsitem_cast<QGraphicsPixmapItem*>(this->scena->items().first()))
 				item->setPixmap(QPixmap(nazwaPliku));
 		} else {
-			this->ui->graphicsView->scene()->addPixmap(QPixmap(nazwaPliku));
+			this->scena->addPixmap(QPixmap(nazwaPliku));
 		}
 	}
 }
 
 void MainWindow::usunZaznaczony()
 {
-	QList<QGraphicsItem*> zaznaczenie = this->ui->graphicsView->scene()->selectedItems();
+	QList<QGraphicsItem*> zaznaczenie = this->scena->selectedItems();
 	if(zaznaczenie.count()) {
 		if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(zaznaczenie.first())) {
-			this->ui->graphicsView->scene()->removeItem(przeszkoda);
+			this->scena->removeItem(przeszkoda);
 
 			QTreeWidgetItem *item = this->tabelaElementow.key(przeszkoda);
 			this->tabelaElementow.remove(item);
 			delete item;
+
+			this->scenaZmieniona();
 		}
 	}
 }
@@ -145,18 +164,51 @@ void MainWindow::scenaZmieniona()
 	this->setWindowModified(true);
 }
 
-void MainWindow::dodajPrzeszkode(const QPolygon &poly)
+void MainWindow::aktualizujTryb()
 {
-	Przeszkoda *item = new Przeszkoda(poly);
-	this->ui->graphicsView->scene()->addItem(item);
+	this->ustawTryb(static_cast<Scena::Tryby>(this->scena->property("tryb").toInt()));
+}
 
-	QTreeWidgetItem *galaz = new QTreeWidgetItem(ui->treeWidget->topLevelItem(0));
-	galaz->setText(0, QString("Przeszkoda #%1").arg(ui->graphicsView->scene()->items().count() - 1));
-	galaz->setIcon(0, QIcon(":/ikony/shape_square.png"));
+void MainWindow::aktualizujDrzewkoPrzeszkod()
+{
+	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
+		QGraphicsItem *item = this->scena->items().at(i);
+		if(item->type() == Przeszkoda::Type) {
+			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item)) {
+				if(!this->tabelaElementow.key(przeszkoda)) {
+					QTreeWidgetItem *galaz = new QTreeWidgetItem(ui->treeWidget->topLevelItem(0));
+					galaz->setText(0, QString("Przeszkoda #%1").arg(this->scena->przeszkody));
+					galaz->setIcon(0, QIcon(":/ikony/shape_square.png"));
 
-	this->tabelaElementow.insert(galaz, item);
-	this->ui->treeWidget->expandAll();
-	this->setWindowModified(true);
+					this->tabelaElementow.insert(galaz, przeszkoda);
+					this->ui->treeWidget->expandAll();
+
+					this->scenaZmieniona();
+				}
+			}
+		}
+	}
+}
+
+void MainWindow::aktualizujDrzewkoWaypointow()
+{
+	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
+		QGraphicsItem *item = this->scena->items().at(i);
+		if(item->type() == Waypoint::Type) {
+			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item)) {
+				if(!this->tabelaElementow.key(waypoint)) {
+					QTreeWidgetItem *galaz = new QTreeWidgetItem(this->ui->treeWidget2->topLevelItem(0));
+					galaz->setText(0, QString("Punkt #%1").arg(this->scena->waypointy));
+					galaz->setIcon(0, QIcon(":/ikony/flag_yellow.png"));
+
+					this->tabelaElementow.insert(galaz, waypoint);
+					this->ui->treeWidget->expandAll();
+
+					this->scenaZmieniona();
+				}
+			}
+		}
+	}
 }
 
 bool MainWindow::sprawdzZapis()
@@ -192,20 +244,19 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 	QFileInfo plik(nazwaPliku);
 
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
-	mapaSpecyfikacjaDane << this->ui->graphicsView->items().count() - 1;
 
-	for(int i = this->ui->graphicsView->items().count() - 1;  i >= 0; i--) {
-		QGraphicsItem *item = this->ui->graphicsView->items().at(i);
+	QList<Przeszkoda*> przeszkody;
+	QList<Waypoint*> waypointy;
+
+	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
+		QGraphicsItem *item = this->scena->items().at(i);
 		if(item->type() == Przeszkoda::Type) {
-			if(Przeszkoda *poly = qgraphicsitem_cast<Przeszkoda*>(item)) {
-				mapaSpecyfikacjaDane << poly->polygon().count();
-
-				QPoint wierzcholek;
-				for(int j = 0; j < poly->polygon().count(); j++) {
-					poly->polygon().toPolygon().point(j, &wierzcholek.rx(), &wierzcholek.ry());
-					wierzcholek += poly->pos().toPoint();
-					mapaSpecyfikacjaDane << wierzcholek;
-				}
+			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item)) {
+				przeszkody << przeszkoda;
+			}
+		} else if(item->type() == Waypoint::Type) {
+			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item)) {
+				waypointy << waypoint;
 			}
 		} else if(item->type() == QGraphicsPixmapItem::Type) {
 			if(QGraphicsPixmapItem *tlo = static_cast<QGraphicsPixmapItem*>(item)) {
@@ -214,10 +265,30 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 		}
 	}
 
+	mapaSpecyfikacjaDane << this->scena->przeszkody;
+	foreach(Przeszkoda *poly, przeszkody) {
+		mapaSpecyfikacjaDane << poly->polygon().count();
+
+		QPoint wierzcholek;
+		for(int j = 0; j < poly->polygon().count(); j++) {
+			poly->polygon().toPolygon().point(j, &wierzcholek.rx(), &wierzcholek.ry());
+			wierzcholek += poly->pos().toPoint();
+			mapaSpecyfikacjaDane << wierzcholek;
+		}
+	}
+
+	mapaSpecyfikacjaDane << this->scena->waypointy;
+	foreach(Waypoint *waypoint, waypointy) {
+		qDebug() << waypoint->pos();
+		mapaSpecyfikacjaDane << waypoint->pos().toPoint();
+	}
+
 	mapaSpecyfikacjaPlik.close();
 
 	this->plikPlanszy = nazwaPliku;
 	this->setWindowModified(false);
+
+	QMessageBox::information(this, "Zapisano", "Plansza została zapisana.");
 
 	return true;
 }
@@ -226,23 +297,31 @@ void MainWindow::ustawTryb(Scena::Tryby tryb)
 {
 	this->tryb = tryb;
 
+	this->ui->graphicsView->setCursor((this->tryb == Scena::DODAWANIE_PRZESZKODY || this->tryb == Scena::DODAWANIE_WAYPOINTU) ? Qt::CrossCursor : Qt::ArrowCursor);
+
 	this->ui->actionZaznaczanie->setChecked(tryb == Scena::ZAZNACZANIE);
 	this->ui->actionPrzesuwanieWidoku->setChecked(tryb == Scena::PRZESUWANIE_WIDOKU);
-	this->ui->actionPrzesuwanie->setChecked(tryb == Scena::PRZESUWANIE_PRZESZKODY);
+	this->ui->actionPrzesuwanie->setChecked(tryb == Scena::PRZESUWANIE_ELEMENTU);
 	this->ui->actionEdycjaWierzcholkow->setChecked(tryb == Scena::EDYCJA_WIERZCHOLKOW);
+	this->ui->actionDodaj->setChecked(tryb == Scena::DODAWANIE_PRZESZKODY);
+	this->ui->actionDodajPunktRuchu->setChecked(tryb == Scena::DODAWANIE_WAYPOINTU);
 
 	this->ui->graphicsView->setDragMode((tryb == Scena::PRZESUWANIE_WIDOKU) ? QGraphicsView::ScrollHandDrag : QGraphicsView::NoDrag);
 
-	this->ui->graphicsView->scene()->setProperty("tryb", tryb);
-	this->ui->graphicsView->scene()->update();
+	this->scena->setProperty("tryb", tryb);
+	this->scena->update();
 }
 
 void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
 	if(current) {
 		if(current->parent()) {
-			this->ui->graphicsView->scene()->clearSelection();
-			this->tabelaElementow.value(current)->setSelected(true);
+			this->scena->clearSelection();
+
+			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(this->tabelaElementow.value(current))) {
+				przeszkoda->setSelected(true);
+				this->ui->graphicsView->ensureVisible(przeszkoda);
+			}
 		}
 	}
 }
@@ -259,7 +338,7 @@ void MainWindow::on_actionOddal_triggered()
 
 void MainWindow::on_actionPrzesuwanie_triggered()
 {
-	this->ustawTryb(Scena::PRZESUWANIE_PRZESZKODY);
+	this->ustawTryb(Scena::PRZESUWANIE_ELEMENTU);
 }
 
 void MainWindow::on_actionEdycjaWierzcholkow_triggered()
@@ -287,16 +366,28 @@ void MainWindow::on_actionDodaj_triggered()
 	bool ok = false;
 	int boki = QInputDialog::getInt(this, "Podaj ilosc bokow", "Ilosc bokow:", 3, 3, 100, 1, &ok);
 	if(ok) {
-		QPointF srodek(0, 0);
-		double r = 100.0;
-		QPolygonF poly;
-		float alfa;
+		this->ustawTryb(Scena::DODAWANIE_PRZESZKODY);
+		this->scena->setProperty("boki", boki);
+	} else {
+		this->ustawTryb(this->tryb);
+	}
+}
 
-		for(int i = 0; i < boki; i++) {
-			alfa = 2.0 * M_PI * i / boki;
-			poly.push_back(srodek + r * QPointF(qSin(alfa), -qCos(alfa)));
+void MainWindow::on_actionDodajPunktRuchu_triggered()
+{
+	this->ustawTryb(Scena::DODAWANIE_WAYPOINTU);
+}
+
+void MainWindow::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+{
+	if(current) {
+		if(current->parent()) {
+			this->scena->clearSelection();
+
+			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(this->tabelaElementow.value(current))) {
+				waypoint->setSelected(true);
+				this->ui->graphicsView->ensureVisible(waypoint);
+			}
 		}
-
-		this->dodajPrzeszkode(poly.toPolygon());
 	}
 }

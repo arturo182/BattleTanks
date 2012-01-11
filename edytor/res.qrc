@@ -15,5 +15,8 @@
         <file>ikony/cursor.png</file>
         <file>ikony/hand.png</file>
         <file>ikony/zoom_actual.png</file>
+        <file>ikony/flag_yellow.png</file>
+        <file>ikony/flag_yellow_add.png</file>
+        <file>ikona.ico</file>
     </qresource>
 </RCC>
