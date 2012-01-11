@@ -280,7 +280,9 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 				sciezki << sciezka;
 		} else if(item->type() == QGraphicsPixmapItem::Type) {
 			if(QGraphicsPixmapItem *tlo = static_cast<QGraphicsPixmapItem*>(item)) {
-				tlo->pixmap().save(plik.absolutePath() + "/" + plik.completeBaseName() + ".png");
+				QString nazwaGrafiki = plik.absolutePath() + "/" + plik.completeBaseName() + ".png";
+				if(!QFile::exists(nazwaGrafiki))
+					tlo->pixmap().save(nazwaGrafiki);
 			}
 		}
 	}
