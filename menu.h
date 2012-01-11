@@ -15,9 +15,6 @@ class BazaDanych;
 class Plansza;
 class Ekran;
 
-QString qSizeToString(const QSize &size);
-QSize qStringToSize(const QString &str);
-
 class Menu: public QObject{
   Q_OBJECT
 

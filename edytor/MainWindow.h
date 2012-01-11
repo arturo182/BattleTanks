@@ -51,13 +51,13 @@ class MainWindow : public QMainWindow{
 	private:
 		bool sprawdzZapis();
 		bool zapiszPlik(const QString &nazwaPliku);
-		void ustawTryb(Scena::Tryby tryb);
+		void ustawTryb(Scena::Tryb tryb);
 
 	private:
 		Ui::MainWindow *ui;
 		QString plikPlanszy;
 		Scena *scena;
-		Scena::Tryby tryb;
+		Scena::Tryb tryb;
 		QHash<QTreeWidgetItem*, class QGraphicsItem*> tabelaElementow;
 };
 

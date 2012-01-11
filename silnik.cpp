@@ -1,6 +1,7 @@
 #include "silnik.h"
 #include "klawiatura.h"
 #include "bazadanych.h"
+#include "funkcje.h"
 #include "plansza.h"
 #include "gamepad.h"
 #include "logika.h"
@@ -34,7 +35,7 @@ milisekundy(0){
 	Tekstura::przeskalujWszystko(Obiekt::skala);
 
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
-	this->pauza = new Pauza(this->ekran, this->plansza);
+	this->pauza = new Pauza(this->ekran, this->bazaDanych, this->plansza);
 	this->logika = new Logika(this->plansza);
 
 	this->urzadzenieWejscia->otworz();
@@ -103,6 +104,8 @@ void Silnik::odswiezMenu(int milisekundy){
 
 void Silnik::odswiezRozgrywke(int milisekundy){
 	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA)) {
+		this->plansza->rysuj();
+		this->pauza->ustawTlo();
 		this->tryb = PAUZA;
 		return;
 	}
@@ -148,10 +151,8 @@ void Silnik::odswiezPauze(int milisekundy)
 {
 	this->tryb = this->pauza->odswiez(milisekundy, aktualnaAkcja());
 
-	if(this->tryb == PAUZA) {
-		this->plansza->rysuj();
+	if(this->tryb == PAUZA)
 		this->pauza->rysuj();
-	}
 }
 
 Silnik::Akcja Silnik::aktualnaAkcja() const

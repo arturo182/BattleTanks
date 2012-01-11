@@ -317,7 +317,7 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 	return true;
 }
 
-void MainWindow::ustawTryb(Scena::Tryby tryb)
+void MainWindow::ustawTryb(Scena::Tryb tryb)
 {
 	this->tryb = tryb;
 

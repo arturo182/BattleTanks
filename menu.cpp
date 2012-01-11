@@ -1,5 +1,6 @@
 #include "menu.h"
 #include "bazadanych.h"
+#include "funkcje.h"
 #include "plansza.h"
 #include "widzety.h"
 #include "dzwiek.h"
@@ -13,25 +14,6 @@
 #include <QSqlQuery>
 #include <QDebug>
 #include <QStyle>
-
-QString qSizeToString(const QSize &size)
-{
-	return QString("%1x%2").arg(size.width()).arg(size.height());
-}
-
-QSize qStringToSize(const QString &str)
-{
-	int w = 0;
-	int h = 0;
-
-	QStringList lista = str.split("x");
-	if(lista.size() == 2) {
-		w = lista.at(0).toInt();
-		h = lista.at(1).toInt();
-	}
-
-	return QSize(w, h);
-}
 
 Menu::Menu(Ekran* ekran, BazaDanych* bazaDanych, Plansza* plansza):
 ekran(ekran),
@@ -107,6 +89,11 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 	} else if(this->tryb == MENU_GLOWNE) {
 		if(!this->muzyka->state() != Phonon::PlayingState)
 			this->muzyka->play();
+
+		if(this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString() != this->rozdzielczosc) {
+			this->wczytajUstawienia();
+			this->wczytajGrafiki();
+		}
 
 		if(akcja == Silnik::WYBIERZ) {
 			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
@@ -803,6 +790,11 @@ void Menu::zapiszUstawienia()
 	this->bazaDanych->zapiszUstawienie("rozdzielczosc", this->rozdzielczosc);
 	this->bazaDanych->zapiszUstawienie("sterowanie", this->sterowanie);
 	QSqlQuery("END;");
+
+	this->ekran->ustawRozdzielczosc(qStringToSize(this->rozdzielczosc));
+	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);
+	Tekstura::przeskalujWszystko(Obiekt::skala);
+	this->wczytajGrafiki();
 
 	Dzwiek::glosnosc = this->glosnosc;
 	this->ekran->ustawJakosc(this->jakosc);
