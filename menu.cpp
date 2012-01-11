@@ -52,20 +52,24 @@ shift(false){
 }
 
 Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
+	//	DEBUG
+	//	this->plansza->zaladuj("planszaTestowa");
+	//	return Silnik::ROZGRYWKA;
+
 	if(this->tryb == WYBOR_TRYBU) {
 		if(akcja == Silnik::WYBIERZ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
 			this->trybGry = this->pozycja;
 			this->wczytajMapy();
 			this->tryb = WYBOR_MAPY;
 		} else if(akcja == Silnik::LEWO) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja = 1;
 		} else if(akcja == Silnik::PRAWO) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja = 2;
 		} else if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
@@ -77,7 +81,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			this->muzyka->stop();
 			return Silnik::ROZGRYWKA;
 		} else if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
 			this->pozycja = 1;
 			this->tryb = WYBOR_TRYBU;
 		} else if(akcja == Silnik::LEWO) {
@@ -89,7 +93,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 	} else if(this->tryb == REKORDY) {
 		if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		} else if(akcja == Silnik::GORA) {
@@ -105,7 +109,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			this->muzyka->play();
 
 		if(akcja == Silnik::WYBIERZ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 
 			if(this->pozycja == 1) {
 				this->pozycja = 1;
@@ -120,13 +124,13 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 				return Silnik::WYJSCIE;
 			}
 		} else if(akcja == Silnik::GORA) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja--;
 
 			if(this->pozycja < 1)
 				this->pozycja = 4;
 		} else if(akcja == Silnik::DOL) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja++;
 
 			if(this->pozycja > 4)
@@ -134,7 +138,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 	} else if(this->tryb == USTAWIENIA_POMOC) {
 		if(akcja == Silnik::WYBIERZ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 
 			if(this->pozycja == 1) {
 				this->pozycja = 1;
@@ -151,41 +155,41 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->tryb = MENU_GLOWNE;
 			}
 		} else if(akcja == Silnik::GORA) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja--;
 
 			if(this->pozycja < 1)
 				this->pozycja = 4;
 		} else if(akcja == Silnik::DOL) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja++;
 
 			if(this->pozycja > 4)
 				this->pozycja = 1;
 		} else if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
 	} else if(this->tryb == USTAWIENIA) {
 		if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->wczytajUstawienia();
 			this->pozycja = 1;
 			this->tryb = USTAWIENIA_POMOC;
 		} else if(akcja == Silnik::WYBIERZ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->zapiszUstawienia();
 			this->pozycja = 1;
 			this->tryb = USTAWIENIA_POMOC;
 		} else if(akcja == Silnik::GORA) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja--;
 
 			if(this->pozycja < 1)
 				this->pozycja = 4;
 		} else if(akcja == Silnik::DOL) {
-			Dzwiek::odtworz("dane/dzwieki/menu_zmiana.mp3");
+			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja++;
 
 			if(this->pozycja > 4)
@@ -238,7 +242,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		wyjscie->setVolume(this->glosnosc / 10.0);
 	} else if(this->tryb == AUTORZY) {
 		if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->tryb = USTAWIENIA_POMOC;
 		}
 	} else if(this->tryb == POMOC) {
@@ -251,13 +255,13 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 	} else if(this->tryb == WYBOR_PROFILU) {
 		if(akcja == Silnik::WYBIERZ && this->profile.count()){
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 
 			this->idGracza = this->bazaDanych->idProfilu(this->profile.at(this->pozycja-1));
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		} else if(akcja == Silnik::WYBIERZ_ALT) {
-			Dzwiek::odtworz("dane/dzwieki/menu_wybor.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->nowyProfil = "";
 			this->tryb = TWORZENIE_PROFILU;
 			this->pozycja = 1;
@@ -291,7 +295,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 	} else if(this->tryb == TWORZENIE_PROFILU) {
 		if(akcja == Silnik::PRAWO) {
-			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+			Dzwiek::odtworz("dzwieki/menu_litera.mp3");
 
 			if(this->pozycja == 10)
 				this->pozycja = 37;
@@ -312,7 +316,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			else
 				this->pozycja++;
 		} else if(akcja == Silnik::LEWO) {
-			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+			Dzwiek::odtworz("dzwieki/menu_litera.mp3");
 
 			if(this->pozycja == 1)
 				this->pozycja = 37;
@@ -333,7 +337,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			else
 				this->pozycja--;
 		} else if(akcja == Silnik::DOL) {
-			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+			Dzwiek::odtworz("dzwieki/menu_litera.mp3");
 
 			if(this->pozycja == 27)
 				this->pozycja = 7;
@@ -350,7 +354,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			else
 				this->pozycja += 10;
 		} else if(akcja == Silnik::GORA) {
-			Dzwiek::odtworz("dane/dzwieki/menu_litera.mp3");
+			Dzwiek::odtworz("dzwieki/menu_litera.mp3");
 
 			if(this->pozycja == 7)
 				this->pozycja = 27;
@@ -367,7 +371,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			else
 				this->pozycja -= 10;
 		} else if(akcja == Silnik::WYBIERZ) {
-			Dzwiek::odtworz("dane/dzwieki/menu_karetka.mp3");
+			Dzwiek::odtworz("dzwieki/menu_karetka.mp3");
 
 			if(this->pozycja <= this->alfabet.count()) {
 				if(this->nowyProfil.length() < 80) {
@@ -394,7 +398,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 					wczytajProfile();
 				}
 
-				Dzwiek::odtworz("dane/dzwieki/menu_wybierz.mp3");
+				Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
 				this->pozycja = 1;
 				this->tryb = WYBOR_PROFILU;
 			}
@@ -544,7 +548,7 @@ void Menu::rysuj() const{
 
 		QPixmap pixmapy[5];
 		if(this->pozycja > 2) {
-			pixmapy[0].load(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-3).at(2)));
+			pixmapy[0].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-3).at(2)));
 			pixmapy[0] = pixmapy[0].scaled(
 				Obiekt::skala * pixmapy[0].size() * 0.8,
 				Qt::IgnoreAspectRatio,
@@ -553,7 +557,7 @@ void Menu::rysuj() const{
 		}
 
 		if(this->pozycja > 1) {
-			pixmapy[1] = QPixmap(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-2).at(2)));
+			pixmapy[1] = QPixmap(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-2).at(2)));
 			pixmapy[1] = pixmapy[1].scaled(
 				Obiekt::skala * pixmapy[1].size() * 0.9,
 				Qt::IgnoreAspectRatio,
@@ -561,7 +565,7 @@ void Menu::rysuj() const{
 			);
 		}
 
-		pixmapy[2].load(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-1).at(2)));
+		pixmapy[2].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-1).at(2)));
 		pixmapy[2] = pixmapy[2].scaled(
 			Obiekt::skala * pixmapy[2].size(),
 			Qt::IgnoreAspectRatio,
@@ -569,7 +573,7 @@ void Menu::rysuj() const{
 		);
 
 		if(this->pozycja < this->mapy.count()) {
-			pixmapy[3].load(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja).at(2)));
+			pixmapy[3].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja).at(2)));
 			pixmapy[3] = pixmapy[3].scaled(
 				Obiekt::skala * pixmapy[3].size() * 0.9,
 				Qt::IgnoreAspectRatio,
@@ -578,7 +582,7 @@ void Menu::rysuj() const{
 		}
 
 		if(this->pozycja+1 < this->mapy.count()) {
-			pixmapy[4].load(QString("dane/plansze/%1_mini.png").arg(this->mapy.at(this->pozycja+1).at(2)));
+			pixmapy[4].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja+1).at(2)));
 			pixmapy[4] = pixmapy[4].scaled(
 				Obiekt::skala * pixmapy[4].size() * 0.8,
 				Qt::IgnoreAspectRatio,
@@ -687,7 +691,7 @@ void Menu::rysuj() const{
 		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Wróć [%1]").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
 	} else if(this->tryb == POMOC) {
 		if(this->pozycja == 1) {
-			painter.drawPixmap(0, 0, szerokoscEkranu, wysokoscEkranu, QPixmap(qApp->applicationDirPath() + QString("/dane/pomoc/%1.png").arg((sterowanie == "gamepad")?"pad":"klawiatura")));
+			painter.drawPixmap(0, 0, szerokoscEkranu, wysokoscEkranu, QPixmap(qApp->applicationDirPath() + QString("/pomoc/%1.png").arg((sterowanie == "gamepad")?"pad":"klawiatura")));
 		} else if(this->pozycja == 2) {
 
 		}
@@ -704,7 +708,7 @@ void Menu::odtwarzajMuzyke()
 
 void Menu::zapetlMuzyke()
 {
-	this->muzyka->enqueue(qApp->applicationDirPath() + "/dane/muzyka/menu.mp3");
+	this->muzyka->enqueue(qApp->applicationDirPath() + "/dzwieki/muzyka/menu.mp3");
 }
 
 void Menu::wczytajProfile()
@@ -721,7 +725,7 @@ void Menu::wczytajRekordy()
 
 void Menu::wczytajMuzyke()
 {
-	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, Phonon::MediaSource("dane/muzyka/menu.mp3"));
+	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, Phonon::MediaSource("dzwieki/muzyka/menu.mp3"));
 	this->muzyka->pause();
 	this->muzyka->setTransitionTime(-2000);
 
@@ -734,42 +738,42 @@ void Menu::wczytajMuzyke()
 
 void Menu::wczytajGrafiki()
 {
-	QPixmap tlo("dane/grafika/tlo_menu.png");
+	QPixmap tlo("grafika/tlo_menu.png");
 	this->tloPixmapa = tlo.scaled(
 		Obiekt::skala * tlo.size(),
 		Qt::IgnoreAspectRatio,
 		(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
 	);
 
-	QPixmap logo("dane/grafika/logo.png");
+	QPixmap logo("grafika/logo.png");
 	this->logoPixmapa = logo.scaled(
 		Obiekt::skala * logo.size(),
 		Qt::IgnoreAspectRatio,
 		(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
 	);
 
-	QPixmap demolka("dane/grafika/demolka.png");
+	QPixmap demolka("grafika/demolka.png");
 	this->trybyPixmapa[0] = demolka.scaled(
 		Obiekt::skala * demolka.size(),
 		Qt::IgnoreAspectRatio,
 		(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
 	);
 
-	QPixmap demolka_zaz("dane/grafika/demolka_zaznaczony.png");
+	QPixmap demolka_zaz("grafika/demolka_zaznaczony.png");
 	this->trybyPixmapa[1] = demolka_zaz.scaled(
 		Obiekt::skala * demolka_zaz.size(),
 		Qt::IgnoreAspectRatio,
 		(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
 	);
 
-	QPixmap labirynt("dane/grafika/labirynt.png");
+	QPixmap labirynt("grafika/labirynt.png");
 	this->trybyPixmapa[2] = labirynt.scaled(
 		Obiekt::skala * labirynt.size(),
 		Qt::IgnoreAspectRatio,
 		(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
 	);
 
-	QPixmap labirynt_zaz("dane/grafika/labirynt_zaznaczony.png");
+	QPixmap labirynt_zaz("grafika/labirynt_zaznaczony.png");
 	this->trybyPixmapa[3] = labirynt_zaz.scaled(
 		Obiekt::skala * labirynt_zaz.size(),
 		Qt::IgnoreAspectRatio,

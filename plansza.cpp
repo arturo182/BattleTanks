@@ -1,19 +1,17 @@
+#include <QFile>
+#include <QDataStream>
+#include <QDebug>
 #include "plansza.h"
 #include "ekran.h"
 #include "pojazdgracza.h"
 #include "pojazdobcy.h"
 #include "pocisk.h"
 
-#include <QDataStream>
-#include <QDebug>
-#include <QFile>
-
-Plansza::Plansza(Ekran* ekran, int widokWysokosc, int margines):
+Plansza::Plansza(Ekran* ekran):
 	ekran(ekran),
-	widokWysokosc(widokWysokosc),
-	margines(margines),
 	mapa(0),
-	pojazdGracza(0){}
+	pojazdGracza(0),
+	celownik(QPixmap("grafika/celownik.png")){}
 
 void Plansza::dodajSpecyfikacje(const SpecyfikacjaPojazdu& specyfikacja){
 	this->specyfikacjePojazdow.append(specyfikacja);
@@ -28,19 +26,18 @@ void Plansza::dodajSpecyfikacje(const SpecyfikacjaAnimacji& specyfikacja){
 }
 
 bool Plansza::zaladuj(QString nazwaPlanszy){
-	QPixmap mapaTekstura("dane/plansze/" + nazwaPlanszy + ".png");
+	QPixmap mapaTekstura("plansze/" + nazwaPlanszy + ".png");
 
 	if(mapaTekstura.isNull())
 		return false;
 	this->mapa = new Tekstura(mapaTekstura);
 	this->widok = Obiekt::skala * QPoint(0, 0);
-
-	QFile mapaSpecyfikacjaPlik("dane/plansze/" + nazwaPlanszy + ".dat");
+	
+	QFile mapaSpecyfikacjaPlik("plansze/" + nazwaPlanszy + ".dat");
 	if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly)){
 		delete this->mapa;
 		return false;
 	}
-
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 
 	//	typ mapy
@@ -52,14 +49,14 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 	for(int i = 0; i < iloscPrzeszkod; i++){
 		mapaSpecyfikacjaDane >> iloscWierzcholkow;
 
-		QPolygon przeszkoda(iloscWierzcholkow);
+		QPolygonF przeszkoda;
 		for(int j = 0; j < iloscWierzcholkow; j++){
 			mapaSpecyfikacjaDane >> wierzcholek;
-			przeszkoda.setPoint(j, wierzcholek);
+			przeszkoda << wierzcholek;
 		}
 		this->przeszkody.append(przeszkoda);
 	}
-
+	
 	this->pojazdGracza = new PojazdGracza(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0.0, this->specyfikacjePociskow.size(), 0);
 
 	mapaSpecyfikacjaPlik.close();
@@ -91,7 +88,6 @@ void Plansza::czysc(){
 void Plansza::rysuj(){
 	if(!this->mapa || !this->pojazdGracza)
 		return;
-
 	QPainter painter(&this->ekran->buforObrazu);
 
 	this->odswiezWidok();
@@ -109,13 +105,28 @@ void Plansza::rysuj(){
 
 	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
 		(*i)->rysuj(painter, this->widok);
+	
+	this->rysujCelownik(painter);
+	
+	//	DEBUG
+	painter.setPen(Qt::red);
+	painter.setBrush(QColor(0, 255, 0, 128));
+	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++)
+		painter.drawPolygon(i->translated(-widok));
 
 	painter.end();
 	this->ekran->update();
 }
 
+void Plansza::rysujCelownik(QPainter& painter){
+	painter.drawPixmap(
+		Obiekt::skala * (this->pojazdGracza->punktWylotuLufy() + this->pojazdGracza->celownikOdleglosc * this->pojazdGracza->zwrotWiezyWektor.toPointF()) - this->widok - QPointF(this->celownik.teksturaPrzeskalowana.width() / 2.0, this->celownik.teksturaPrzeskalowana.height() / 2.0),
+		this->celownik.teksturaPrzeskalowana
+	);
+}
+
 void Plansza::odswiezWidok(){
-	int margines = Obiekt::skala * this->margines;
+	int margines = Obiekt::skala * MARGINES;
 
 	if(Obiekt::skala * this->pojazdGracza->pozycja.x() - this->widok.x() < margines){
 		if(Obiekt::skala * this->pojazdGracza->pozycja.x() > margines)

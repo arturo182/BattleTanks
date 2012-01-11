@@ -16,6 +16,7 @@ class Pocisk: public Obiekt{
 		QPointF punktStartowy;
 		QVector2D wektorKierunku;
 		float dystansCalkowity;
+		float dystansAktualny;
 		int czasMilisekundy;
 
 	public:

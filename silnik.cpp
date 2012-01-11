@@ -28,9 +28,10 @@ milisekundy(0){
 	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
 	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
 
-	this->plansza = new Plansza(this->ekran, 1080, 400);
+	this->plansza = new Plansza(this->ekran);
 
-	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(this->plansza->wysokoscWidoku());
+	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);
+	Tekstura::przeskalujWszystko(Obiekt::skala);
 
 	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
 	this->pauza = new Pauza(this->ekran, this->plansza);
@@ -40,8 +41,6 @@ milisekundy(0){
 	Dzwiek::glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
 
 	this->zaladujSpecyfikacjeObiektow();
-
-	//	dopiac kontrole uruchomienia poszczegolnych elementow
 }
 
 Silnik::~Silnik(){
@@ -64,8 +63,8 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 		QString nazwaPojazdu = pojazdy.value(1).toString();
 
 		this->plansza->dodajSpecyfikacje(SpecyfikacjaPojazdu(
-			QPixmap("dane/pojazdy/" + nazwaPojazdu + "Korpus.png"),
-			QPixmap("dane/pojazdy/" + nazwaPojazdu + "Wieza.png"),
+			QPixmap("grafika/pojazdy/" + nazwaPojazdu + "Korpus.png"),
+			QPixmap("grafika/pojazdy/" + nazwaPojazdu + "Wieza.png"),
 			pojazdy.value(2).toFloat(),
 			pojazdy.value(3).toFloat(),
 			pojazdy.value(4).toFloat(),
@@ -77,7 +76,7 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 	QSqlQuery pociski("SELECT * FROM pociski");
 	while(pociski.next()) {
 		this->plansza->dodajSpecyfikacje(SpecyfikacjaPocisku(
-			QPixmap("dane/pociski/" + pociski.value(1).toString() + ".png"),
+			QPixmap("grafika/pociski/" + pociski.value(1).toString() + ".png"),
 			pociski.value(3).toInt(),
 			pociski.value(4).toInt(),
 			pociski.value(5).toInt(),
@@ -85,7 +84,7 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 		));
 	}
 
-	QString nazwaAnimacji = "animacjaTestowa";
+	QString nazwaAnimacji = "grafika/animacje/wybuchy/wybuchTestowy";
 	this->plansza->dodajSpecyfikacje(
 		SpecyfikacjaAnimacji(
 			QPixmap(nazwaAnimacji + ".png"),	//	tekstury
