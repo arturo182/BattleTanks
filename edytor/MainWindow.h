@@ -46,6 +46,7 @@ class MainWindow : public QMainWindow{
 		void on_actionDodaj_triggered();
 		void on_actionDodajPunktRuchu_triggered();
 		void on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
+		void on_actionLaczeniePunktowRuchu_triggered();
 
 	private:
 		bool sprawdzZapis();

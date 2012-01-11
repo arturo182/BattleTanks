@@ -131,6 +131,7 @@
    <addaction name="actionDodaj"/>
    <addaction name="actionEdycjaWierzcholkow"/>
    <addaction name="actionDodajPunktRuchu"/>
+   <addaction name="actionLaczeniePunktowRuchu"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="maximumSize">
@@ -183,6 +184,12 @@
    </widget>
   </widget>
   <widget class="QDockWidget" name="dockWidget2">
+   <property name="features">
+    <set>QDockWidget::DockWidgetMovable</set>
+   </property>
+   <property name="allowedAreas">
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
+   </property>
    <property name="windowTitle">
     <string>Drzewo punktów ruchu</string>
    </property>
@@ -427,6 +434,18 @@
    </property>
    <property name="shortcut">
     <string>Ctrl+5</string>
+   </property>
+  </action>
+  <action name="actionLaczeniePunktowRuchu">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/flag_connect.png</normaloff>:/ikony/flag_connect.png</iconset>
+   </property>
+   <property name="text">
+    <string>Łączenie punktów ruchu</string>
    </property>
   </action>
  </widget>

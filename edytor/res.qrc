@@ -18,5 +18,6 @@
         <file>ikony/flag_yellow.png</file>
         <file>ikony/flag_yellow_add.png</file>
         <file>ikona.ico</file>
+        <file>ikony/flag_connect.png</file>
     </qresource>
 </RCC>

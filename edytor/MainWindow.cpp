@@ -3,6 +3,7 @@
 
 #include "przeszkoda.h"
 #include "waypoint.h"
+#include "sciezka.h"
 #include "scena.h"
 
 #include <QGraphicsPolygonItem>
@@ -21,6 +22,7 @@ ui(new Ui::MainWindow)
 	this->scena = new Scena();
 	this->ui->graphicsView->setScene(this->scena);
 	this->plikPlanszy = "";
+	this->ui->graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
 
 	this->ustawTryb(Scena::ZAZNACZANIE);
 
@@ -88,11 +90,27 @@ void MainWindow::wczytajPlansze()
 			this->scena->dodajPrzeszkode(przeszkoda);
 		}
 
+		QList<Waypoint*> waypointy;
+
 		//waypointy
 		mapaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
 			mapaSpecyfikacjaDane >> wierzcholek;
-			this->scena->dodajWaypoint(wierzcholek);
+
+			Waypoint *waypoint = this->scena->dodajWaypoint(wierzcholek);
+
+			waypointy << waypoint;
+		}
+
+		int poczatek, koniec;
+
+		//sciezki
+		mapaSpecyfikacjaDane >> iloscElementow;
+		for(int i = 0; i < iloscElementow; i++){
+			mapaSpecyfikacjaDane >> poczatek;
+			mapaSpecyfikacjaDane >> koniec;
+
+			this->scena->dodajSciezke(waypointy.at(poczatek), waypointy.at(koniec));
 		}
 
 		mapaSpecyfikacjaPlik.close();
@@ -166,7 +184,7 @@ void MainWindow::scenaZmieniona()
 
 void MainWindow::aktualizujTryb()
 {
-	this->ustawTryb(static_cast<Scena::Tryby>(this->scena->property("tryb").toInt()));
+	this->ustawTryb(this->scena->tryb());
 }
 
 void MainWindow::aktualizujDrzewkoPrzeszkod()
@@ -202,7 +220,7 @@ void MainWindow::aktualizujDrzewkoWaypointow()
 					galaz->setIcon(0, QIcon(":/ikony/flag_yellow.png"));
 
 					this->tabelaElementow.insert(galaz, waypoint);
-					this->ui->treeWidget->expandAll();
+					this->ui->treeWidget2->expandAll();
 
 					this->scenaZmieniona();
 				}
@@ -247,17 +265,19 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 
 	QList<Przeszkoda*> przeszkody;
 	QList<Waypoint*> waypointy;
+	QList<Sciezka*> sciezki;
 
 	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
 		QGraphicsItem *item = this->scena->items().at(i);
 		if(item->type() == Przeszkoda::Type) {
-			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item)) {
+			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item))
 				przeszkody << przeszkoda;
-			}
 		} else if(item->type() == Waypoint::Type) {
-			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item)) {
+			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item))
 				waypointy << waypoint;
-			}
+		} else if(item->type() == Sciezka::Type) {
+			if(Sciezka *sciezka = qgraphicsitem_cast<Sciezka*>(item))
+				sciezki << sciezka;
 		} else if(item->type() == QGraphicsPixmapItem::Type) {
 			if(QGraphicsPixmapItem *tlo = static_cast<QGraphicsPixmapItem*>(item)) {
 				tlo->pixmap().save(plik.absolutePath() + "/" + plik.completeBaseName() + ".png");
@@ -265,7 +285,7 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 		}
 	}
 
-	mapaSpecyfikacjaDane << this->scena->przeszkody;
+	mapaSpecyfikacjaDane << przeszkody.count();
 	foreach(Przeszkoda *poly, przeszkody) {
 		mapaSpecyfikacjaDane << poly->polygon().count();
 
@@ -277,11 +297,13 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 		}
 	}
 
-	mapaSpecyfikacjaDane << this->scena->waypointy;
-	foreach(Waypoint *waypoint, waypointy) {
-		qDebug() << waypoint->pos();
+	mapaSpecyfikacjaDane << waypointy.count();
+	foreach(Waypoint *waypoint, waypointy)
 		mapaSpecyfikacjaDane << waypoint->pos().toPoint();
-	}
+
+	mapaSpecyfikacjaDane << sciezki.count();
+	foreach(Sciezka *sciezka, sciezki)
+		mapaSpecyfikacjaDane << waypointy.indexOf(sciezka->poczatek()) << waypointy.indexOf(sciezka->koniec());
 
 	mapaSpecyfikacjaPlik.close();
 
@@ -305,10 +327,11 @@ void MainWindow::ustawTryb(Scena::Tryby tryb)
 	this->ui->actionEdycjaWierzcholkow->setChecked(tryb == Scena::EDYCJA_WIERZCHOLKOW);
 	this->ui->actionDodaj->setChecked(tryb == Scena::DODAWANIE_PRZESZKODY);
 	this->ui->actionDodajPunktRuchu->setChecked(tryb == Scena::DODAWANIE_WAYPOINTU);
+	this->ui->actionLaczeniePunktowRuchu->setChecked(tryb == Scena::LACZENIE_WAYPOINTOW);
 
 	this->ui->graphicsView->setDragMode((tryb == Scena::PRZESUWANIE_WIDOKU) ? QGraphicsView::ScrollHandDrag : QGraphicsView::NoDrag);
 
-	this->scena->setProperty("tryb", tryb);
+	this->scena->ustawTryb(tryb);
 	this->scena->update();
 }
 
@@ -390,4 +413,9 @@ void MainWindow::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTr
 			}
 		}
 	}
+}
+
+void MainWindow::on_actionLaczeniePunktowRuchu_triggered()
+{
+	this->ustawTryb(Scena::LACZENIE_WAYPOINTOW);
 }

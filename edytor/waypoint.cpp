@@ -1,4 +1,5 @@
 #include "waypoint.h"
+#include "sciezka.h"
 #include "scena.h"
 
 #include <QGraphicsSceneMouseEvent>
@@ -22,6 +23,29 @@ QGraphicsPathItem()
 	this->setPos(srodek);
 	this->setFlags(QGraphicsItem::ItemIsSelectable);
 	this->setAcceptHoverEvents(true);
+	this->setZValue(100);
+}
+
+void Waypoint::usunSciezke(Sciezka *sciezka)
+{
+	this->sciezki.removeOne(sciezka);
+}
+
+void Waypoint::usunSciezki()
+{
+	foreach(Sciezka *sciezka, this->sciezki) {
+		sciezka->poczatek()->usunSciezke(sciezka);
+		sciezka->koniec()->usunSciezke(sciezka);
+
+		scene()->removeItem(sciezka);
+
+		delete sciezka;
+	}
+}
+
+void Waypoint::dodajSciezke(Sciezka *sciezka)
+{
+	this->sciezki.append(sciezka);
 }
 
 void Waypoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -43,4 +67,13 @@ void Waypoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU)
 		this->setCursor(Qt::SizeAllCursor);
 
+}
+
+QVariant Waypoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
+{
+	if(change == QGraphicsItem::ItemPositionChange)
+		foreach(Sciezka *sciezka, this->sciezki)
+			sciezka->aktualizujPozycje();
+
+	return value;
 }

@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Wed 11. Jan 01:15:30 2012
+** Created: Wed 11. Jan 18:05:09 2012
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -47,6 +47,7 @@ public:
     QAction *actionZapiszJako;
     QAction *actionOryginalnyRozmiar;
     QAction *actionDodajPunktRuchu;
+    QAction *actionLaczeniePunktowRuchu;
     QWidget *centralWidget;
     QGridLayout *gridLayout;
     QGraphicsView *graphicsView;
@@ -160,6 +161,12 @@ public:
         QIcon icon15;
         icon15.addFile(QString::fromUtf8(":/ikony/flag_yellow.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionDodajPunktRuchu->setIcon(icon15);
+        actionLaczeniePunktowRuchu = new QAction(MainWindow);
+        actionLaczeniePunktowRuchu->setObjectName(QString::fromUtf8("actionLaczeniePunktowRuchu"));
+        actionLaczeniePunktowRuchu->setCheckable(true);
+        QIcon icon16;
+        icon16.addFile(QString::fromUtf8(":/ikony/flag_connect.png"), QSize(), QIcon::Normal, QIcon::Off);
+        actionLaczeniePunktowRuchu->setIcon(icon16);
         centralWidget = new QWidget(MainWindow);
         centralWidget->setObjectName(QString::fromUtf8("centralWidget"));
         gridLayout = new QGridLayout(centralWidget);
@@ -221,6 +228,8 @@ public:
         MainWindow->addDockWidget(static_cast<Qt::DockWidgetArea>(2), dockWidget);
         dockWidget2 = new QDockWidget(MainWindow);
         dockWidget2->setObjectName(QString::fromUtf8("dockWidget2"));
+        dockWidget2->setFeatures(QDockWidget::DockWidgetMovable);
+        dockWidget2->setAllowedAreas(Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea);
         dockWidgetContents_2 = new QWidget();
         dockWidgetContents_2->setObjectName(QString::fromUtf8("dockWidgetContents_2"));
         gridLayout_3 = new QGridLayout(dockWidgetContents_2);
@@ -252,6 +261,7 @@ public:
         menuPlansza->addSeparator();
         menuPlansza->addAction(actionDodaj);
         menuPlansza->addAction(actionUsun);
+        menuPlansza->addAction(actionDodajPunktRuchu);
         menuWidok->addAction(actionPrzybliz);
         menuWidok->addAction(actionOddal);
         menuNarzedzia->addAction(actionZaznaczanie);
@@ -274,6 +284,7 @@ public:
         toolBar->addAction(actionDodaj);
         toolBar->addAction(actionEdycjaWierzcholkow);
         toolBar->addAction(actionDodajPunktRuchu);
+        toolBar->addAction(actionLaczeniePunktowRuchu);
 
         retranslateUi(MainWindow);
         QObject::connect(actionWczytaj, SIGNAL(triggered()), MainWindow, SLOT(wczytajPlansze()));
@@ -330,6 +341,7 @@ public:
         actionDodajPunktRuchu->setToolTip(QApplication::translate("MainWindow", "Dodaj punkt ruchu", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
         actionDodajPunktRuchu->setShortcut(QApplication::translate("MainWindow", "Ctrl+5", 0, QApplication::UnicodeUTF8));
+        actionLaczeniePunktowRuchu->setText(QApplication::translate("MainWindow", "\305\201\304\205czenie punkt\303\263w ruchu", 0, QApplication::UnicodeUTF8));
         menuPlik->setTitle(QApplication::translate("MainWindow", "Plik", 0, QApplication::UnicodeUTF8));
         menuPlansza->setTitle(QApplication::translate("MainWindow", "Plansza", 0, QApplication::UnicodeUTF8));
         menuWidok->setTitle(QApplication::translate("MainWindow", "Widok", 0, QApplication::UnicodeUTF8));

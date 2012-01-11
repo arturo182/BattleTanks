@@ -8,13 +8,15 @@ SOURCES += main.cpp\
     scena.cpp \
     przeszkoda.cpp \
     mainwindow.cpp \
-    waypoint.cpp
+    waypoint.cpp \
+    sciezka.cpp
 
 HEADERS  += \
     scena.h \
     przeszkoda.h \
     mainwindow.h \
-    waypoint.h
+    waypoint.h \
+    sciezka.h
 
 FORMS    += \
     mainwindow.ui
