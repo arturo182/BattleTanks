@@ -6,7 +6,6 @@
         <file>ikony/cancel.png</file>
         <file>ikony/picture.png</file>
         <file>ikony/shape_square_add.png</file>
-        <file>ikony/shape_square_delete.png</file>
         <file>ikony/zoom_in.png</file>
         <file>ikony/zoom_out.png</file>
         <file>ikony/shape_square.png</file>
@@ -19,5 +18,6 @@
         <file>ikony/flag_yellow_add.png</file>
         <file>ikona.ico</file>
         <file>ikony/flag_connect.png</file>
+        <file>ikony/delete.png</file>
     </qresource>
 </RCC>

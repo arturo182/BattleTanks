@@ -26,10 +26,14 @@ ui(new Ui::MainWindow)
 
 	this->ustawTryb(Scena::ZAZNACZANIE);
 
-	connect(this->scena, SIGNAL(selectionChanged()), this, SLOT(zaznaczGalaz()));
-	connect(this->scena, SIGNAL(trybZmieniony()), this, SLOT(aktualizujTryb()));
-	connect(this->scena, SIGNAL(przeszkodaDodana()), this, SLOT(aktualizujDrzewkoPrzeszkod()));
-	connect(this->scena, SIGNAL(waypointDodany()), this, SLOT(aktualizujDrzewkoWaypointow()));
+	connect(this->scena, SIGNAL(selectionChanged()), SLOT(zaznaczGalaz()));
+	connect(this->scena, SIGNAL(trybZmieniony()), SLOT(aktualizujTryb()));
+	connect(this->scena, SIGNAL(przeszkodaDodana()), SLOT(aktualizujDrzewkoPrzeszkod()));
+	connect(this->scena, SIGNAL(waypointDodany()), SLOT(aktualizujDrzewkoWaypointow()));
+	connect(this->scena, SIGNAL(sciezkaDodana()), SLOT(scenaZmieniona()));
+	connect(this->scena, SIGNAL(elementPrzesuniety()), SLOT(scenaZmieniona()));
+	connect(this->scena, SIGNAL(zoomOddalony()), SLOT(oddalZoom()));
+	connect(this->scena, SIGNAL(zoomPrzyblizony()), SLOT(przyblizZoom()));
 }
 
 MainWindow::~MainWindow()
@@ -45,10 +49,32 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		event->ignore();
 }
 
+void MainWindow::keyPressEvent(QKeyEvent *event)
+{
+	if((event->key() == Qt::Key_Space) && !event->isAutoRepeat()) {
+		this->setProperty("poprzedniTryb", this->scena->tryb());
+		this->ustawTryb(Scena::PRZESUWANIE_WIDOKU);
+	}
+
+	QMainWindow::keyPressEvent(event);
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *event)
+{
+	if((event->key() == Qt::Key_Space) && !event->isAutoRepeat())
+		this->ustawTryb((Scena::Tryb)this->property("poprzedniTryb").toInt());
+
+	QMainWindow::keyReleaseEvent(event);
+}
+
 void MainWindow::nowaPlansza()
 {
 	if(this->sprawdzZapis()) {
 		qDeleteAll(this->ui->treeWidget->topLevelItem(0)->takeChildren());
+		qDeleteAll(this->ui->treeWidget2->topLevelItem(0)->takeChildren());
+
+		this->scena->przeszkody = 0;
+		this->scena->waypointy = 0;
 
 		this->scena->clear();
 		this->tabelaElementow.clear();
@@ -59,10 +85,11 @@ void MainWindow::nowaPlansza()
 
 void MainWindow::wczytajPlansze()
 {
-	this->nowaPlansza();
-
+	this->sprawdzZapis();
 	QString nazwaPliku = QFileDialog::getOpenFileName(this, "Wczytaj plansze", "", "Plansze (*.dat)");
 	if(!nazwaPliku.isEmpty()) {
+		this->nowaPlansza();
+
 		QFileInfo plik(nazwaPliku);
 
 		this->scena->addPixmap(QPixmap(plik.absolutePath() + "/" + plik.completeBaseName() + ".png"));
@@ -163,17 +190,33 @@ void MainWindow::wybierzTlo()
 
 void MainWindow::usunZaznaczony()
 {
-	QList<QGraphicsItem*> zaznaczenie = this->scena->selectedItems();
-	if(zaznaczenie.count()) {
-		if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(zaznaczenie.first())) {
-			this->scena->removeItem(przeszkoda);
+	foreach(QGraphicsItem *element, this->scena->selectedItems()) {
+		if(element->type() == Sciezka::Type) {
+			this->scena->removeItem(element);
 
-			QTreeWidgetItem *item = this->tabelaElementow.key(przeszkoda);
-			this->tabelaElementow.remove(item);
-			delete item;
+			Sciezka *sciezka = qgraphicsitem_cast<Sciezka*>(element);
+			sciezka->poczatek()->usunSciezke(sciezka);
+			sciezka->koniec()->usunSciezke(sciezka);
 
-			this->scenaZmieniona();
+			delete element;
 		}
+	}
+
+	foreach(QGraphicsItem *element, this->scena->selectedItems()) {
+		this->scena->removeItem(element);
+
+		if(element->type() == Waypoint::Type) {
+			qgraphicsitem_cast<Waypoint*>(element)->usunSciezki();
+		}
+
+		QTreeWidgetItem *galaz = this->tabelaElementow.key(element);
+		if(galaz) {
+			this->tabelaElementow.remove(galaz);
+			delete galaz;
+		}
+
+		delete element;
+		this->scenaZmieniona();
 	}
 }
 
@@ -319,9 +362,7 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 
 void MainWindow::ustawTryb(Scena::Tryb tryb)
 {
-	this->tryb = tryb;
-
-	this->ui->graphicsView->setCursor((this->tryb == Scena::DODAWANIE_PRZESZKODY || this->tryb == Scena::DODAWANIE_WAYPOINTU) ? Qt::CrossCursor : Qt::ArrowCursor);
+	this->ui->graphicsView->setCursor((tryb == Scena::DODAWANIE_PRZESZKODY || tryb == Scena::DODAWANIE_WAYPOINTU) ? Qt::CrossCursor : Qt::ArrowCursor);
 
 	this->ui->actionZaznaczanie->setChecked(tryb == Scena::ZAZNACZANIE);
 	this->ui->actionPrzesuwanieWidoku->setChecked(tryb == Scena::PRZESUWANIE_WIDOKU);
@@ -351,42 +392,42 @@ void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTre
 	}
 }
 
-void MainWindow::on_actionPrzybliz_triggered()
+void MainWindow::przyblizZoom()
 {
 	this->ui->graphicsView->scale(1.15, 1.15);
 }
 
-void MainWindow::on_actionOddal_triggered()
+void MainWindow::oddalZoom()
 {
 	this->ui->graphicsView->scale(1.0 / 1.15, 1.0 / 1.15);
 }
 
-void MainWindow::on_actionPrzesuwanie_triggered()
+void MainWindow::trybPrzesuwania()
 {
 	this->ustawTryb(Scena::PRZESUWANIE_ELEMENTU);
 }
 
-void MainWindow::on_actionEdycjaWierzcholkow_triggered()
+void MainWindow::trybEdycjiWierzcholkow()
 {
 	this->ustawTryb(Scena::EDYCJA_WIERZCHOLKOW);
 }
 
-void MainWindow::on_actionZaznaczanie_triggered()
+void MainWindow::trybZaznaczania()
 {
 	this->ustawTryb(Scena::ZAZNACZANIE);
 }
 
-void MainWindow::on_actionPrzesuwanieWidoku_triggered()
+void MainWindow::trybPrzesuwaniaWidoku()
 {
 	this->ustawTryb(Scena::PRZESUWANIE_WIDOKU);
 }
 
-void MainWindow::on_actionOryginalnyRozmiar_triggered()
+void MainWindow::zerujZoom()
 {
   this->ui->graphicsView->resetTransform();
 }
 
-void MainWindow::on_actionDodaj_triggered()
+void MainWindow::trybDodawaniaPrzeszkod()
 {
 	bool ok = false;
 	int boki = QInputDialog::getInt(this, "Podaj ilosc bokow", "Ilosc bokow:", 3, 3, 100, 1, &ok);
@@ -394,11 +435,11 @@ void MainWindow::on_actionDodaj_triggered()
 		this->ustawTryb(Scena::DODAWANIE_PRZESZKODY);
 		this->scena->setProperty("boki", boki);
 	} else {
-		this->ustawTryb(this->tryb);
+		this->ustawTryb(this->scena->tryb());
 	}
 }
 
-void MainWindow::on_actionDodajPunktRuchu_triggered()
+void MainWindow::trybDodawaniaWaypointow()
 {
 	this->ustawTryb(Scena::DODAWANIE_WAYPOINTU);
 }
@@ -417,7 +458,7 @@ void MainWindow::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTr
 	}
 }
 
-void MainWindow::on_actionLaczeniePunktowRuchu_triggered()
+void MainWindow::trybLaczeniaWaypointow()
 {
 	this->ustawTryb(Scena::LACZENIE_WAYPOINTOW);
 }

@@ -5,8 +5,10 @@
 
 class Sciezka;
 
-class Waypoint : public QGraphicsPathItem
+class Waypoint : public QObject, public QGraphicsPathItem
 {
+	Q_OBJECT
+
 	public:
 		enum { Type = UserType + 2 };
 
@@ -17,6 +19,10 @@ class Waypoint : public QGraphicsPathItem
 		void usunSciezke(Sciezka *sciezka);
 		void usunSciezki();
 		void dodajSciezke(Sciezka *sciezka);
+		QList<Sciezka*> sciezki() const { return this->sciezkiWaypointu; }
+
+	signals:
+		void pozycjaZmieniona();
 
 	protected:
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -24,7 +30,7 @@ class Waypoint : public QGraphicsPathItem
 		QVariant itemChange(GraphicsItemChange change, const QVariant &value);
 
 	private:
-		QList<Sciezka*> sciezki;
+		QList<Sciezka*> sciezkiWaypointu;
 };
 
 #endif // WAYPOINT_H

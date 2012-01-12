@@ -37,11 +37,16 @@ class Scena : public QGraphicsScene
 		void trybZmieniony();
 		void przeszkodaDodana();
 		void waypointDodany();
+		void sciezkaDodana();
+		void zoomOddalony();
+		void zoomPrzyblizony();
+		void elementPrzesuniety();
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+		void wheelEvent(QGraphicsSceneWheelEvent *event);
 
 	private:
 		QGraphicsLineItem *linia;

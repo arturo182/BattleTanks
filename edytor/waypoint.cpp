@@ -8,18 +8,17 @@
 Waypoint::Waypoint(const QPointF &srodek):
 QGraphicsPathItem()
 {
-	int rozmiar = 20;
+	int rozmiar = 60;
 
 	QPainterPath path;
-	path.moveTo(-rozmiar, -rozmiar);
-	path.lineTo( rozmiar,  rozmiar);
-	path.moveTo(-rozmiar,  rozmiar);
-	path.lineTo( rozmiar, -rozmiar);
-	path.addEllipse(QPointF(), rozmiar * 0.5, rozmiar * 0.5);
+
+	path.quadTo(-(rozmiar * 0.5), -rozmiar, 0, -rozmiar);
+	path.quadTo((rozmiar * 0.5), -rozmiar, 0, 0);
+	path.addEllipse(-rozmiar * 0.125, -rozmiar * 0.85, rozmiar * 0.25, rozmiar * 0.25);
 
 	this->setPath(path);
-	this->setPen(QPen(Qt::green, 2));
-	this->setBrush(QColor(0, 255, 0, 128));
+	this->setPen(QPen(QColor(0, 128, 0), 2));
+	this->setBrush(QColor(0, 128, 0, 128));
 	this->setPos(srodek);
 	this->setFlags(QGraphicsItem::ItemIsSelectable);
 	this->setAcceptHoverEvents(true);
@@ -28,16 +27,16 @@ QGraphicsPathItem()
 
 void Waypoint::usunSciezke(Sciezka *sciezka)
 {
-	this->sciezki.removeOne(sciezka);
+	this->sciezkiWaypointu.removeAll(sciezka);
 }
 
 void Waypoint::usunSciezki()
 {
-	foreach(Sciezka *sciezka, this->sciezki) {
+	foreach(Sciezka *sciezka, this->sciezkiWaypointu) {
 		sciezka->poczatek()->usunSciezke(sciezka);
 		sciezka->koniec()->usunSciezke(sciezka);
 
-		scene()->removeItem(sciezka);
+		//this->scene()->removeItem(sciezka);
 
 		delete sciezka;
 	}
@@ -45,7 +44,7 @@ void Waypoint::usunSciezki()
 
 void Waypoint::dodajSciezke(Sciezka *sciezka)
 {
-	this->sciezki.append(sciezka);
+	this->sciezkiWaypointu.append(sciezka);
 }
 
 void Waypoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
@@ -54,8 +53,10 @@ void Waypoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	QPoint pos = event->pos().toPoint();
 	QPoint delta = pos - lastPos;
 
-	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU)
+	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		this->moveBy(delta.x(), delta.y());
+		emit pozycjaZmieniona();
+	}
 }
 
 void Waypoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
@@ -72,7 +73,7 @@ void Waypoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 QVariant Waypoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)
 {
 	if(change == QGraphicsItem::ItemPositionChange)
-		foreach(Sciezka *sciezka, this->sciezki)
+		foreach(Sciezka *sciezka, this->sciezkiWaypointu)
 			sciezka->aktualizujPozycje();
 
 	return value;

@@ -22,6 +22,7 @@ Przeszkoda *Scena::dodajPrzeszkode(const QPolygon &poly)
 	this->przeszkody++;
 
 	Przeszkoda *przeszkoda = new Przeszkoda(poly);
+	connect(przeszkoda, SIGNAL(pozycjaZmieniona()), SIGNAL(elementPrzesuniety()));
 	this->addItem(przeszkoda);
 
 	emit przeszkodaDodana();
@@ -34,6 +35,7 @@ Waypoint *Scena::dodajWaypoint(const QPoint &punkt)
 	this->waypointy++;
 
 	Waypoint *waypoint = new Waypoint(punkt);
+	connect(waypoint, SIGNAL(pozycjaZmieniona()), SIGNAL(elementPrzesuniety()));
 	this->addItem(waypoint);
 
 	emit waypointDodany();
@@ -44,7 +46,15 @@ Waypoint *Scena::dodajWaypoint(const QPoint &punkt)
 Sciezka *Scena::dodajSciezke(Waypoint *poczatek, Waypoint *koniec)
 {
 	Sciezka *sciezka = new Sciezka(poczatek, koniec);
+
+	poczatek->dodajSciezke(sciezka);
+	koniec->dodajSciezke(sciezka);
+
+	sciezka->aktualizujPozycje();
+
 	this->addItem(sciezka);
+	emit sciezkaDodana();
+
 	return sciezka;
 }
 
@@ -104,12 +114,17 @@ void Scena::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 					 Waypoint *poczatek = qgraphicsitem_cast<Waypoint*>(elementyPoczatkowe.first());
 					 Waypoint *koniec = qgraphicsitem_cast<Waypoint*>(elementyKoncowe.first());
 
-					 Sciezka *sciezka = new Sciezka(poczatek, koniec);
-					 poczatek->dodajSciezke(sciezka);
-					 koniec->dodajSciezke(sciezka);
+					 bool istnieje = false;
+					 foreach(Sciezka *sciezka, poczatek->sciezki()) {
+						 if(((sciezka->poczatek() == poczatek) && (sciezka->koniec() == koniec)) ||
+							((sciezka->poczatek() == koniec) && (sciezka->koniec() == poczatek))) {
+							 istnieje = true;
+							 break;
+						 }
+					 }
 
-					 this->addItem(sciezka);
-					 sciezka->aktualizujPozycje();
+					 if(!istnieje)
+						this->dodajSciezke(poczatek, koniec);
 				 }
 			 }
 		 }
@@ -120,3 +135,14 @@ void Scena::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 	 QGraphicsScene::mouseReleaseEvent(event);
 }
 
+void Scena::wheelEvent(QGraphicsSceneWheelEvent *event)
+{
+	if(event->modifiers() & Qt::ControlModifier) {
+		if(event->delta() > 0)
+			emit zoomPrzyblizony();
+		else if(event->delta() < 0)
+			emit zoomOddalony();
+	}
+
+	QGraphicsScene::wheelEvent(event);
+}
