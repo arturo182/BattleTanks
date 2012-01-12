@@ -3,7 +3,7 @@
 #include "specyfikacjapocisku.h"
 #include <QDebug>
 
-Pocisk::Pocisk(SpecyfikacjaPocisku* specyfikacja, bool pociskGracza, QPointF punktStartowy, QVector2D wektorKierunku, float dystansCalkowity):
+Pocisk::Pocisk(const SpecyfikacjaPocisku* specyfikacja, bool pociskGracza, QPointF punktStartowy, QVector2D wektorKierunku, float dystansCalkowity):
 	Obiekt(punktStartowy),
 	specyfikacja(specyfikacja),
 	status(true),
@@ -16,7 +16,7 @@ Pocisk::Pocisk(SpecyfikacjaPocisku* specyfikacja, bool pociskGracza, QPointF pun
 	QTransform transformacja;
 	
 	transformacja.rotateRadians(M_PI_2 + atan2(this->wektorKierunku.y(), this->wektorKierunku.x()));
-	this->tekstura = new Tekstura(this->specyfikacja->tekstura.transformed(transformacja));
+	this->tekstura = new Tekstura(this->specyfikacja->tekstura.teksturaOryginalna.transformed(transformacja));
 }
 
 Pocisk::~Pocisk(){

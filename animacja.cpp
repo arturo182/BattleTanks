@@ -1,7 +1,7 @@
 #include "animacja.h"
 #include "specyfikacjaanimacji.h"
 
-Animacja::Animacja(SpecyfikacjaAnimacji* specyfikacja, QPointF pozycja):
+Animacja::Animacja(const SpecyfikacjaAnimacji* specyfikacja, QPointF pozycja):
 	Obiekt(pozycja),
 	specyfikacja(specyfikacja),
 	status(true),

@@ -53,7 +53,7 @@ shift(false){
 
 Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 	//	DEBUG
-	//	this->plansza->zaladuj("planszaTestowa");
+	//	this->plansza->zaladuj("pustynia");
 	//	return Silnik::ROZGRYWKA;
 
 	if(this->tryb == WYBOR_TRYBU) {

@@ -5,14 +5,21 @@
 
 class PojazdGracza: public Pojazd{
 	private:
+		int iloscRodzajowPociskow;
 		int* zasobyPociskow;
-		int aktualnaBron;
 	
 	public:
-		PojazdGracza(SpecyfikacjaPojazdu*, QPointF, float, int, int);
+		PojazdGracza(const SpecyfikacjaPojazdu*, QPointF, float, int);
 		~PojazdGracza();
-	
-	friend class Logika;
+		bool dodajPociski(int, int);
+		int wystrzelPocisk();
+		inline int zapasPociskow() const;
+		bool ustawBron();
+		bool zmienBron(int);
 };
+
+int PojazdGracza::zapasPociskow() const{
+	return this->zasobyPociskow[this->aktualnaBron];
+}
 
 #endif // POJAZDGRACZA_H

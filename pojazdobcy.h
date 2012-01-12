@@ -3,14 +3,10 @@
 
 #include "pojazd.h"
 
-class SpecyfikacjaPocisku;
-
 class PojazdObcy: public Pojazd{
-	private:
-		SpecyfikacjaPocisku* pociski;
-	
 	public:
-		PojazdObcy(SpecyfikacjaPojazdu*, QPointF, float, SpecyfikacjaPocisku*);
+		PojazdObcy(const SpecyfikacjaPojazdu*, QPointF, float, int);
+		int wystrzelPocisk();
 	
 	friend class Logika;
 };

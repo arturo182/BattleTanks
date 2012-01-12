@@ -9,19 +9,10 @@
 Logika::Logika(Plansza* plansza):
 	plansza(plansza){}
 
-void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predkoscGasienicyPrawej, int rotacjaWiezy, int zmianaZasiegu, int zmianaBroni, bool wystrzal){
+void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predkoscGasienicyPrawej, int rotacjaWiezy, int zmianaBroni, int zmianaZasiegu, bool wystrzal){
 	float czas = float(milisekundy) / 1000.0;
 	
-	this->przemiescKorpus(*this->plansza->pojazdGracza, predkoscGasienicyLewej, predkoscGasienicyPrawej, czas, KRAWEDZIE_MAPY | PRZESZKODY | POJAZDY);
-	this->obrocWieze(*this->plansza->pojazdGracza, rotacjaWiezy, czas);
-	
-	if(zmianaZasiegu != 0){
-		this->plansza->pojazdGracza->celownikOdleglosc += zmianaZasiegu * PREDKOSC_CELOWNIKA * czas;
-		if(this->plansza->pojazdGracza->celownikOdleglosc < MINIMALNA_ODLEGLOSC_CELOWNIKA)
-			this->plansza->pojazdGracza->celownikOdleglosc = MINIMALNA_ODLEGLOSC_CELOWNIKA;
-		else if(this->plansza->pojazdGracza->celownikOdleglosc > this->plansza->specyfikacjePociskow[this->plansza->pojazdGracza->aktualnaBron].zasieg)
-			this->plansza->pojazdGracza->celownikOdleglosc = this->plansza->specyfikacjePociskow[this->plansza->pojazdGracza->aktualnaBron].zasieg;
-	}
+	this->odswiezPojazdGracza(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal, czas);
 	
 	
 	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
@@ -30,34 +21,22 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
 		(*i)->odswiez(milisekundy);
 		
-	if(wystrzal){
-		this->plansza->pociski.append(
-			new Pocisk(
-				&this->plansza->specyfikacjePociskow[this->plansza->pojazdGracza->aktualnaBron],
-				true,
-				this->plansza->pojazdGracza->punktWylotuLufy(),
-				this->plansza->pojazdGracza->zwrotWiezyWektor,
-				this->plansza->pojazdGracza->celownikOdleglosc
-			)
-		);
-	}
-	
 	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
 		if(!(*i)->sprawdzStatus()){
 			delete *i;
 			this->plansza->animacje.removeOne(*i);
 		}
 	
-	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
-		if(!(*i)->sprawdzStatus()){
+	for(int i = this->plansza->pociski.size() - 1; i >= 0; i--)
+		if(!this->plansza->pociski[i]->sprawdzStatus()){
 			this->plansza->animacje.append(
 				new Animacja(
-					&this->plansza->specyfikacjeAnimacji[0],
-					(*i)->pozycja
+					this->plansza->pociski[i]->specyfikacja->animacja(),
+					this->plansza->pociski[i]->pozycja
 				)
 			);
-			delete *i;
-			this->plansza->pociski.removeOne(*i);
+			delete this->plansza->pociski[i];
+			this->plansza->pociski.removeAt(i);
 		}
 }
 
@@ -168,9 +147,45 @@ bool Logika::przemiescKorpus(Pojazd& pojazd, float predkoscGasienicyLewej, float
 	return false;
 }
 
-void Logika::obrocWieze(Pojazd& pojazd, float rotacja, float czas){
-	if(rotacja != 0)
-		pojazd.zwrotWiezyWzgledemKorpusuKat = fmod(pojazd.zwrotWiezyWzgledemKorpusuKat + rotacja * pojazd.specyfikacja->predkoscRotacjiWiezy * czas, 2.0 * M_PI);
-		
+void Logika::obrocWieze(Pojazd& pojazd, int kierunek, float czas){
+	if(kierunek != 0)
+		pojazd.zwrotWiezyWzgledemKorpusuKat = fmod(pojazd.zwrotWiezyWzgledemKorpusuKat + kierunek * pojazd.specyfikacja->predkoscRotacjiWiezy * czas, 2.0 * M_PI);
+	
 	pojazd.zwrotWiezyWektor = QVector2D(cos(pojazd.zwrotKorpusuKat + pojazd.zwrotWiezyWzgledemKorpusuKat), -sin(pojazd.zwrotKorpusuKat + pojazd.zwrotWiezyWzgledemKorpusuKat));
+}
+
+void Logika::zmienZasieg(Pojazd& pojazd, int kierunek, float czas){
+	pojazd.celownikOdleglosc += kierunek * PREDKOSC_CELOWNIKA * czas;
+	if(pojazd.celownikOdleglosc < MINIMALNA_ODLEGLOSC_CELOWNIKA)
+		pojazd.celownikOdleglosc = MINIMALNA_ODLEGLOSC_CELOWNIKA;
+	else if(pojazd.celownikOdleglosc > this->plansza->specyfikacjePociskow[pojazd.aktualnaBron]->zasieg)
+		pojazd.celownikOdleglosc = this->plansza->specyfikacjePociskow[pojazd.aktualnaBron]->zasieg;
+}
+
+bool Logika::wystrzelPocisk(Pojazd& pojazd, bool pociskGracza){
+	int wystrzelonyPocisk = pojazd.wystrzelPocisk();
+	
+	if(wystrzelonyPocisk < 0)
+		return false;
+		
+	this->plansza->pociski.append(
+		new Pocisk(
+			this->plansza->specyfikacjePociskow[wystrzelonyPocisk],
+			pociskGracza,
+			pojazd.punktWylotuLufy(),
+			pojazd.zwrotWiezyWektor,
+			pojazd.celownikOdleglosc
+		)
+	);
+	return true;
+}
+
+void Logika::odswiezPojazdGracza(float predkoscGasienicyLewej, float predkoscGasienicyPrawej, int rotacjaWiezy, int zmianaBroni, int zmianaZasiegu, bool wystrzal, float czas){
+	this->przemiescKorpus(*this->plansza->pojazdGracza, predkoscGasienicyLewej, predkoscGasienicyPrawej, czas, KRAWEDZIE_MAPY | PRZESZKODY | POJAZDY);
+	this->obrocWieze(*this->plansza->pojazdGracza, rotacjaWiezy, czas);
+	if(zmianaBroni != 0)
+		this->plansza->pojazdGracza->zmienBron(zmianaBroni);
+	this->zmienZasieg(*this->plansza->pojazdGracza, zmianaZasiegu, czas);
+	if(wystrzal)
+		this->wystrzelPocisk(*this->plansza->pojazdGracza, true);
 }

@@ -27,6 +27,7 @@ milisekundy(0){
 	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
 	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
 	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
+//	this->ekran = new Ekran(QSize(1024, 768), jakosc);
 
 	this->plansza = new Plansza(this->ekran);
 
@@ -59,39 +60,59 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 	//	dodac specyfikacje obiektow do planszy
 
 	QSqlQuery pojazdy("SELECT * FROM pojazdy");
-	while(pojazdy.next()) {
+	while(pojazdy.next()){
 		QString nazwaPojazdu = pojazdy.value(1).toString();
 
-		this->plansza->dodajSpecyfikacje(SpecyfikacjaPojazdu(
-			QPixmap("grafika/pojazdy/" + nazwaPojazdu + "Korpus.png"),
-			QPixmap("grafika/pojazdy/" + nazwaPojazdu + "Wieza.png"),
-			pojazdy.value(2).toFloat(),
-			pojazdy.value(3).toFloat(),
-			pojazdy.value(4).toFloat(),
-			pojazdy.value(5).toFloat(),
-			pojazdy.value(6).toInt()
-		));
+		this->plansza->dodajSpecyfikacje(
+			new SpecyfikacjaPojazdu(
+				QPixmap("grafika/pojazdy/" + nazwaPojazdu + "Korpus.png"),
+				QPixmap("grafika/pojazdy/" + nazwaPojazdu + "Wieza.png"),
+				pojazdy.value(2).toFloat(),
+				pojazdy.value(3).toFloat(),
+				pojazdy.value(4).toFloat(),
+				pojazdy.value(5).toFloat(),
+				pojazdy.value(6).toInt()
+			)
+		);
 	}
-
+/*
 	QSqlQuery pociski("SELECT * FROM pociski");
 	while(pociski.next()) {
-		this->plansza->dodajSpecyfikacje(SpecyfikacjaPocisku(
-			QPixmap("grafika/pociski/" + pociski.value(1).toString() + ".png"),
-			pociski.value(3).toInt(),
-			pociski.value(4).toInt(),
-			pociski.value(5).toInt(),
-			pociski.value(6).toInt()
-		));
+		this->plansza->dodajSpecyfikacje(
+			new SpecyfikacjaPocisku(
+				QPixmap("grafika/pociski/" + pociski.value(1).toString() + ".png"),
+				pociski.value(3).toInt(),
+				pociski.value(4).toInt(),
+				pociski.value(5).toInt(),
+				pociski.value(6).toInt()
+			)
+		);
 	}
+*/
 
-	QString nazwaAnimacji = "grafika/animacje/wybuchy/wybuchTestowy";
-	this->plansza->dodajSpecyfikacje(
-		SpecyfikacjaAnimacji(
-			QPixmap(nazwaAnimacji + ".png"),	//	tekstury
+	QString nazwaBroni;
+	for(int i = 1; i <= 2; i++){
+		nazwaBroni = "grafika/bronie/bron" + QString::number(i);
+		
+		SpecyfikacjaAnimacji* animacja = new SpecyfikacjaAnimacji(
+			QPixmap(nazwaBroni + "Eksplozja.png"),	//	tekstury
 			QSize(4, 4),	//	iloscKlatek
 			1000	//	czasTrwaniaMilisekundy
-		)
-	);
+		);
+		
+		this->plansza->dodajSpecyfikacje(animacja);
+		
+		this->plansza->dodajSpecyfikacje(
+			new SpecyfikacjaPocisku(
+				QPixmap(nazwaBroni + "Pocisk.png"),
+				i * 500,
+				i * 500,
+				i * 100,
+				i * 100,
+				animacja
+			)
+		);
+	}
 }
 
 void Silnik::odswiezMenu(int milisekundy){
@@ -116,12 +137,6 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::PRAWO || this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WIEZA_PRAWO))
 		rotacjaWiezy--;
 
-	int zmianaZasiegu = 0;
-	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::GORA)
-		zmianaZasiegu++;
-	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::DOL)
-		zmianaZasiegu--;
-
 	int zmianaBroni = 0;
 	if(
 		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::BRON_PLUS) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::BRON_PLUS2)) ||
@@ -131,12 +146,18 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::BRON_MINUS))
 		zmianaBroni--;
 
+	int zmianaZasiegu = 0;
+	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::GORA)
+		zmianaZasiegu++;
+	if(this->urzadzenieWejscia->statusNawigatorPolozenie() & UrzadzenieWejscia::DOL)
+		zmianaZasiegu--;
+
 	bool wystrzal = (
 		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYSTRZAL) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WYSTRZAL2)) ||
 		(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::WYSTRZAL2) && !this->urzadzenieWejscia->statusPrzyciskPolozenie(UrzadzenieWejscia::WYSTRZAL))
 	);
 
-	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaZasiegu, zmianaBroni, wystrzal);
+	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal);
 
 	//	sprawdzic czy koniec gry
 

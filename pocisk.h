@@ -20,7 +20,7 @@ class Pocisk: public Obiekt{
 		int czasMilisekundy;
 
 	public:
-		Pocisk(SpecyfikacjaPocisku*, bool, QPointF, QVector2D, float);
+		Pocisk(const SpecyfikacjaPocisku*, bool, QPointF, QVector2D, float);
 		~Pocisk();
 		void odswiez(int);
 		inline bool sprawdzStatus() const;

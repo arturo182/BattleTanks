@@ -1,5 +1,8 @@
 #include "pojazdobcy.h"
 
-PojazdObcy::PojazdObcy(SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja, float zwrotKorpusu, SpecyfikacjaPocisku* pociski):
-	Pojazd(specyfikacja, pozycja, zwrotKorpusu),
-	pociski(pociski){}
+PojazdObcy::PojazdObcy(const SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja, float zwrotKorpusu, int bron):
+	Pojazd(specyfikacja, pozycja, zwrotKorpusu, bron){}
+	
+int PojazdObcy::wystrzelPocisk(){
+	return this->aktualnaBron;
+}

@@ -19,9 +19,9 @@ class Pocisk;
 class Plansza{
 	private:
 		Ekran* ekran;
-		QList<SpecyfikacjaPojazdu> specyfikacjePojazdow;
-		QList<SpecyfikacjaPocisku> specyfikacjePociskow;
-		QList<SpecyfikacjaAnimacji> specyfikacjeAnimacji;
+		QList<SpecyfikacjaPojazdu*> specyfikacjePojazdow;
+		QList<SpecyfikacjaPocisku*> specyfikacjePociskow;
+		QList<SpecyfikacjaAnimacji*> specyfikacjeAnimacji;
 		Tekstura* mapa;
 		QPoint widok;
 		QList<QPolygonF> przeszkody;
@@ -33,13 +33,17 @@ class Plansza{
 		QList<Animacja*> bonusy;
 		
 		void odswiezWidok();
+		void rysujMape(QPainter&);
+		void rysujAnimacje(QPainter&);
+		void rysujPociski(QPainter&);
 		void rysujCelownik(QPainter&);
 		
 	public:
 		Plansza(Ekran*);
-		void dodajSpecyfikacje(const SpecyfikacjaPojazdu&);
-		void dodajSpecyfikacje(const SpecyfikacjaPocisku&);
-		void dodajSpecyfikacje(const SpecyfikacjaAnimacji&);
+		~Plansza();
+		void dodajSpecyfikacje(SpecyfikacjaPojazdu*);
+		void dodajSpecyfikacje(SpecyfikacjaPocisku*);
+		void dodajSpecyfikacje(SpecyfikacjaAnimacji*);
 		bool zaladuj(QString);
 		void czysc();
 		void rysuj();

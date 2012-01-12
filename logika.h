@@ -26,7 +26,10 @@ class Logika{
 		QPolygonF wyznaczOtoczke(QPointF, QSize, QVector2D) const;
 		bool sprawdzKolizje(Pojazd&, int) const;
 		bool przemiescKorpus(Pojazd&, float, float, float, int);
-		void obrocWieze(Pojazd&, float, float);
+		void obrocWieze(Pojazd&, int, float);
+		void zmienZasieg(Pojazd&, int, float);
+		bool wystrzelPocisk(Pojazd&, bool);
+		void odswiezPojazdGracza(float, float, int, int, int, bool, float);
 		
 	public:
 		Logika(Plansza*);

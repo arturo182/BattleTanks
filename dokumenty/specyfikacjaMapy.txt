@@ -1,0 +1,23 @@
+<int iloscPrzeszkod>
+ <int iloscWierzcholkow>
+  <QPoint wierzcholek>
+  :
+ :
+<int iloscWierzcholkowGrafu>
+ <QPoint wierzcholek>
+ :
+<int iloscKrawedziGrafu>
+ <int v, int w>
+ :
+<int nrSpecyfikacjiPojazduGracza>
+<QPoint pozycjaPoczatkowaPojazduGracza>
+<float zwrotPoczatkowyPojazduGracza> // kat w radianach
+<int iloscRodzajowPociskowPojazduGracza>
+ <int nrSpecyfikacjiPocisku, int iloscPociskow> // iloscPociskow = -1 oznacza nieskonczonosc
+ : // wymienic tylko te rodzaje pociskow ktorych ilosc jest poczatkowo > 0
+<int iloscObcychPojazdow>
+ <int nrSpecyfikacjiObcegoPojazdu>
+ <int nrWierzcholkaGrafuObcegoPojazdu> // okresla jego poczatkowa pozycje
+ <float zwrotPoczatkowyObcegoPojazdu> // kat w radianach
+ <int nrSpecyfikacjiPociskuObcegoPojazdu>
+ :

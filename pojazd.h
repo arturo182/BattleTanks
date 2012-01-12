@@ -18,10 +18,12 @@ class Pojazd: public Obiekt{
 		QPolygonF otoczka;
 		float celownikOdleglosc;
 		int zdrowie;
+		int aktualnaBron;
 		
-		Pojazd(SpecyfikacjaPojazdu*, QPointF, float);
+		Pojazd(const SpecyfikacjaPojazdu*, QPointF, float, int);
 		virtual ~Pojazd();
 		QPointF punktWylotuLufy() const;
+		virtual int wystrzelPocisk() = 0;
 		void rysuj(QPainter&, QPoint) const;
 };
 

@@ -6,6 +6,7 @@
 #include "pojazdgracza.h"
 #include "pojazdobcy.h"
 #include "pocisk.h"
+#include "widzety.h"
 
 Plansza::Plansza(Ekran* ekran):
 	ekran(ekran),
@@ -13,15 +14,22 @@ Plansza::Plansza(Ekran* ekran):
 	pojazdGracza(0),
 	celownik(QPixmap("grafika/celownik.png")){}
 
-void Plansza::dodajSpecyfikacje(const SpecyfikacjaPojazdu& specyfikacja){
+Plansza::~Plansza(){
+	this->czysc();
+	qDeleteAll(this->specyfikacjePojazdow);
+	qDeleteAll(this->specyfikacjePociskow);
+	qDeleteAll(this->specyfikacjeAnimacji);
+}
+
+void Plansza::dodajSpecyfikacje(SpecyfikacjaPojazdu* specyfikacja){
 	this->specyfikacjePojazdow.append(specyfikacja);
 }
 
-void Plansza::dodajSpecyfikacje(const SpecyfikacjaPocisku& specyfikacja){
+void Plansza::dodajSpecyfikacje(SpecyfikacjaPocisku* specyfikacja){
 	this->specyfikacjePociskow.append(specyfikacja);
 }
 
-void Plansza::dodajSpecyfikacje(const SpecyfikacjaAnimacji& specyfikacja){
+void Plansza::dodajSpecyfikacje(SpecyfikacjaAnimacji* specyfikacja){
 	this->specyfikacjeAnimacji.append(specyfikacja);
 }
 
@@ -38,10 +46,8 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		delete this->mapa;
 		return false;
 	}
+	
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
-
-	//	typ mapy
-
 	int iloscPrzeszkod, iloscWierzcholkow;
 	QPoint wierzcholek;
 
@@ -57,8 +63,12 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		this->przeszkody.append(przeszkoda);
 	}
 	
-	this->pojazdGracza = new PojazdGracza(&this->specyfikacjePojazdow[0], QPointF(100, 100), 0.0, this->specyfikacjePociskow.size(), 0);
-
+	//	LADOWAC ZE SPECYFIKACJI
+	this->pojazdGracza = new PojazdGracza(this->specyfikacjePojazdow[0], QPointF(100, 100), 0.0, this->specyfikacjePociskow.size());
+	this->pojazdGracza->dodajPociski(0, -1);
+	this->pojazdGracza->dodajPociski(1, 10);
+	this->pojazdGracza->ustawBron();
+	
 	mapaSpecyfikacjaPlik.close();
 	return true;
 }
@@ -86,36 +96,59 @@ void Plansza::czysc(){
 }
 
 void Plansza::rysuj(){
-	if(!this->mapa || !this->pojazdGracza)
+	if(!this->mapa)
 		return;
+	
 	QPainter painter(&this->ekran->buforObrazu);
-
+	
 	this->odswiezWidok();
+	this->rysujMape(painter);
+	this->pojazdGracza->rysuj(painter, this->widok);
+	this->rysujAnimacje(painter);
+	this->rysujPociski(painter);
+	this->rysujCelownik(painter);
+	
+	painter.drawPixmap(
+		Obiekt::skala * QPointF(20.0, WYSOKOSC_WIDOKU - this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.height() - 20),
+		this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaPrzeskalowana
+	);
+	painter.setFont(QFont("Trebuchet MS", Obiekt::skala * 20, QFont::Bold));
+	painter.setPen(Qt::white);
+	Widzety::cieniowanyTekst(painter, QRectF(
+		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 50),
+		QSize(100, 50)
+	), " x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow())));
+/*	painter.drawText(
+		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 23),
+		" x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow()))
+	);*/
+	
+	//	DEBUG
+/*	painter.setPen(Qt::red);
+	painter.setBrush(QColor(0, 255, 0, 128));
+	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++)
+		painter.drawPolygon(i->translated(-widok));*/
 
+	painter.end();
+	this->ekran->update();
+}
+
+void Plansza::rysujMape(QPainter& painter){
 	painter.drawPixmap(
 		QPoint(0, 0),
 		this->mapa->teksturaPrzeskalowana,
 		QRect(this->widok, this->ekran->buforObrazu.size())
 	);
+}
 
-	this->pojazdGracza->rysuj(painter, this->widok);
-
+void Plansza::rysujAnimacje(QPainter& painter){
 	for(QList<Animacja*>::iterator i = this->animacje.begin(); i != this->animacje.end(); i++)
 		(*i)->rysuj(painter, this->widok);
+}
 
+void Plansza::rysujPociski(QPainter& painter){
 	for(QList<Pocisk*>::iterator i = this->pociski.begin(); i != this->pociski.end(); i++)
 		(*i)->rysuj(painter, this->widok);
-	
-	this->rysujCelownik(painter);
-	
-	//	DEBUG
-	painter.setPen(Qt::red);
-	painter.setBrush(QColor(0, 255, 0, 128));
-	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++)
-		painter.drawPolygon(i->translated(-widok));
-
-	painter.end();
-	this->ekran->update();
 }
 
 void Plansza::rysujCelownik(QPainter& painter){

@@ -4,7 +4,7 @@
 #include "pojazd.h"
 #include "specyfikacjapojazdu.h"
 
-Pojazd::Pojazd(SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja, float zwrotKorpusuKat):
+Pojazd::Pojazd(const SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja, float zwrotKorpusuKat, int aktualnaBron):
 	Obiekt(pozycja),
 	specyfikacja(specyfikacja),
 	zwrotKorpusuKat(zwrotKorpusuKat),
@@ -12,7 +12,8 @@ Pojazd::Pojazd(SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja, float zwrotKo
 	zwrotKorpusuWektor(cos(this->zwrotKorpusuKat), -sin(this->zwrotKorpusuKat)),
 	zwrotWiezyWektor(cos(this->zwrotKorpusuKat + this->zwrotWiezyWzgledemKorpusuKat), -sin(this->zwrotKorpusuKat + this->zwrotWiezyWzgledemKorpusuKat)),
 	celownikOdleglosc(MINIMALNA_ODLEGLOSC_CELOWNIKA),
-	zdrowie(this->specyfikacja->wytrzymalosc){}
+	zdrowie(this->specyfikacja->wytrzymalosc),
+	aktualnaBron(aktualnaBron){}
 
 Pojazd::~Pojazd(){}
 
@@ -39,9 +40,9 @@ void Pojazd::rysuj(QPainter& painter, QPoint widok) const{
 	);
 	
 	//	TEST
-	painter.setPen(Qt::red);
+/*	painter.setPen(Qt::red);
 	painter.setBrush(QColor(0, 0, 255, 128));
 	painter.drawPolygon(this->otoczka.translated(-widok));
 	for(int i = 0; i < 4; i++)
-		painter.drawText(this->otoczka[i] - widok, QString::number(i));
+		painter.drawText(this->otoczka[i] - widok, QString::number(i));*/
 }

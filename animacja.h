@@ -12,7 +12,7 @@ class Animacja: public Obiekt{
 		int czasMilisekundy;
 		int aktualnaKlatka;
 		
-		Animacja(SpecyfikacjaAnimacji*, QPointF);
+		Animacja(const SpecyfikacjaAnimacji*, QPointF);
 		void odswiez(int);
 		inline void zakoncz();
 		inline bool sprawdzStatus() const;

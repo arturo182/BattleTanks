@@ -1,7 +1,7 @@
 #ifndef SPECYFIKACJAANIMACJI_H
 #define SPECYFIKACJAANIMACJI_H
 
-#include "tekstura.h" 
+#include "tekstura.h"
 
 class SpecyfikacjaAnimacji{
 	private:
