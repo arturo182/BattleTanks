@@ -21,6 +21,8 @@ class MainWindow : public QMainWindow{
 
 	protected:
 		void closeEvent(QCloseEvent *event);
+		void keyPressEvent(QKeyEvent *event);
+		void keyReleaseEvent(QKeyEvent *event);
 
 	private slots:
 		void nowaPlansza();
@@ -34,30 +36,28 @@ class MainWindow : public QMainWindow{
 		void aktualizujTryb();
 		void aktualizujDrzewkoPrzeszkod();
 		void aktualizujDrzewkoWaypointow();
-
 		void on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-		void on_actionPrzybliz_triggered();
-		void on_actionOddal_triggered();
-		void on_actionPrzesuwanie_triggered();
-		void on_actionEdycjaWierzcholkow_triggered();
-		void on_actionZaznaczanie_triggered();
-		void on_actionPrzesuwanieWidoku_triggered();
-		void on_actionOryginalnyRozmiar_triggered();
-		void on_actionDodaj_triggered();
-		void on_actionDodajPunktRuchu_triggered();
+		void przyblizZoom();
+		void oddalZoom();
+		void trybPrzesuwania();
+		void trybEdycjiWierzcholkow();
+		void trybZaznaczania();
+		void trybPrzesuwaniaWidoku();
+		void zerujZoom();
+		void trybDodawaniaPrzeszkod();
+		void trybDodawaniaWaypointow();
 		void on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
-		void on_actionLaczeniePunktowRuchu_triggered();
+		void trybLaczeniaWaypointow();
 
 	private:
 		bool sprawdzZapis();
 		bool zapiszPlik(const QString &nazwaPliku);
-		void ustawTryb(Scena::Tryby tryb);
+		void ustawTryb(Scena::Tryb tryb);
 
 	private:
 		Ui::MainWindow *ui;
 		QString plikPlanszy;
 		Scena *scena;
-		Scena::Tryby tryb;
 		QHash<QTreeWidgetItem*, class QGraphicsItem*> tabelaElementow;
 };
 

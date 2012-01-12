@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created: Wed 11. Jan 18:05:09 2012
+** Created: Thu 12. Jan 02:16:11 2012
 **      by: Qt User Interface Compiler version 4.7.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
@@ -53,7 +53,6 @@ public:
     QGraphicsView *graphicsView;
     QMenuBar *menuBar;
     QMenu *menuPlik;
-    QMenu *menuPlansza;
     QMenu *menuWidok;
     QMenu *menuNarzedzia;
     QToolBar *mainToolBar;
@@ -106,7 +105,7 @@ public:
         actionUsun->setObjectName(QString::fromUtf8("actionUsun"));
         actionUsun->setEnabled(false);
         QIcon icon6;
-        icon6.addFile(QString::fromUtf8(":/ikony/shape_square_delete.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon6.addFile(QString::fromUtf8(":/ikony/delete.png"), QSize(), QIcon::Normal, QIcon::Off);
         actionUsun->setIcon(icon6);
         actionTlo = new QAction(MainWindow);
         actionTlo->setObjectName(QString::fromUtf8("actionTlo"));
@@ -184,8 +183,6 @@ public:
         menuBar->setGeometry(QRect(0, 0, 734, 21));
         menuPlik = new QMenu(menuBar);
         menuPlik->setObjectName(QString::fromUtf8("menuPlik"));
-        menuPlansza = new QMenu(menuBar);
-        menuPlansza->setObjectName(QString::fromUtf8("menuPlansza"));
         menuWidok = new QMenu(menuBar);
         menuWidok->setObjectName(QString::fromUtf8("menuWidok"));
         menuNarzedzia = new QMenu(menuBar);
@@ -250,30 +247,31 @@ public:
         menuBar->addAction(menuPlik->menuAction());
         menuBar->addAction(menuWidok->menuAction());
         menuBar->addAction(menuNarzedzia->menuAction());
-        menuBar->addAction(menuPlansza->menuAction());
         menuPlik->addAction(actionNowaPlansza);
         menuPlik->addAction(actionWczytaj);
         menuPlik->addAction(actionZapisz);
         menuPlik->addAction(actionZapiszJako);
         menuPlik->addSeparator();
         menuPlik->addAction(actionWyjdz);
-        menuPlansza->addAction(actionTlo);
-        menuPlansza->addSeparator();
-        menuPlansza->addAction(actionDodaj);
-        menuPlansza->addAction(actionUsun);
-        menuPlansza->addAction(actionDodajPunktRuchu);
         menuWidok->addAction(actionPrzybliz);
         menuWidok->addAction(actionOddal);
         menuNarzedzia->addAction(actionZaznaczanie);
         menuNarzedzia->addAction(actionPrzesuwanieWidoku);
         menuNarzedzia->addAction(actionPrzesuwanie);
+        menuNarzedzia->addAction(actionUsun);
+        menuNarzedzia->addSeparator();
+        menuNarzedzia->addAction(actionDodaj);
         menuNarzedzia->addAction(actionEdycjaWierzcholkow);
+        menuNarzedzia->addSeparator();
+        menuNarzedzia->addAction(actionDodajPunktRuchu);
+        menuNarzedzia->addAction(actionLaczeniePunktowRuchu);
+        menuNarzedzia->addSeparator();
+        menuNarzedzia->addAction(actionTlo);
         mainToolBar->addAction(actionNowaPlansza);
         mainToolBar->addAction(actionWczytaj);
         mainToolBar->addAction(actionZapisz);
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionTlo);
-        mainToolBar->addAction(actionUsun);
         mainToolBar->addSeparator();
         mainToolBar->addAction(actionOryginalnyRozmiar);
         mainToolBar->addAction(actionPrzybliz);
@@ -281,6 +279,7 @@ public:
         toolBar->addAction(actionZaznaczanie);
         toolBar->addAction(actionPrzesuwanieWidoku);
         toolBar->addAction(actionPrzesuwanie);
+        toolBar->addAction(actionUsun);
         toolBar->addAction(actionDodaj);
         toolBar->addAction(actionEdycjaWierzcholkow);
         toolBar->addAction(actionDodajPunktRuchu);
@@ -294,6 +293,8 @@ public:
         QObject::connect(actionUsun, SIGNAL(triggered()), MainWindow, SLOT(usunZaznaczony()));
         QObject::connect(actionZapisz, SIGNAL(triggered()), MainWindow, SLOT(zapiszPlansze()));
         QObject::connect(actionZapiszJako, SIGNAL(triggered()), MainWindow, SLOT(zapiszPlanszeJako()));
+        QObject::connect(actionPrzybliz, SIGNAL(triggered()), MainWindow, SLOT(przyblizZoom()));
+        QObject::connect(actionOddal, SIGNAL(triggered()), MainWindow, SLOT(oddalZoom()));
 
         QMetaObject::connectSlotsByName(MainWindow);
     } // setupUi
@@ -309,8 +310,16 @@ public:
         actionZapisz->setShortcut(QApplication::translate("MainWindow", "Ctrl+S", 0, QApplication::UnicodeUTF8));
         actionNowaPlansza->setText(QApplication::translate("MainWindow", "Nowa plansza", 0, QApplication::UnicodeUTF8));
         actionNowaPlansza->setShortcut(QApplication::translate("MainWindow", "Ctrl+N", 0, QApplication::UnicodeUTF8));
-        actionDodaj->setText(QApplication::translate("MainWindow", "Dodaj", 0, QApplication::UnicodeUTF8));
-        actionUsun->setText(QApplication::translate("MainWindow", "Usu\305\204", 0, QApplication::UnicodeUTF8));
+        actionDodaj->setText(QApplication::translate("MainWindow", "Dodaj przeszkod\304\231", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionDodaj->setToolTip(QApplication::translate("MainWindow", "Dodaj przeszkod\304\231", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        actionDodaj->setShortcut(QApplication::translate("MainWindow", "Ctrl+4", 0, QApplication::UnicodeUTF8));
+        actionUsun->setText(QApplication::translate("MainWindow", "Usu\305\204 zaznaczone elementy", 0, QApplication::UnicodeUTF8));
+#ifndef QT_NO_TOOLTIP
+        actionUsun->setToolTip(QApplication::translate("MainWindow", "Usu\305\204 zaznaczone elementy", 0, QApplication::UnicodeUTF8));
+#endif // QT_NO_TOOLTIP
+        actionUsun->setShortcut(QApplication::translate("MainWindow", "Del", 0, QApplication::UnicodeUTF8));
         actionTlo->setText(QApplication::translate("MainWindow", "T\305\202o", 0, QApplication::UnicodeUTF8));
         actionPrzybliz->setText(QApplication::translate("MainWindow", "Przybli\305\274", 0, QApplication::UnicodeUTF8));
         actionPrzybliz->setShortcut(QApplication::translate("MainWindow", "Ctrl++", 0, QApplication::UnicodeUTF8));
@@ -325,7 +334,7 @@ public:
 #ifndef QT_NO_TOOLTIP
         actionEdycjaWierzcholkow->setToolTip(QApplication::translate("MainWindow", "Edycja wierzcho\305\202k\303\263w", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionEdycjaWierzcholkow->setShortcut(QApplication::translate("MainWindow", "Ctrl+4", 0, QApplication::UnicodeUTF8));
+        actionEdycjaWierzcholkow->setShortcut(QApplication::translate("MainWindow", "Ctrl+5", 0, QApplication::UnicodeUTF8));
         actionZaznaczanie->setText(QApplication::translate("MainWindow", "Zaznaczanie", 0, QApplication::UnicodeUTF8));
 #ifndef QT_NO_TOOLTIP
         actionZaznaczanie->setToolTip(QApplication::translate("MainWindow", "Zaznaczanie", 0, QApplication::UnicodeUTF8));
@@ -340,10 +349,10 @@ public:
 #ifndef QT_NO_TOOLTIP
         actionDodajPunktRuchu->setToolTip(QApplication::translate("MainWindow", "Dodaj punkt ruchu", 0, QApplication::UnicodeUTF8));
 #endif // QT_NO_TOOLTIP
-        actionDodajPunktRuchu->setShortcut(QApplication::translate("MainWindow", "Ctrl+5", 0, QApplication::UnicodeUTF8));
+        actionDodajPunktRuchu->setShortcut(QApplication::translate("MainWindow", "Ctrl+6", 0, QApplication::UnicodeUTF8));
         actionLaczeniePunktowRuchu->setText(QApplication::translate("MainWindow", "\305\201\304\205czenie punkt\303\263w ruchu", 0, QApplication::UnicodeUTF8));
+        actionLaczeniePunktowRuchu->setShortcut(QApplication::translate("MainWindow", "Ctrl+7", 0, QApplication::UnicodeUTF8));
         menuPlik->setTitle(QApplication::translate("MainWindow", "Plik", 0, QApplication::UnicodeUTF8));
-        menuPlansza->setTitle(QApplication::translate("MainWindow", "Plansza", 0, QApplication::UnicodeUTF8));
         menuWidok->setTitle(QApplication::translate("MainWindow", "Widok", 0, QApplication::UnicodeUTF8));
         menuNarzedzia->setTitle(QApplication::translate("MainWindow", "Narz\304\231dzia", 0, QApplication::UnicodeUTF8));
         toolBar->setWindowTitle(QApplication::translate("MainWindow", "toolBar", 0, QApplication::UnicodeUTF8));

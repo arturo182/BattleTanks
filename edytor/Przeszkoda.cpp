@@ -110,6 +110,7 @@ void Przeszkoda::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 		}
 	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		this->moveBy(delta.x(), delta.y());
+		emit pozycjaZmieniona();
 	}
 }
 

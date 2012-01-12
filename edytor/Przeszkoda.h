@@ -3,8 +3,10 @@
 
 #include <QGraphicsPolygonItem>
 
-class Przeszkoda : public QGraphicsPolygonItem
+class Przeszkoda : public QObject, public QGraphicsPolygonItem
 {
+	Q_OBJECT
+
 	public:
 		enum { Type = UserType + 1 };
 
@@ -13,6 +15,9 @@ class Przeszkoda : public QGraphicsPolygonItem
 		QRectF boundingRect() const;
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 		int type() const { return Type; }
+
+	signals:
+		void pozycjaZmieniona();
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);

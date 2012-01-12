@@ -47,16 +47,6 @@
     <addaction name="separator"/>
     <addaction name="actionWyjdz"/>
    </widget>
-   <widget class="QMenu" name="menuPlansza">
-    <property name="title">
-     <string>Plansza</string>
-    </property>
-    <addaction name="actionTlo"/>
-    <addaction name="separator"/>
-    <addaction name="actionDodaj"/>
-    <addaction name="actionUsun"/>
-    <addaction name="actionDodajPunktRuchu"/>
-   </widget>
    <widget class="QMenu" name="menuWidok">
     <property name="title">
      <string>Widok</string>
@@ -71,12 +61,19 @@
     <addaction name="actionZaznaczanie"/>
     <addaction name="actionPrzesuwanieWidoku"/>
     <addaction name="actionPrzesuwanie"/>
+    <addaction name="actionUsun"/>
+    <addaction name="separator"/>
+    <addaction name="actionDodaj"/>
     <addaction name="actionEdycjaWierzcholkow"/>
+    <addaction name="separator"/>
+    <addaction name="actionDodajPunktRuchu"/>
+    <addaction name="actionLaczeniePunktowRuchu"/>
+    <addaction name="separator"/>
+    <addaction name="actionTlo"/>
    </widget>
    <addaction name="menuPlik"/>
    <addaction name="menuWidok"/>
    <addaction name="menuNarzedzia"/>
-   <addaction name="menuPlansza"/>
   </widget>
   <widget class="QToolBar" name="mainToolBar">
    <property name="movable">
@@ -99,7 +96,6 @@
    <addaction name="actionZapisz"/>
    <addaction name="separator"/>
    <addaction name="actionTlo"/>
-   <addaction name="actionUsun"/>
    <addaction name="separator"/>
    <addaction name="actionOryginalnyRozmiar"/>
    <addaction name="actionPrzybliz"/>
@@ -128,6 +124,7 @@
    <addaction name="actionZaznaczanie"/>
    <addaction name="actionPrzesuwanieWidoku"/>
    <addaction name="actionPrzesuwanie"/>
+   <addaction name="actionUsun"/>
    <addaction name="actionDodaj"/>
    <addaction name="actionEdycjaWierzcholkow"/>
    <addaction name="actionDodajPunktRuchu"/>
@@ -281,7 +278,13 @@
      <normaloff>:/ikony/shape_square_add.png</normaloff>:/ikony/shape_square_add.png</iconset>
    </property>
    <property name="text">
-    <string>Dodaj</string>
+    <string>Dodaj przeszkodę</string>
+   </property>
+   <property name="toolTip">
+    <string>Dodaj przeszkodę</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+4</string>
    </property>
   </action>
   <action name="actionUsun">
@@ -290,10 +293,16 @@
    </property>
    <property name="icon">
     <iconset resource="res.qrc">
-     <normaloff>:/ikony/shape_square_delete.png</normaloff>:/ikony/shape_square_delete.png</iconset>
+     <normaloff>:/ikony/delete.png</normaloff>:/ikony/delete.png</iconset>
    </property>
    <property name="text">
-    <string>Usuń</string>
+    <string>Usuń zaznaczone elementy</string>
+   </property>
+   <property name="toolTip">
+    <string>Usuń zaznaczone elementy</string>
+   </property>
+   <property name="shortcut">
+    <string>Del</string>
    </property>
   </action>
   <action name="actionTlo">
@@ -362,7 +371,7 @@
     <string>Edycja wierzchołków</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+4</string>
+    <string>Ctrl+5</string>
    </property>
   </action>
   <action name="actionZaznaczanie">
@@ -433,7 +442,7 @@
     <string>Dodaj punkt ruchu</string>
    </property>
    <property name="shortcut">
-    <string>Ctrl+5</string>
+    <string>Ctrl+6</string>
    </property>
   </action>
   <action name="actionLaczeniePunktowRuchu">
@@ -446,6 +455,9 @@
    </property>
    <property name="text">
     <string>Łączenie punktów ruchu</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+7</string>
    </property>
   </action>
  </widget>
@@ -566,6 +578,38 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionPrzybliz</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>przyblizZoom()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOddal</sender>
+   <signal>triggered()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>oddalZoom()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>wczytajPlansze()</slot>
@@ -574,5 +618,15 @@
   <slot>usunZaznaczony()</slot>
   <slot>zapiszPlansze()</slot>
   <slot>zapiszPlanszeJako()</slot>
+  <slot>przyblizZoom()</slot>
+  <slot>oddalZoom()</slot>
+  <slot>trybPrzesuwania()</slot>
+  <slot>trybEdycjiWierzcholkow()</slot>
+  <slot>trybZaznaczania()</slot>
+  <slot>trybPrzesuwaniaWidoku()</slot>
+  <slot>zerujZoom()</slot>
+  <slot>trybDodawaniaPrzeszkod()</slot>
+  <slot>trybLaczeniaWaypointow()</slot>
+  <slot>trybDodawaniaWaypointow()</slot>
  </slots>
 </ui>

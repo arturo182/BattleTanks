@@ -6,11 +6,11 @@
 class Scena : public QGraphicsScene
 {
 	Q_OBJECT
-	Q_ENUMS(Tryby)
-	Q_PROPERTY(Tryby tryb READ tryb WRITE ustawTryb)
+	Q_ENUMS(Tryb)
+	Q_PROPERTY(Tryb tryb READ tryb WRITE ustawTryb)
 
 	public:
-		enum Tryby{
+		enum Tryb{
 			ZAZNACZANIE = 0,
 			PRZESUWANIE_WIDOKU,
 			PRZESUWANIE_ELEMENTU,
@@ -30,22 +30,27 @@ class Scena : public QGraphicsScene
 		class Waypoint *dodajWaypoint(const QPoint &punkt);
 		class Sciezka *dodajSciezke(Waypoint *poczatek, Waypoint *koniec);
 
-		Tryby tryb() const { return this->trybSceny; }
-		void ustawTryb(Tryby tryb) { this->trybSceny = tryb; }
+		Tryb tryb() const { return this->trybSceny; }
+		void ustawTryb(Tryb tryb) { this->trybSceny = tryb; }
 
 	signals:
 		void trybZmieniony();
 		void przeszkodaDodana();
 		void waypointDodany();
+		void sciezkaDodana();
+		void zoomOddalony();
+		void zoomPrzyblizony();
+		void elementPrzesuniety();
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
+		void wheelEvent(QGraphicsSceneWheelEvent *event);
 
 	private:
 		QGraphicsLineItem *linia;
-		Tryby trybSceny;
+		Tryb trybSceny;
 };
 
 #endif // SCENA_H

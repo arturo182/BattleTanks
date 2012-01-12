@@ -27,7 +27,8 @@ SOURCES += \
     klawiatura.cpp \
     dzwiek.cpp \
     pauza.cpp \
-    widzety.cpp
+    widzety.cpp \
+    funkcje.cpp
 
 HEADERS += \
         silnik.h \
@@ -51,6 +52,7 @@ HEADERS += \
     klawiatura.h \
     dzwiek.h \
     pauza.h \
-    widzety.h
+    widzety.h \
+    funkcje.h
 
 RC_FILE     = res.rc
