@@ -82,10 +82,10 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 		this->plansza->dodajSpecyfikacje(
 			new SpecyfikacjaPocisku(
 				QPixmap("grafika/pociski/" + pociski.value(1).toString() + ".png"),
-				pociski.value(3).toInt(),
-				pociski.value(4).toInt(),
-				pociski.value(5).toInt(),
-				pociski.value(6).toInt()
+				pociski.value(2).toInt(), // zasieg
+				pociski.value(3).toInt(), // predkosc
+				pociski.value(4).toInt(), // silaRazenie
+				pociski.value(5).toInt()  // promienRazenie
 			)
 		);
 	}
@@ -94,15 +94,15 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 	QString nazwaBroni;
 	for(int i = 1; i <= 2; i++){
 		nazwaBroni = "grafika/bronie/bron" + QString::number(i);
-		
+
 		SpecyfikacjaAnimacji* animacja = new SpecyfikacjaAnimacji(
 			QPixmap(nazwaBroni + "Eksplozja.png"),	//	tekstury
 			QSize(4, 4),	//	iloscKlatek
 			1000	//	czasTrwaniaMilisekundy
 		);
-		
+
 		this->plansza->dodajSpecyfikacje(animacja);
-		
+
 		this->plansza->dodajSpecyfikacje(
 			new SpecyfikacjaPocisku(
 				QPixmap(nazwaBroni + "Pocisk.png"),

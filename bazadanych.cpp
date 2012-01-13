@@ -24,13 +24,15 @@ bool BazaDanych::polacz(){
 	// sprawdzamy czy tabele w bazie danych istnieją
 	if(!db.tables().count()) {
 		db.exec("CREATE TABLE pociski ("
-		"  pocisk_id       integer PRIMARY KEY NOT NULL, "
-		"  nazwa           varchar(255), "
-		"  rodzaj          smallint, "
-		"  zasieg          integer, "
-		"  predkosc        integer, "
-		"  silaRazenie     integer, "
-		"  promienRazenie  integer "
+		"  pocisk_id          integer PRIMARY KEY NOT NULL, "
+		"  nazwa              varchar(255), "
+		"  zasieg             integer, "
+		"  predkosc           integer, "
+		"  silaRazenie        integer, "
+		"  promienRazenie     integer, "
+		"  animacjaSzerokosc  smallint, "
+		"  animacjaWysokosc   smallint, "
+		"  animacjaCzas       integer "
 		");");
 
 		db.exec("CREATE TABLE mapy ("
