@@ -128,7 +128,7 @@ void OknoGlowne::wczytajPlansze()
 			return;
 
 		int iloscElementow, iloscWierzcholkow;
-		QPoint wierzcholek;
+		QPoint punkt;
 
 		QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 
@@ -139,8 +139,8 @@ void OknoGlowne::wczytajPlansze()
 
 			QPolygon przeszkoda(iloscWierzcholkow);
 			for(int j = 0; j < iloscWierzcholkow; j++){
-				mapaSpecyfikacjaDane >> wierzcholek;
-				przeszkoda.setPoint(j, wierzcholek);
+				mapaSpecyfikacjaDane >> punkt;
+				przeszkoda.setPoint(j, punkt);
 			}
 
 			this->scena->dodajPrzeszkode(przeszkoda);
@@ -151,9 +151,9 @@ void OknoGlowne::wczytajPlansze()
 		//waypointy
 		mapaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> wierzcholek;
+			mapaSpecyfikacjaDane >> punkt;
 
-			Waypoint *waypoint = this->scena->dodajWaypoint(wierzcholek);
+			Waypoint *waypoint = this->scena->dodajWaypoint(punkt);
 
 			waypointy << waypoint;
 		}
@@ -169,11 +169,14 @@ void OknoGlowne::wczytajPlansze()
 			this->scena->dodajSciezke(waypointy.at(poczatek), waypointy.at(koniec));
 		}
 
-		mapaSpecyfikacjaDane >> this->pojazdGracza;
-		mapaSpecyfikacjaDane >> wierzcholek;
+		float zwrotGracza;
 
-		if(!wierzcholek.isNull())
-			this->scena->dodajGracza(wierzcholek);
+		mapaSpecyfikacjaDane >> this->pojazdGracza;
+		mapaSpecyfikacjaDane >> punkt;
+		mapaSpecyfikacjaDane >> zwrotGracza;
+
+		if(!punkt.isNull())
+			this->scena->dodajGracza(punkt)->setRotation(-(zwrotGracza * 180 / M_PI));
 
 		mapaSpecyfikacjaDane >> iloscElementow;
 		int id, ilosc;
@@ -387,6 +390,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 	QList<Waypoint*> waypointy;
 	QList<Sciezka*> sciezki;
 	QPoint pozycjaGracza;
+	float zwrotGracza;
 
 	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
 		QGraphicsItem *item = this->scena->items().at(i);
@@ -401,6 +405,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 				sciezki << sciezka;
 		} else if(item->type() == Gracz::Type) {
 			pozycjaGracza = item->pos().toPoint();
+			zwrotGracza = -item->rotation();
 		}
 	}
 
@@ -426,6 +431,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 
 	mapaSpecyfikacjaDane << this->pojazdGracza;
 	mapaSpecyfikacjaDane << pozycjaGracza;
+	mapaSpecyfikacjaDane << zwrotGracza * M_PI / 180;
 
 	mapaSpecyfikacjaDane << this->pociskiGracza.count();
 	QMapIterator<int, int> it(this->pociskiGracza);
@@ -554,6 +560,7 @@ void OknoGlowne::trybPozycjiGracza()
 {
 	foreach(QGraphicsItem *item, this->scena->items()) {
 		if(item->type() == Gracz::Type) {
+			this->ui->graphicsView->ensureVisible(item);
 			QMessageBox::information(this, "Punkt już ustawiony", "Punkt początkowy jest już wstawiony na planszy.<br>Jeśli chcesz go przenieść, użyj narzędzia przesuwania lub usuń go i dodaj nowy.");
 			this->aktualizujTryb();
 			return;

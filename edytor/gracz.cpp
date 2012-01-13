@@ -13,14 +13,13 @@ uchwyt(false)
 {
 	QPainterPath path;
 	path.setFillRule(Qt::WindingFill);
-	path.addRect(0, 0, 100, 70);
-	path.addEllipse(QPointF(50, 35), 20, 20);
-	path.addRect(70, 30, 60, 10);
+	path.addRect(-50, -35, 100, 70);
+	path.addEllipse(QPointF(), 20, 20);
+	path.addRect(20, -5, 60, 10);
 	this->setPath(path);
 
 	this->setPen(QPen(Qt::black, 2));
 	this->setBrush(QColor(0, 0, 0, 128));
-	this->setTransformOriginPoint(50, 35);
 	this->setPos(srodek);
 	this->setFlags(QGraphicsItem::ItemIsSelectable);
 	this->setAcceptHoverEvents(true);
@@ -42,7 +41,13 @@ void Gracz::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		if(uchwyt) {
-			//rotacja
+			float kat = qAtan2(this->pos().x() - event->scenePos().x(), this->pos().y() - event->scenePos().y()) * (180 / M_PI);
+			kat += 90;
+
+			if(kat < 0)
+				kat += 360;
+
+			this->setRotation(-kat);
 		} else {
 			this->prepareGeometryChange();
 			this->moveBy(delta.x(), delta.y());
@@ -55,7 +60,7 @@ void Gracz::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 void Gracz::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	QPoint pos = event->pos().toPoint();
-	QRect uchwyt(QPoint(127, 32), QSize(6, 6));
+	QRect uchwyt(QPoint(77, -3), QSize(6, 6));
 
 	this->uchwyt = uchwyt.contains(pos);
 	QGraphicsPathItem::mousePressEvent(event);
@@ -72,7 +77,7 @@ void Gracz::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 	QPoint pos = event->pos().toPoint();
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
-		QRect uchwyt(QPoint(127, 32), QSize(6, 6));
+		QRect uchwyt(QPoint(77, -3), QSize(6, 6));
 
 		if(uchwyt.contains(pos))
 			this->setCursor(QPixmap(":/ikony/rotate_icon.png"));
@@ -91,6 +96,6 @@ void Gracz::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 		painter->setPen(Qt::black);
 		painter->setBrush(Qt::white);
 
-		painter->drawRect(QRect(QPoint(127, 32), QSize(6, 6)));
+		painter->drawRect(QRect(QPoint(77, -3), QSize(6, 6)));
 	}
 }
