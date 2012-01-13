@@ -1,7 +1,7 @@
 #include <QApplication>
 #include <QTextCodec>
 
-#include "MainWindow.h"
+#include "oknoglowne.h"
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 
 	QApplication a(argc, argv);
 
-	MainWindow w;
+	OknoGlowne w;
 	w.show();
 
 	return a.exec();

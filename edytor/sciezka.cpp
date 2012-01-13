@@ -24,6 +24,7 @@ QRectF Sciezka::boundingRect() const
 
 void Sciezka::aktualizujPozycje()
 {
+	this->prepareGeometryChange();
 	this->setLine(QLineF(this->mapFromItem(this->elementPoczatkowy, 0, 0), this->mapFromItem(this->elementKoncowy, 0, 0)));
 }
 

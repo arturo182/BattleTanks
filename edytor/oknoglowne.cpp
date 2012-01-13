@@ -1,30 +1,36 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "oknoglowne.h"
+#include "ui_oknoglowne.h"
 
+#include "oknospecyfikacji.h"
 #include "przeszkoda.h"
 #include "waypoint.h"
 #include "sciezka.h"
+#include "gracz.h"
 #include "scena.h"
 
 #include <QGraphicsPolygonItem>
 #include <QInputDialog>
+#include <QSqlDatabase>
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QKeyEvent>
+#include <QSqlError>
 #include <qmath.h>
 #include <QDebug>
 
-MainWindow::MainWindow(QWidget *parent):
+OknoGlowne::OknoGlowne(QWidget *parent):
 QMainWindow(parent),
-ui(new Ui::MainWindow)
+pojazdGracza(1),
+ui(new Ui::OknoGlowne)
 {
 	this->ui->setupUi(this);
-	this->scena = new Scena();
+	this->scena = new Scena(QRectF(0, 0, 1000, 1000));
 	this->ui->graphicsView->setScene(this->scena);
-	this->plikPlanszy = "";
 	this->ui->graphicsView->setRenderHints(QPainter::Antialiasing | QPainter::SmoothPixmapTransform);
+	this->ui->graphicsView->viewport()->installEventFilter(this);
 
 	this->ustawTryb(Scena::ZAZNACZANIE);
+	this->wczytajBazeDanych();
 
 	connect(this->scena, SIGNAL(selectionChanged()), SLOT(zaznaczGalaz()));
 	connect(this->scena, SIGNAL(trybZmieniony()), SLOT(aktualizujTryb()));
@@ -32,16 +38,14 @@ ui(new Ui::MainWindow)
 	connect(this->scena, SIGNAL(waypointDodany()), SLOT(aktualizujDrzewkoWaypointow()));
 	connect(this->scena, SIGNAL(sciezkaDodana()), SLOT(scenaZmieniona()));
 	connect(this->scena, SIGNAL(elementPrzesuniety()), SLOT(scenaZmieniona()));
-	connect(this->scena, SIGNAL(zoomOddalony()), SLOT(oddalZoom()));
-	connect(this->scena, SIGNAL(zoomPrzyblizony()), SLOT(przyblizZoom()));
 }
 
-MainWindow::~MainWindow()
+OknoGlowne::~OknoGlowne()
 {
 	delete this->ui;
 }
 
-void MainWindow::closeEvent(QCloseEvent *event)
+void OknoGlowne::closeEvent(QCloseEvent *event)
 {
 	if(sprawdzZapis())
 		event->accept();
@@ -49,7 +53,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		event->ignore();
 }
 
-void MainWindow::keyPressEvent(QKeyEvent *event)
+void OknoGlowne::keyPressEvent(QKeyEvent *event)
 {
 	if((event->key() == Qt::Key_Space) && !event->isAutoRepeat()) {
 		this->setProperty("poprzedniTryb", this->scena->tryb());
@@ -59,7 +63,7 @@ void MainWindow::keyPressEvent(QKeyEvent *event)
 	QMainWindow::keyPressEvent(event);
 }
 
-void MainWindow::keyReleaseEvent(QKeyEvent *event)
+void OknoGlowne::keyReleaseEvent(QKeyEvent *event)
 {
 	if((event->key() == Qt::Key_Space) && !event->isAutoRepeat())
 		this->ustawTryb((Scena::Tryb)this->property("poprzedniTryb").toInt());
@@ -67,7 +71,27 @@ void MainWindow::keyReleaseEvent(QKeyEvent *event)
 	QMainWindow::keyReleaseEvent(event);
 }
 
-void MainWindow::nowaPlansza()
+bool OknoGlowne::eventFilter(QObject *obj, QEvent *event)
+{
+	if(obj == this->ui->graphicsView->viewport()) {
+		if(event->type() == QEvent::Wheel) {
+			if(QWheelEvent *wheel = static_cast<QWheelEvent*>(event)) {
+				if(wheel->modifiers() & Qt::ControlModifier) {
+					if(wheel->delta() < 0)
+						this->oddalZoom();
+					else
+						this->przyblizZoom();
+
+					return true;
+				}
+			}
+		}
+	}
+
+	return QMainWindow::eventFilter(obj, event);
+}
+
+void OknoGlowne::nowaPlansza()
 {
 	if(this->sprawdzZapis()) {
 		qDeleteAll(this->ui->treeWidget->topLevelItem(0)->takeChildren());
@@ -77,13 +101,17 @@ void MainWindow::nowaPlansza()
 		this->scena->waypointy = 0;
 
 		this->scena->clear();
+		this->scena->setSceneRect(QRectF(0, 0, 1000, 1000));
 		this->tabelaElementow.clear();
 		this->plikPlanszy = "";
+		this->plikTla = "";
+		this->pojazdGracza = 0;
+		this->pociskiGracza.clear();
 		this->setWindowModified(false);
 	}
 }
 
-void MainWindow::wczytajPlansze()
+void OknoGlowne::wczytajPlansze()
 {
 	this->sprawdzZapis();
 	QString nazwaPliku = QFileDialog::getOpenFileName(this, "Wczytaj plansze", "", "Plansze (*.dat)");
@@ -92,7 +120,8 @@ void MainWindow::wczytajPlansze()
 
 		QFileInfo plik(nazwaPliku);
 
-		this->scena->addPixmap(QPixmap(plik.absolutePath() + "/" + plik.completeBaseName() + ".png"));
+		this->plikTla = plik.absolutePath() + "/" + plik.completeBaseName() + ".png";
+		this->scena->addPixmap(QPixmap(this->plikTla));
 
 		QFile mapaSpecyfikacjaPlik(nazwaPliku);
 		if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly))
@@ -140,14 +169,32 @@ void MainWindow::wczytajPlansze()
 			this->scena->dodajSciezke(waypointy.at(poczatek), waypointy.at(koniec));
 		}
 
+		mapaSpecyfikacjaDane >> this->pojazdGracza;
+		mapaSpecyfikacjaDane >> wierzcholek;
+
+		if(!wierzcholek.isNull())
+			this->scena->dodajGracza(wierzcholek);
+
+		mapaSpecyfikacjaDane >> iloscElementow;
+		int id, ilosc;
+		for(int i = 0; i < iloscElementow; i++){
+			mapaSpecyfikacjaDane >> id;
+			mapaSpecyfikacjaDane >> ilosc;
+
+			this->pociskiGracza.insert(id, ilosc);
+		}
+
 		mapaSpecyfikacjaPlik.close();
+
+		if(this->scena->items().count())
+			this->scena->setSceneRect(this->scena->itemsBoundingRect());
 
 		this->plikPlanszy = nazwaPliku;
 		this->setWindowModified(false);
 	}
 }
 
-bool MainWindow::zapiszPlansze()
+bool OknoGlowne::zapiszPlansze()
 {
 	if(this->plikPlanszy.isEmpty())
 		return this->zapiszPlanszeJako();
@@ -155,7 +202,7 @@ bool MainWindow::zapiszPlansze()
 		return this->zapiszPlik(this->plikPlanszy);
 }
 
-void MainWindow::zaznaczGalaz()
+void OknoGlowne::zaznaczGalaz()
 {
 	QList<QGraphicsItem*> zaznaczenie = this->scena->selectedItems();
 	if(zaznaczenie.count()) {
@@ -175,20 +222,46 @@ void MainWindow::zaznaczGalaz()
 	this->ui->actionUsun->setEnabled(zaznaczenie.count());
 }
 
-void MainWindow::wybierzTlo()
+void OknoGlowne::edytujSpecyfikacje()
 {
-	QString nazwaPliku = QFileDialog::getOpenFileName(this, "Wybierz tło", "", "Pliki graficzne (*.bmp;*.png;*.jpg;*.jpeg)");
-	if(!nazwaPliku.isEmpty()) {
-		if(this->scena->items().count()) {
-			if(QGraphicsPixmapItem *item = qgraphicsitem_cast<QGraphicsPixmapItem*>(this->scena->items().first()))
-				item->setPixmap(QPixmap(nazwaPliku));
-		} else {
-			this->scena->addPixmap(QPixmap(nazwaPliku));
+	OknoSpecyfikacji spec(this->plikTla, this->pojazdGracza, this->pociskiGracza, this);
+	int ret = spec.exec();
+
+	if(ret == QDialog::Accepted) {
+		if(this->plikTla != spec.plikTla) {
+			this->plikTla = spec.plikTla;
+			this->scenaZmieniona();
+
+			if(!this->plikTla.isEmpty()) {
+				bool ustawiony = false;
+				foreach(QGraphicsItem *item, this->scena->items()) {
+					if(item->type() == QGraphicsPixmapItem::Type) {
+						if(QGraphicsPixmapItem *pixmap = qgraphicsitem_cast<QGraphicsPixmapItem*>(item)) {
+							pixmap->setPixmap(QPixmap(this->plikTla));
+							ustawiony = true;
+							break;
+						}
+					}
+				}
+
+				if(!ustawiony)
+					this->scena->addPixmap(QPixmap(this->plikTla))->setZValue(-100);
+			}
+		}
+
+		if(this->pojazdGracza != spec.pojazdGracza) {
+			this->pojazdGracza = spec.pojazdGracza;
+			this->scenaZmieniona();
+		}
+
+		if(this->pociskiGracza != spec.pociskiGracza) {
+			this->pociskiGracza = spec.pociskiGracza;
+			this->scenaZmieniona();
 		}
 	}
 }
 
-void MainWindow::usunZaznaczony()
+void OknoGlowne::usunZaznaczony()
 {
 	foreach(QGraphicsItem *element, this->scena->selectedItems()) {
 		if(element->type() == Sciezka::Type) {
@@ -220,17 +293,17 @@ void MainWindow::usunZaznaczony()
 	}
 }
 
-void MainWindow::scenaZmieniona()
+void OknoGlowne::scenaZmieniona()
 {
 	this->setWindowModified(true);
 }
 
-void MainWindow::aktualizujTryb()
+void OknoGlowne::aktualizujTryb()
 {
 	this->ustawTryb(this->scena->tryb());
 }
 
-void MainWindow::aktualizujDrzewkoPrzeszkod()
+void OknoGlowne::aktualizujDrzewkoPrzeszkod()
 {
 	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
 		QGraphicsItem *item = this->scena->items().at(i);
@@ -251,7 +324,7 @@ void MainWindow::aktualizujDrzewkoPrzeszkod()
 	}
 }
 
-void MainWindow::aktualizujDrzewkoWaypointow()
+void OknoGlowne::aktualizujDrzewkoWaypointow()
 {
 	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
 		QGraphicsItem *item = this->scena->items().at(i);
@@ -272,7 +345,7 @@ void MainWindow::aktualizujDrzewkoWaypointow()
 	}
 }
 
-bool MainWindow::sprawdzZapis()
+bool OknoGlowne::sprawdzZapis()
 {
 	if(this->isWindowModified()) {
 		QMessageBox::StandardButton ret = QMessageBox::warning(this, "Zapisz zmiany", "Plansza została zmieniona, czy zapisać zmiany?", QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
@@ -286,7 +359,7 @@ bool MainWindow::sprawdzZapis()
 	return true;
 }
 
-bool MainWindow::zapiszPlanszeJako()
+bool OknoGlowne::zapiszPlanszeJako()
 {
 	QString nazwaPliku = QFileDialog::getSaveFileName(this, "Zapisz plansze", "", "Plansze (*.dat)");
 	if(nazwaPliku.isEmpty())
@@ -295,7 +368,7 @@ bool MainWindow::zapiszPlanszeJako()
 	return this->zapiszPlik(nazwaPliku);
 }
 
-bool MainWindow::zapiszPlik(const QString &nazwaPliku)
+bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 {
 	QFile mapaSpecyfikacjaPlik(nazwaPliku);
 	if(!mapaSpecyfikacjaPlik.open(QFile::WriteOnly)) {
@@ -303,12 +376,17 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 	}
 
 	QFileInfo plik(nazwaPliku);
+	QString nazwaGrafiki = plik.absolutePath() + "/" + plik.completeBaseName() + ".png";
+	if(!QFile::exists(nazwaGrafiki)) {
+		QFile::copy(this->plikTla, nazwaGrafiki);
+	}
 
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 
 	QList<Przeszkoda*> przeszkody;
 	QList<Waypoint*> waypointy;
 	QList<Sciezka*> sciezki;
+	QPoint pozycjaGracza;
 
 	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
 		QGraphicsItem *item = this->scena->items().at(i);
@@ -321,12 +399,8 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 		} else if(item->type() == Sciezka::Type) {
 			if(Sciezka *sciezka = qgraphicsitem_cast<Sciezka*>(item))
 				sciezki << sciezka;
-		} else if(item->type() == QGraphicsPixmapItem::Type) {
-			if(QGraphicsPixmapItem *tlo = static_cast<QGraphicsPixmapItem*>(item)) {
-				QString nazwaGrafiki = plik.absolutePath() + "/" + plik.completeBaseName() + ".png";
-				if(!QFile::exists(nazwaGrafiki))
-					tlo->pixmap().save(nazwaGrafiki);
-			}
+		} else if(item->type() == Gracz::Type) {
+			pozycjaGracza = item->pos().toPoint();
 		}
 	}
 
@@ -350,17 +424,29 @@ bool MainWindow::zapiszPlik(const QString &nazwaPliku)
 	foreach(Sciezka *sciezka, sciezki)
 		mapaSpecyfikacjaDane << waypointy.indexOf(sciezka->poczatek()) << waypointy.indexOf(sciezka->koniec());
 
+	mapaSpecyfikacjaDane << this->pojazdGracza;
+	mapaSpecyfikacjaDane << pozycjaGracza;
+
+	mapaSpecyfikacjaDane << this->pociskiGracza.count();
+	QMapIterator<int, int> it(this->pociskiGracza);
+	while(it.hasNext()) {
+		it.next();
+
+		mapaSpecyfikacjaDane << it.key() << it.value();
+	}
+
+
 	mapaSpecyfikacjaPlik.close();
 
 	this->plikPlanszy = nazwaPliku;
 	this->setWindowModified(false);
 
-	QMessageBox::information(this, "Zapisano", "Plansza została zapisana.");
+	this->ui->statusBar->showMessage("Plansza została zapisana.", 10 * 1000);
 
 	return true;
 }
 
-void MainWindow::ustawTryb(Scena::Tryb tryb)
+void OknoGlowne::ustawTryb(Scena::Tryb tryb)
 {
 	this->ui->graphicsView->setCursor((tryb == Scena::DODAWANIE_PRZESZKODY || tryb == Scena::DODAWANIE_WAYPOINTU) ? Qt::CrossCursor : Qt::ArrowCursor);
 
@@ -371,6 +457,7 @@ void MainWindow::ustawTryb(Scena::Tryb tryb)
 	this->ui->actionDodaj->setChecked(tryb == Scena::DODAWANIE_PRZESZKODY);
 	this->ui->actionDodajPunktRuchu->setChecked(tryb == Scena::DODAWANIE_WAYPOINTU);
 	this->ui->actionLaczeniePunktowRuchu->setChecked(tryb == Scena::LACZENIE_WAYPOINTOW);
+	this->ui->actionUstawPunktPoczatkowy->setChecked(tryb == Scena::POZYCJA_GRACZA);
 
 	this->ui->graphicsView->setDragMode((tryb == Scena::PRZESUWANIE_WIDOKU) ? QGraphicsView::ScrollHandDrag : QGraphicsView::NoDrag);
 
@@ -378,7 +465,7 @@ void MainWindow::ustawTryb(Scena::Tryb tryb)
 	this->scena->update();
 }
 
-void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void OknoGlowne::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
 	if(current) {
 		if(current->parent()) {
@@ -392,42 +479,42 @@ void MainWindow::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTre
 	}
 }
 
-void MainWindow::przyblizZoom()
+void OknoGlowne::przyblizZoom()
 {
 	this->ui->graphicsView->scale(1.15, 1.15);
 }
 
-void MainWindow::oddalZoom()
+void OknoGlowne::oddalZoom()
 {
 	this->ui->graphicsView->scale(1.0 / 1.15, 1.0 / 1.15);
 }
 
-void MainWindow::trybPrzesuwania()
+void OknoGlowne::trybPrzesuwania()
 {
 	this->ustawTryb(Scena::PRZESUWANIE_ELEMENTU);
 }
 
-void MainWindow::trybEdycjiWierzcholkow()
+void OknoGlowne::trybEdycjiWierzcholkow()
 {
 	this->ustawTryb(Scena::EDYCJA_WIERZCHOLKOW);
 }
 
-void MainWindow::trybZaznaczania()
+void OknoGlowne::trybZaznaczania()
 {
 	this->ustawTryb(Scena::ZAZNACZANIE);
 }
 
-void MainWindow::trybPrzesuwaniaWidoku()
+void OknoGlowne::trybPrzesuwaniaWidoku()
 {
 	this->ustawTryb(Scena::PRZESUWANIE_WIDOKU);
 }
 
-void MainWindow::zerujZoom()
+void OknoGlowne::zerujZoom()
 {
   this->ui->graphicsView->resetTransform();
 }
 
-void MainWindow::trybDodawaniaPrzeszkod()
+void OknoGlowne::trybDodawaniaPrzeszkod()
 {
 	bool ok = false;
 	int boki = QInputDialog::getInt(this, "Podaj ilosc bokow", "Ilosc bokow:", 3, 3, 100, 1, &ok);
@@ -435,16 +522,16 @@ void MainWindow::trybDodawaniaPrzeszkod()
 		this->ustawTryb(Scena::DODAWANIE_PRZESZKODY);
 		this->scena->setProperty("boki", boki);
 	} else {
-		this->ustawTryb(this->scena->tryb());
+		this->aktualizujTryb();
 	}
 }
 
-void MainWindow::trybDodawaniaWaypointow()
+void OknoGlowne::trybDodawaniaWaypointow()
 {
 	this->ustawTryb(Scena::DODAWANIE_WAYPOINTU);
 }
 
-void MainWindow::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
+void OknoGlowne::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
 	if(current) {
 		if(current->parent()) {
@@ -458,7 +545,30 @@ void MainWindow::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTr
 	}
 }
 
-void MainWindow::trybLaczeniaWaypointow()
+void OknoGlowne::trybLaczeniaWaypointow()
 {
 	this->ustawTryb(Scena::LACZENIE_WAYPOINTOW);
+}
+
+void OknoGlowne::trybPozycjiGracza()
+{
+	foreach(QGraphicsItem *item, this->scena->items()) {
+		if(item->type() == Gracz::Type) {
+			QMessageBox::information(this, "Punkt już ustawiony", "Punkt początkowy jest już wstawiony na planszy.<br>Jeśli chcesz go przenieść, użyj narzędzia przesuwania lub usuń go i dodaj nowy.");
+			this->aktualizujTryb();
+			return;
+		}
+	}
+
+	this->ustawTryb(Scena::POZYCJA_GRACZA);
+}
+
+void OknoGlowne::wczytajBazeDanych()
+{
+	//	nawiazanie polaczenia z baza
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+	db.setDatabaseName("baza.db");
+
+	if(!db.open())
+		qDebug() << "Nie udalo sie poalczyc z baza danych" << db.databaseName() << db.lastError().text();
 }

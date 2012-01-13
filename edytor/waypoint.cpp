@@ -54,6 +54,7 @@ void Waypoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	QPoint delta = pos - lastPos;
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
+		this->prepareGeometryChange();
 		this->moveBy(delta.x(), delta.y());
 		emit pozycjaZmieniona();
 	}
@@ -61,13 +62,10 @@ void Waypoint::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void Waypoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 {
-	QPoint pos = event->pos().toPoint();
-
-	this->setCursor(Qt::ArrowCursor);
-
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU)
 		this->setCursor(Qt::SizeAllCursor);
-
+	else
+		this->setCursor(Qt::ArrowCursor);
 }
 
 QVariant Waypoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QVariant &value)

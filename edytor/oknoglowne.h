@@ -5,24 +5,26 @@
 
 #include <QMainWindow>
 #include <QHash>
+#include <QMap>
 
 namespace Ui{
-	class MainWindow;
+	class OknoGlowne;
 }
 
 class QTreeWidgetItem;
 
-class MainWindow : public QMainWindow{
+class OknoGlowne : public QMainWindow{
 	Q_OBJECT
 
 	public:
-		explicit MainWindow(QWidget *parent = 0);
-		~MainWindow();
+		explicit OknoGlowne(QWidget *parent = 0);
+		~OknoGlowne();
 
 	protected:
 		void closeEvent(QCloseEvent *event);
 		void keyPressEvent(QKeyEvent *event);
 		void keyReleaseEvent(QKeyEvent *event);
+		bool eventFilter(QObject *obj, QEvent *event);
 
 	private slots:
 		void nowaPlansza();
@@ -30,7 +32,7 @@ class MainWindow : public QMainWindow{
 		bool zapiszPlansze();
 		bool zapiszPlanszeJako();
 		void zaznaczGalaz();
-		void wybierzTlo();
+		void edytujSpecyfikacje();
 		void usunZaznaczony();
 		void scenaZmieniona();
 		void aktualizujTryb();
@@ -48,6 +50,8 @@ class MainWindow : public QMainWindow{
 		void trybDodawaniaWaypointow();
 		void on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 		void trybLaczeniaWaypointow();
+		void trybPozycjiGracza();
+		void wczytajBazeDanych();
 
 	private:
 		bool sprawdzZapis();
@@ -55,10 +59,13 @@ class MainWindow : public QMainWindow{
 		void ustawTryb(Scena::Tryb tryb);
 
 	private:
-		Ui::MainWindow *ui;
 		QString plikPlanszy;
+		QString plikTla;
+		int pojazdGracza;
+		QMap<int, int> pociskiGracza;
 		Scena *scena;
 		QHash<QTreeWidgetItem*, class QGraphicsItem*> tabelaElementow;
+		Ui::OknoGlowne *ui;
 };
 
 #endif // MAINWINDOW_H

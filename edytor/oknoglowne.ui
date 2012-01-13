@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>MainWindow</class>
- <widget class="QMainWindow" name="MainWindow">
+ <class>OknoGlowne</class>
+ <widget class="QMainWindow" name="OknoGlowne">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -69,7 +69,7 @@
     <addaction name="actionDodajPunktRuchu"/>
     <addaction name="actionLaczeniePunktowRuchu"/>
     <addaction name="separator"/>
-    <addaction name="actionTlo"/>
+    <addaction name="actionUstawPunktPoczatkowy"/>
    </widget>
    <addaction name="menuPlik"/>
    <addaction name="menuWidok"/>
@@ -95,7 +95,7 @@
    <addaction name="actionWczytaj"/>
    <addaction name="actionZapisz"/>
    <addaction name="separator"/>
-   <addaction name="actionTlo"/>
+   <addaction name="actionSpecyfikacja"/>
    <addaction name="separator"/>
    <addaction name="actionOryginalnyRozmiar"/>
    <addaction name="actionPrzybliz"/>
@@ -129,6 +129,7 @@
    <addaction name="actionEdycjaWierzcholkow"/>
    <addaction name="actionDodajPunktRuchu"/>
    <addaction name="actionLaczeniePunktowRuchu"/>
+   <addaction name="actionUstawPunktPoczatkowy"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="maximumSize">
@@ -193,7 +194,7 @@
    <attribute name="dockWidgetArea">
     <number>2</number>
    </attribute>
-   <widget class="QWidget" name="dockWidgetContents_2">
+   <widget class="QWidget" name="dockWidgetContents2">
     <layout class="QGridLayout" name="gridLayout_3">
      <property name="margin">
       <number>0</number>
@@ -303,15 +304,6 @@
    </property>
    <property name="shortcut">
     <string>Del</string>
-   </property>
-  </action>
-  <action name="actionTlo">
-   <property name="icon">
-    <iconset resource="res.qrc">
-     <normaloff>:/ikony/picture.png</normaloff>:/ikony/picture.png</iconset>
-   </property>
-   <property name="text">
-    <string>Tło</string>
    </property>
   </action>
   <action name="actionPrzybliz">
@@ -460,6 +452,30 @@
     <string>Ctrl+7</string>
    </property>
   </action>
+  <action name="actionSpecyfikacja">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/map.png</normaloff>:/ikony/map.png</iconset>
+   </property>
+   <property name="text">
+    <string>Specyfikacja planszy</string>
+   </property>
+  </action>
+  <action name="actionUstawPunktPoczatkowy">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/joystick.png</normaloff>:/ikony/joystick.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ustaw punkt początkowy</string>
+   </property>
+   <property name="toolTip">
+    <string>Ustaw punkt początkowy gracza</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -469,7 +485,7 @@
   <connection>
    <sender>actionWczytaj</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>wczytajPlansze()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -485,7 +501,7 @@
   <connection>
    <sender>actionNowaPlansza</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>nowaPlansza()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -501,24 +517,8 @@
   <connection>
    <sender>actionWyjdz</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>close()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>-1</x>
-     <y>-1</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>366</x>
-     <y>208</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>actionTlo</sender>
-   <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
-   <slot>wybierzTlo()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -533,7 +533,7 @@
   <connection>
    <sender>actionUsun</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>usunZaznaczony()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -549,7 +549,7 @@
   <connection>
    <sender>actionZapisz</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>zapiszPlansze()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -565,7 +565,7 @@
   <connection>
    <sender>actionZapiszJako</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>zapiszPlanszeJako()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -581,7 +581,7 @@
   <connection>
    <sender>actionPrzybliz</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>przyblizZoom()</slot>
    <hints>
     <hint type="sourcelabel">
@@ -597,8 +597,168 @@
   <connection>
    <sender>actionOddal</sender>
    <signal>triggered()</signal>
-   <receiver>MainWindow</receiver>
+   <receiver>OknoGlowne</receiver>
    <slot>oddalZoom()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPrzesuwanie</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybPrzesuwania()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionEdycjaWierzcholkow</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybEdycjiWierzcholkow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionZaznaczanie</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybZaznaczania()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionPrzesuwanieWidoku</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybPrzesuwaniaWidoku()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionOryginalnyRozmiar</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>zerujZoom()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDodaj</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybDodawaniaPrzeszkod()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionLaczeniePunktowRuchu</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybLaczeniaWaypointow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionDodajPunktRuchu</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybDodawaniaWaypointow()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionSpecyfikacja</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>edytujSpecyfikacje()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>actionUstawPunktPoczatkowy</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybPozycjiGracza()</slot>
    <hints>
     <hint type="sourcelabel">
      <x>-1</x>
@@ -614,7 +774,6 @@
  <slots>
   <slot>wczytajPlansze()</slot>
   <slot>nowaPlansza()</slot>
-  <slot>wybierzTlo()</slot>
   <slot>usunZaznaczony()</slot>
   <slot>zapiszPlansze()</slot>
   <slot>zapiszPlanszeJako()</slot>
@@ -628,5 +787,7 @@
   <slot>trybDodawaniaPrzeszkod()</slot>
   <slot>trybLaczeniaWaypointow()</slot>
   <slot>trybDodawaniaWaypointow()</slot>
+  <slot>edytujSpecyfikacje()</slot>
+  <slot>trybPozycjiGracza()</slot>
  </slots>
 </ui>

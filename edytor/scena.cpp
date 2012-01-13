@@ -3,14 +3,16 @@
 #include "przeszkoda.h"
 #include "waypoint.h"
 #include "sciezka.h"
+#include "gracz.h"
 
 #include <QGraphicsSceneMouseEvent>
+#include <QPainter>
 #include <QVariant>
-#include <QDebug>
 #include <qmath.h>
+#include <QDebug>
 
-Scena::Scena():
-QGraphicsScene(),
+Scena::Scena(const QRectF &prostokat):
+QGraphicsScene(prostokat),
 przeszkody(0),
 waypointy(0),
 linia(0)
@@ -58,6 +60,16 @@ Sciezka *Scena::dodajSciezke(Waypoint *poczatek, Waypoint *koniec)
 	return sciezka;
 }
 
+Gracz *Scena::dodajGracza(const QPointF &punkt)
+{
+	Gracz *gracz = new Gracz(punkt);
+	connect(gracz, SIGNAL(pozycjaZmieniona()), SIGNAL(elementPrzesuniety()));
+	this->addItem(gracz);
+	emit elementPrzesuniety();
+
+	return gracz;
+}
+
 void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(this->trybSceny == Scena::DODAWANIE_PRZESZKODY) {
@@ -76,6 +88,11 @@ void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		this->dodajPrzeszkode(poly.toPolygon());
 	} else if(this->trybSceny == Scena::DODAWANIE_WAYPOINTU) {
 		this->dodajWaypoint(event->scenePos().toPoint());
+	} else if(this->trybSceny == Scena::POZYCJA_GRACZA) {
+		this->dodajGracza(event->scenePos());
+
+		this->trybSceny = Scena::ZAZNACZANIE;
+		emit trybZmieniony();
 	} else if(this->trybSceny ==  Scena::LACZENIE_WAYPOINTOW) {
 		this->linia = new QGraphicsLineItem(QLineF(event->scenePos(),  event->scenePos()));
 		this->linia->setPen(QPen(Qt::green, 2));
@@ -132,17 +149,5 @@ void Scena::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 
 	 this->linia = 0;
 
-	 QGraphicsScene::mouseReleaseEvent(event);
-}
-
-void Scena::wheelEvent(QGraphicsSceneWheelEvent *event)
-{
-	if(event->modifiers() & Qt::ControlModifier) {
-		if(event->delta() > 0)
-			emit zoomPrzyblizony();
-		else if(event->delta() < 0)
-			emit zoomOddalony();
-	}
-
-	QGraphicsScene::wheelEvent(event);
+	QGraphicsScene::mouseReleaseEvent(event);
 }

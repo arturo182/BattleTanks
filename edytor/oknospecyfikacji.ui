@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>OknoSpecyfikacji</class>
+ <widget class="QDialog" name="OknoSpecyfikacji">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>434</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Specyfikacja planszy</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_3">
+   <property name="margin">
+    <number>6</number>
+   </property>
+   <item>
+    <widget class="QGroupBox" name="tloGroupBox">
+     <property name="title">
+      <string>Tło</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <property name="leftMargin">
+       <number>6</number>
+      </property>
+      <property name="topMargin">
+       <number>3</number>
+      </property>
+      <property name="rightMargin">
+       <number>6</number>
+      </property>
+      <property name="bottomMargin">
+       <number>6</number>
+      </property>
+      <item>
+       <widget class="QLineEdit" name="tloEdit">
+        <property name="readOnly">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="tloPrzegladajButton">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Przeglądaj...</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="graczGroupBox">
+     <property name="title">
+      <string>Pojazd gracza</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QComboBox" name="graczComboBox"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="pociskiGroupBox">
+     <property name="title">
+      <string>Pociski gracza</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="0" column="0">
+       <widget class="QComboBox" name="pociskiComboBox"/>
+      </item>
+      <item row="0" column="1">
+       <widget class="QSpinBox" name="pociskiIloscSpinBox">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="minimum">
+         <number>-1</number>
+        </property>
+        <property name="maximum">
+         <number>999999</number>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QPushButton" name="pociskiDodajButton">
+        <property name="enabled">
+         <bool>false</bool>
+        </property>
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="text">
+         <string>Dodaj</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" colspan="3">
+       <widget class="QTreeWidget" name="pociskiTreeWidget">
+        <property name="indentation">
+         <number>0</number>
+        </property>
+        <column>
+         <property name="text">
+          <string>Nazwa</string>
+         </property>
+        </column>
+        <column>
+         <property name="text">
+          <string>Ilość</string>
+         </property>
+        </column>
+       </widget>
+      </item>
+      <item row="2" column="0" colspan="3">
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QPushButton" name="pociskiUsunButton">
+          <property name="enabled">
+           <bool>false</bool>
+          </property>
+          <property name="text">
+           <string>Usuń</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item>
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>tloPrzegladajButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>przegladajTlo()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>340</x>
+     <y>33</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>373</x>
+     <y>97</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pociskiDodajButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>dodajPocisk()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>343</x>
+     <y>149</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>256</x>
+     <y>115</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pociskiUsunButton</sender>
+   <signal>clicked()</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>usunPocisk()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>339</x>
+     <y>358</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>130</x>
+     <y>116</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>269</x>
+     <y>414</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>129</x>
+     <y>381</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>309</x>
+     <y>415</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>44</x>
+     <y>380</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pociskiComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>sprawdzDodajPocisk(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>127</x>
+     <y>151</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>199</x>
+     <y>216</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pociskiIloscSpinBox</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>sprawdzDodajPocisk(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>269</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>5</x>
+     <y>223</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>graczComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>zmienGracza(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>312</x>
+     <y>91</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>57</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <slot>przegladajTlo()</slot>
+  <slot>dodajPocisk()</slot>
+  <slot>usunPocisk()</slot>
+  <slot>sprawdzDodajPocisk(int)</slot>
+  <slot>zmienGracza(int)</slot>
+ </slots>
+</ui>

@@ -21,7 +21,10 @@ Przeszkoda::Przeszkoda(const QPolygon &polygon):
 
 QRectF Przeszkoda::boundingRect() const
 {
-	return QGraphicsPolygonItem::boundingRect().adjusted(-3, -3, 3, 3);
+	if(this->scene()->property("tryb").toInt() == Scena::EDYCJA_WIERZCHOLKOW)
+		return QGraphicsPolygonItem::boundingRect().adjusted(-3, -3, 3, 3);
+	else
+		return QGraphicsPolygonItem::boundingRect();
 }
 
 void Przeszkoda::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
@@ -87,6 +90,7 @@ void Przeszkoda::mousePressEvent(QGraphicsSceneMouseEvent *event)
 				this->punktUchwytu = minWierz;
 			}
 
+			this->prepareGeometryChange();
 			this->setPolygon(poly);
 		}
 	}
@@ -106,9 +110,11 @@ void Przeszkoda::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 			poly.setPoint(this->punktUchwytu, poly.point(this->punktUchwytu) + delta);
 
+			this->prepareGeometryChange();
 			this->setPolygon(poly);
 		}
 	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
+		this->prepareGeometryChange();
 		this->moveBy(delta.x(), delta.y());
 		emit pozycjaZmieniona();
 	}

@@ -14,7 +14,7 @@ BazaDanych::BazaDanych(){
 bool BazaDanych::polacz(){
 	//	nawiazanie polaczenia z baza
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-	db.setDatabaseName(qApp->applicationDirPath() + "/baza.db");
+	db.setDatabaseName("baza.db");
 
 	if(!db.open()) {
 		qDebug() << "Nie udalo sie poalczyc z baza danych" << db.databaseName() << db.lastError().text();

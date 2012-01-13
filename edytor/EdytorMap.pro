@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui sql
 
 TARGET = EdytorMap
 DESTDIR = ../bin
@@ -7,19 +7,24 @@ TEMPLATE = app
 SOURCES += main.cpp\
     scena.cpp \
     przeszkoda.cpp \
-    mainwindow.cpp \
     waypoint.cpp \
-    sciezka.cpp
+    sciezka.cpp \
+    oknospecyfikacji.cpp \
+    oknoglowne.cpp \
+    gracz.cpp
 
 HEADERS  += \
     scena.h \
     przeszkoda.h \
-    mainwindow.h \
     waypoint.h \
-    sciezka.h
+    sciezka.h \
+    oknospecyfikacji.h \
+    oknoglowne.h \
+    gracz.h
 
 FORMS    += \
-    mainwindow.ui
+    oknospecyfikacji.ui \
+    oknoglowne.ui
 
 RESOURCES += \
     res.qrc

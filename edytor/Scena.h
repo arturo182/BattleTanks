@@ -17,18 +17,20 @@ class Scena : public QGraphicsScene
 			EDYCJA_WIERZCHOLKOW,
 			DODAWANIE_PRZESZKODY,
 			DODAWANIE_WAYPOINTU,
-			LACZENIE_WAYPOINTOW
+			LACZENIE_WAYPOINTOW,
+			POZYCJA_GRACZA
 		};
 
 		int przeszkody;
 		int waypointy;
 
 	public:
-		Scena();
+		Scena(const QRectF &prostokat = QRectF());
 
 		class Przeszkoda *dodajPrzeszkode(const QPolygon &poly);
 		class Waypoint *dodajWaypoint(const QPoint &punkt);
 		class Sciezka *dodajSciezke(Waypoint *poczatek, Waypoint *koniec);
+		class Gracz *dodajGracza(const QPointF &punkt);
 
 		Tryb tryb() const { return this->trybSceny; }
 		void ustawTryb(Tryb tryb) { this->trybSceny = tryb; }
@@ -38,15 +40,12 @@ class Scena : public QGraphicsScene
 		void przeszkodaDodana();
 		void waypointDodany();
 		void sciezkaDodana();
-		void zoomOddalony();
-		void zoomPrzyblizony();
 		void elementPrzesuniety();
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
-		void wheelEvent(QGraphicsSceneWheelEvent *event);
 
 	private:
 		QGraphicsLineItem *linia;
