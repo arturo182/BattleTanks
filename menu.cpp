@@ -424,7 +424,7 @@ void Menu::rysuj() const{
 		painter.setFont(czcionkaNormalna);
 		int odstepX = szerokoscEkranu * 0.03;
 		int odstepY = wysokoscEkranu * 0.06;
-		int offsetY = obszarTytulu.y() + (wysokoscEkranu * 0.4);
+		int offsetY = wysokoscEkranu * 0.45;
 
 		int wiersz = 0;
 		int kolumna = 0;
@@ -460,13 +460,25 @@ void Menu::rysuj() const{
 
 		painter.setPen(Qt::white);
 
-		if(this->profile.count()) {
-			Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.73, szerokoscEkranu, 100), QString("Wybierz [%1]").arg((sterowanie == "gamepad")?"Przycisk 2":"Enter"), QTextOption(Qt::AlignHCenter));
-			Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.78, szerokoscEkranu, 100), QString("Usuń [%1]").arg((sterowanie == "gamepad")?"Przycisk 1":"Del"), QTextOption(Qt::AlignHCenter));
-		}
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), QString("%1Stwórz nowy          Wyjdź").arg((this->profile.count())?"Wybierz          Usuń          ":""), QTextOption(Qt::AlignRight));
 
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.83, szerokoscEkranu, 100), QString("Stwórz nowy [%1]").arg((sterowanie == "gamepad")?"Przycisk 3":"Spacja"), QTextOption(Qt::AlignHCenter));
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.88, szerokoscEkranu, 100), QString("Wyjdź [%1]").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignHCenter));
+		if(sterowanie == "gamepad") {
+			if((this->profile.count())) {
+				Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.50, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "2");
+				Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.61, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "1");
+			}
+
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.69, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "3");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.83, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		} else {
+			if((this->profile.count())) {
+				Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.48, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
+				Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.59, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Del");
+			}
+
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.67, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Spacja");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.81, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
+		}
 
 	} else if(this->tryb == MENU_GLOWNE) {
 		painter.drawPixmap(QPoint(szerokoscEkranu * 0.5 - this->logoPixmapa.width() * 0.5, wysokoscEkranu * 0.05), this->logoPixmapa);
@@ -492,7 +504,17 @@ void Menu::rysuj() const{
 		Widzety::tabelaRekordow(painter, QRectF(szerokoscEkranu * 0.2, wysokoscEkranu * 0.18, szerokoscEkranu * 0.6, wysokoscEkranu * 0.63), this->rekordy, this->pozycja);
 
 		painter.setFont(czcionkaNormalna);
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.85, szerokoscEkranu * 0.9, 100), QString("Zmień strony [Góra/Dół]   Wróć [%1]").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Zmień strony          Wróć", QTextOption(Qt::AlignRight));
+
+		if(sterowanie == "gamepad") {
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.68, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "↑");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.70, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "↓");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.84, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		} else {
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.64, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "↑");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.68, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "↓");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.82, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
+		}
 	} else if(this->tryb == WYBOR_TRYBU) {
 		painter.setFont(czcionkaTytulu);
 		Widzety::cieniowanyTekst(painter, obszarTytulu, "Tryb gry:", QTextOption(Qt::AlignHCenter));
@@ -517,7 +539,15 @@ void Menu::rysuj() const{
 
 		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.25 + this->trybyPixmapa[1].height(), szerokoscEkranu, 100), opis, QTextOption(Qt::AlignHCenter));
 
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Dalej [%1]   Wróć [%2]").arg((sterowanie == "gamepad")?"Przycisk 2":"Enter").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Dalej          Wróć", QTextOption(Qt::AlignRight));
+
+		if(sterowanie == "gamepad") {
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.75, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "2");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.84, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		} else {
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.73, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.82, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
+		}
 	} else if(this->tryb == WYBOR_MAPY) {
 		painter.setFont(czcionkaTytulu);
 		Widzety::cieniowanyTekst(painter, obszarTytulu, "Mapa:", QTextOption(Qt::AlignHCenter));
@@ -602,7 +632,15 @@ void Menu::rysuj() const{
 
 		painter.setPen(Qt::white);
 		painter.setFont(czcionkaNormalna);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Graj [%1]   Wróć [%2]").arg((sterowanie == "gamepad")?"Przycisk 2":"Enter").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Graj          Wróć", QTextOption(Qt::AlignRight));
+
+		if(sterowanie == "gamepad") {
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.76, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "2");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.84, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		} else {
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.74, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.82, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
+		}
 	} else if(this->tryb == USTAWIENIA_POMOC) {
 		painter.drawPixmap(QPoint(szerokoscEkranu * 0.5 - this->logoPixmapa.width() * 0.5, wysokoscEkranu * 0.05), this->logoPixmapa);
 		painter.setFont(czcionkaTytulu);
@@ -641,31 +679,43 @@ void Menu::rysuj() const{
 		Widzety::przyciskUstawien(painter, QRectF(szerokoscEkranu * 0.7, wysokoscEkranu * 0.7, szerokoscEkranu * 0.19, wysokoscEkranu * 0.06), this->sterowanie, this->sterowanie != "gamepad", this->sterowanie != "klawiatura");
 
 		painter.setPen(Qt::white);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Akceptuj [%1]      Anuluj [%2]").arg((sterowanie == "gamepad")?"Przycisk 2":"Enter").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Akceptuj          Anuluj", QTextOption(Qt::AlignRight));
+		if(sterowanie == "gamepad") {
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.72, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "2");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.83, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		} else {
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.70, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.82, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
+		}
 	} else if(this->tryb == AUTORZY) {
 		painter.setFont(czcionkaTytulu);
 		Widzety::cieniowanyTekst(painter, obszarTytulu, "Autorzy", QTextOption(Qt::AlignHCenter));
 
-		painter.setFont(czcionkaSrednia);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.15, szerokoscEkranu, 100), "Programowanie:", QTextOption(Qt::AlignHCenter));
+		painter.setFont(czcionkaTytulu);
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.25, szerokoscEkranu, 100), "Programowanie:", QTextOption(Qt::AlignHCenter));
 
 		painter.setFont(czcionkaNormalna);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.20, szerokoscEkranu, 100), "Paweł Jarzyński", QTextOption(Qt::AlignHCenter));
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.24, szerokoscEkranu, 100), "Artur Pacholec", QTextOption(Qt::AlignHCenter));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.32, szerokoscEkranu, 100), "Paweł Jarzyński", QTextOption(Qt::AlignHCenter));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.36, szerokoscEkranu, 100), "Artur Pacholec", QTextOption(Qt::AlignHCenter));
 
-		painter.setFont(czcionkaSrednia);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.30, szerokoscEkranu, 100), "Grafika:", QTextOption(Qt::AlignHCenter));
-
-		painter.setFont(czcionkaNormalna);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.35, szerokoscEkranu, 100), "Michał Wolski", QTextOption(Qt::AlignHCenter));
-
-		painter.setFont(czcionkaSrednia);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.41, szerokoscEkranu, 100), "Dodatkowe zadania:", QTextOption(Qt::AlignHCenter));
+		painter.setFont(czcionkaTytulu);
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.45, szerokoscEkranu, 100), "Grafika:", QTextOption(Qt::AlignHCenter));
 
 		painter.setFont(czcionkaNormalna);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.bottom() + wysokoscEkranu * 0.47, szerokoscEkranu, 100), "Ewelina Kunikowska", QTextOption(Qt::AlignHCenter));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.52, szerokoscEkranu, 100), "Michał Wolski", QTextOption(Qt::AlignHCenter));
 
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Wróć [%1]").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+		painter.setFont(czcionkaTytulu);
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.61, szerokoscEkranu, 100), "Dodatkowe zadania:", QTextOption(Qt::AlignHCenter));
+
+		painter.setFont(czcionkaNormalna);
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.68, szerokoscEkranu, 100), "Ewelina Kunikowska", QTextOption(Qt::AlignHCenter));
+
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Wróć", QTextOption(Qt::AlignRight));
+
+		if(sterowanie == "gamepad")
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.84, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		 else
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.70, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
 	} else if(this->tryb == POMOC) {
 		if(this->pozycja == 1) {
 			painter.drawPixmap(0, 0, szerokoscEkranu, wysokoscEkranu, QPixmap(qApp->applicationDirPath() + QString("/pomoc/%1.png").arg((sterowanie == "gamepad")?"pad":"klawiatura")));

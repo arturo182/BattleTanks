@@ -35,8 +35,8 @@ QRectF Gracz::boundingRect() const
 
 void Gracz::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	QPoint lastPos = event->lastPos().toPoint();
-	QPoint pos = event->pos().toPoint();
+	QPoint lastPos = event->lastScenePos().toPoint();
+	QPoint pos = event->scenePos().toPoint();
 	QPoint delta = pos - lastPos;
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {

@@ -12,6 +12,8 @@ class Widzety
 		static void tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QStringList> &rekordy, int strona = 1);
 		static void lustrzanyObrazek(QPainter &painter, const QRectF &r, const QPixmap &obrazek);
 		static void schodkiGlosnosci(QPainter &painter, const QRectF &r, int wartosc);
+		static void przyciskGamepada(QPainter &painter, const QRectF &r, const QString &numer);
+		static void przyciskKlawiatury(QPainter &painter, const QRectF &r, const QString &tekst);
 };
 
 #endif // WIDZETY_H

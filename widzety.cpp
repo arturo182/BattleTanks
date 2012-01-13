@@ -2,14 +2,14 @@
 
 void Widzety::cieniowanyTekst(QPainter &painter, const QRectF &r, const QString &text, const QTextOption &o)
 {
-	QPen pen = painter.pen();
+	painter.save();
 
 	int margines = painter.fontMetrics().height() / 10;
 
 	painter.setPen(Qt::black);
 	painter.drawText(r.adjusted(margines, margines, 0, 0), text, o);
 
-	painter.setPen(pen);
+	painter.restore();
 	painter.drawText(r, text, o);
 }
 
@@ -132,4 +132,43 @@ void Widzety::schodkiGlosnosci(QPainter &painter, const QRectF &r, int wartosc)
 	//biale paski
 	for(int j = 0; j < wartosc; j++)
 		painter.fillRect(QRectF(r.left() + gruboscPaska * (j * 2) - margines, r.top() + maxWysokosc * (9 - j) * 0.1 - margines, gruboscPaska, maxWysokosc * (j + 1) * 0.1), Qt::white);
+}
+
+void Widzety::przyciskGamepada(QPainter &painter, const QRectF &r, const QString &numer)
+{
+	painter.save();
+
+	painter.setPen(Qt::black);
+	painter.setBrush(Qt::black);
+	painter.drawEllipse(r.adjusted(-1, -1, 1, 1));
+
+	painter.setPen(QColor("#171717"));
+	painter.setBrush(QColor("#080808"));
+	painter.drawEllipse(r);
+
+	painter.setPen(Qt::white);
+	QFont f = painter.font();
+	f.setPixelSize(r.height() * 0.6);
+	painter.setFont(f);
+	painter.drawText(r, numer, QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
+
+	painter.restore();
+}
+
+void Widzety::przyciskKlawiatury(QPainter &painter, const QRectF &r, const QString &tekst)
+{
+	painter.save();
+
+	painter.setPen(QColor("#bfbfbf"));
+	painter.setBrush(QColor("#deddaf"));
+	painter.drawRect(r);
+
+	painter.setPen(Qt::black);
+	QFont f = painter.font();
+	f.setPixelSize(r.height() * 0.4);
+	painter.setFont(f);
+
+	painter.drawText(r, tekst, QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
+
+	painter.restore();
 }
