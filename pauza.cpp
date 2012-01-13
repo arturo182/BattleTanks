@@ -203,12 +203,12 @@ void Pauza::wczytajUstawienia()
 void Pauza::zapiszUstawienia()
 {
 	//transakcja!
-	QSqlQuery("BEGIN;");
+	QSqlQuery("BEGIN;", QSqlDatabase::database("dbUstawienia"));
 	this->bazaDanych->zapiszUstawienie("glosnosc", this->glosnosc);
 	this->bazaDanych->zapiszUstawienie("jakosc", this->jakosc);
 	this->bazaDanych->zapiszUstawienie("rozdzielczosc", this->rozdzielczosc);
 	this->bazaDanych->zapiszUstawienie("sterowanie", this->sterowanie);
-	QSqlQuery("END;");
+	QSqlQuery("END;", QSqlDatabase::database("dbUstawienia"));
 
 	this->ekran->ustawRozdzielczosc(qStringToSize(this->rozdzielczosc));
 	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);

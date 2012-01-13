@@ -40,7 +40,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 
 	if(this->tryb == WYBOR_TRYBU) {
 		if(akcja == Silnik::WYBIERZ) {
-			Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->trybGry = this->pozycja;
 			this->wczytajMapy();
 			this->tryb = WYBOR_MAPY;
@@ -51,7 +51,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja = 2;
 		} else if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
@@ -63,7 +63,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			this->muzyka->stop();
 			return Silnik::ROZGRYWKA;
 		} else if(akcja == Silnik::COFNIJ) {
-			Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
+			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->pozycja = 1;
 			this->tryb = WYBOR_TRYBU;
 		} else if(akcja == Silnik::LEWO) {
@@ -256,14 +256,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			if(this->profile.count()) {
 				int id = this->bazaDanych->idProfilu(this->profile.at(this->pozycja-1));
 
-				QSqlQuery query;
-				query.prepare("DELETE FROM profile WHERE profil_id = :id;");
-				query.bindValue(":id", id);
-				query.exec();
-
-				query.prepare("DELETE FROM rekordy WHERE profil_id = :id;");
-				query.bindValue(":id", id);
-				query.exec();
+				this->bazaDanych->usunProfil(id);
 
 				wczytajProfile();
 			}
@@ -377,15 +370,11 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->nowyProfil.chop(1);
 			else if(this->pozycja == 40) {
 				if(this->nowyProfil.trimmed().length()) {
-					QSqlQuery query;
-					query.prepare("INSERT INTO profile(nazwa) VALUES (:nazwa);");
-					query.bindValue(":nazwa", this->nowyProfil);
-					query.exec();
-
+					this->bazaDanych->dodajProfil(this->nowyProfil);
 					wczytajProfile();
 				}
 
-				Dzwiek::odtworz("dzwieki/menu_wybierz.mp3");
+				Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 				this->pozycja = 1;
 				this->tryb = WYBOR_PROFILU;
 			}
@@ -785,12 +774,12 @@ void Menu::wczytajUstawienia()
 void Menu::zapiszUstawienia()
 {
 	//transakcja!
-	QSqlQuery("BEGIN;");
+	QSqlQuery("BEGIN;", QSqlDatabase::database("dbUstawienia"));
 	this->bazaDanych->zapiszUstawienie("glosnosc", this->glosnosc);
 	this->bazaDanych->zapiszUstawienie("jakosc", this->jakosc);
 	this->bazaDanych->zapiszUstawienie("rozdzielczosc", this->rozdzielczosc);
 	this->bazaDanych->zapiszUstawienie("sterowanie", this->sterowanie);
-	QSqlQuery("END;");
+	QSqlQuery("END;", QSqlDatabase::database("dbUstawienia"));
 
 	this->ekran->ustawRozdzielczosc(qStringToSize(this->rozdzielczosc));
 	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);

@@ -10,6 +10,8 @@ class BazaDanych{
 	bool polacz();
 
 	QStringList profile() const;
+	void dodajProfil(const QString &nazwa) const;
+	void usunProfil(int id) const;
 	int idProfilu(const QString &nazwa) const;
 
 	QList<QStringList> rekordy() const;
