@@ -176,7 +176,14 @@ void Pauza::rysuj() const{
 		Widzety::przyciskUstawien(painter, QRectF(szerokoscEkranu * 0.7, wysokoscEkranu * 0.7, szerokoscEkranu * 0.19, wysokoscEkranu * 0.06), this->sterowanie, this->sterowanie != "gamepad", this->sterowanie != "klawiatura");
 
 		painter.setPen(Qt::white);
-		Widzety::cieniowanyTekst(painter, QRectF(0, obszarTytulu.y() + wysokoscEkranu * 0.8, szerokoscEkranu * 0.9, 100), QString("Akceptuj [%1]      Anuluj [%2]").arg((sterowanie == "gamepad")?"Przycisk 2":"Enter").arg((sterowanie == "gamepad")?"Przycisk 4":"Backspace"), QTextOption(Qt::AlignRight));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Akceptuj          Anuluj", QTextOption(Qt::AlignRight));
+		if(sterowanie == "gamepad") {
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Akceptuj          Anuluj").width() - 35 * Obiekt::skala, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "2");
+			Widzety::przyciskGamepada(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Anuluj").width() - 35 * Obiekt::skala, wysokoscEkranu * 0.902, 35 * Obiekt::skala, 35 * Obiekt::skala), "4");
+		} else {
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Akceptuj          Anuluj").width() - 70 * Obiekt::skala, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
+			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Anuluj").width() - 70 * Obiekt::skala, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
+		}
 	}
 
 	painter.end();
