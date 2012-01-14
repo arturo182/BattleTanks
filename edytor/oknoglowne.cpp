@@ -110,7 +110,6 @@ void OknoGlowne::nowaPlansza()
 
 void OknoGlowne::wczytajPlansze()
 {
-	this->sprawdzZapis();
 	QString nazwaPliku = QFileDialog::getOpenFileName(this, "Wczytaj plansze", "", "Plansze (*.dat)");
 	if(!nazwaPliku.isEmpty()) {
 		this->nowaPlansza();
@@ -124,18 +123,19 @@ void OknoGlowne::wczytajPlansze()
 		if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly))
 			return;
 
-		int iloscElementow, iloscWierzcholkow;
+		int iloscElementow, id, num1, num2;
 		QPoint punkt;
+		float real;
 
 		QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 
 		//przeszkody
 		mapaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> iloscWierzcholkow;
+			mapaSpecyfikacjaDane >> num1;
 
-			QPolygon przeszkoda(iloscWierzcholkow);
-			for(int j = 0; j < iloscWierzcholkow; j++){
+			QPolygon przeszkoda(num1);
+			for(int j = 0; j < num1; j++){
 				mapaSpecyfikacjaDane >> punkt;
 				przeszkoda.setPoint(j, punkt);
 			}
@@ -155,33 +155,46 @@ void OknoGlowne::wczytajPlansze()
 			waypointy << waypoint;
 		}
 
-		int poczatek, koniec;
-
 		//sciezki
 		mapaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> poczatek;
-			mapaSpecyfikacjaDane >> koniec;
+			mapaSpecyfikacjaDane >> num1;
+			mapaSpecyfikacjaDane >> num2;
 
-			this->scena->dodajSciezke(waypointy.at(poczatek), waypointy.at(koniec));
+			this->scena->dodajSciezke(waypointy.at(num1), waypointy.at(num2));
 		}
 
-		float zwrotGracza;
 
+		//pozycja gracza
 		mapaSpecyfikacjaDane >> this->pojazdGracza;
 		mapaSpecyfikacjaDane >> punkt;
-		mapaSpecyfikacjaDane >> zwrotGracza;
+		mapaSpecyfikacjaDane >> real;
 
 		if(!punkt.isNull())
-			this->scena->dodajGracza(punkt)->setRotation(-(zwrotGracza * 180 / M_PI));
+			this->scena->dodajGracza(punkt)->setRotation(-(real * 180 / M_PI));
 
+		//pociski
 		mapaSpecyfikacjaDane >> iloscElementow;
-		int id, ilosc;
 		for(int i = 0; i < iloscElementow; i++){
 			mapaSpecyfikacjaDane >> id;
-			mapaSpecyfikacjaDane >> ilosc;
+			mapaSpecyfikacjaDane >> num1;
 
-			this->pociskiGracza.insert(id, ilosc);
+			this->pociskiGracza.insert(id, num1);
+		}
+
+		//pojazdy obce
+		mapaSpecyfikacjaDane >> iloscElementow;
+		for(int i = 0; i < iloscElementow; i++){
+			mapaSpecyfikacjaDane >> id;
+			mapaSpecyfikacjaDane >> num1;
+			mapaSpecyfikacjaDane >> real;
+			mapaSpecyfikacjaDane >> num2;
+
+			Waypoint *waypoint = waypointy.at(num1);
+			waypoint->obcyPojazd->pojazd = id;
+			waypoint->obcyPojazd->zwrot = real;
+			waypoint->obcyPojazd->pocisk = num2;
+			waypoint->aktualizujKsztalt();
 		}
 
 		mapaSpecyfikacjaPlik.close();
@@ -225,9 +238,7 @@ void OknoGlowne::zaznaczGalaz()
 void OknoGlowne::edytujSpecyfikacje()
 {
 	OknoSpecyfikacji spec(this->plikTla, this->pojazdGracza, this->pociskiGracza, this);
-	int ret = spec.exec();
-
-	if(ret == QDialog::Accepted) {
+	if(spec.exec() == QDialog::Accepted) {
 		if(this->plikTla != spec.plikTla) {
 			this->plikTla = spec.plikTla;
 			this->scenaZmieniona();
@@ -393,14 +404,19 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 	QList<Sciezka*> sciezki;
 	QPoint pozycjaGracza;
 	float zwrotGracza;
+	int obcePojazdy = 0;
 
 	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
 		if(item->type() == Przeszkoda::Type) {
 			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item))
 				przeszkody << przeszkoda;
 		} else if(item->type() == Waypoint::Type) {
-			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item))
+			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item)) {
 				waypointy << waypoint;
+
+				if(waypoint->obcyPojazd->pojazd > -1)
+					obcePojazdy++;
+			}
 		} else if(item->type() == Sciezka::Type) {
 			if(Sciezka *sciezka = qgraphicsitem_cast<Sciezka*>(item))
 				sciezki << sciezka;
@@ -442,6 +458,16 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 		mapaSpecyfikacjaDane << it.key() << it.value();
 	}
 
+	mapaSpecyfikacjaDane << obcePojazdy;
+	foreach(Waypoint *waypoint, waypointy) {
+		if(waypoint->obcyPojazd->pojazd > -1) {
+			mapaSpecyfikacjaDane << waypoint->obcyPojazd->pojazd;
+			mapaSpecyfikacjaDane << waypointy.indexOf(waypoint);
+			mapaSpecyfikacjaDane << waypoint->obcyPojazd->zwrot;
+			mapaSpecyfikacjaDane << waypoint->obcyPojazd->pocisk;
+		}
+	}
+
 
 	mapaSpecyfikacjaPlik.close();
 
@@ -465,6 +491,7 @@ void OknoGlowne::ustawTryb(Scena::Tryb tryb)
 	this->ui->actionDodajPunktRuchu->setChecked(tryb == Scena::DODAWANIE_WAYPOINTU);
 	this->ui->actionLaczeniePunktowRuchu->setChecked(tryb == Scena::LACZENIE_WAYPOINTOW);
 	this->ui->actionUstawPunktPoczatkowy->setChecked(tryb == Scena::POZYCJA_GRACZA);
+	this->ui->actionDodajObcyPojazd->setChecked(tryb == Scena::OBCY_POJAZD);
 
 	this->ui->graphicsView->setDragMode((tryb == Scena::PRZESUWANIE_WIDOKU) ? QGraphicsView::ScrollHandDrag : QGraphicsView::NoDrag);
 
@@ -571,6 +598,11 @@ void OknoGlowne::trybPozycjiGracza()
 	this->ustawTryb(Scena::POZYCJA_GRACZA);
 }
 
+void OknoGlowne::trybObcegoPojazdu()
+{
+	this->ustawTryb(Scena::OBCY_POJAZD);
+}
+
 void OknoGlowne::wczytajBazeDanych()
 {
 	//	nawiazanie polaczenia z baza
@@ -588,7 +620,7 @@ void OknoGlowne::przenumerujWaypointy()
 		if(item->type() == Waypoint::Type) {
 			Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item);
 			waypoint->id = id;
-			this->tabelaElementow.key(waypoint)->setText(0, "Przeszkoda #" + QString::number(id));
+			this->tabelaElementow.key(waypoint)->setText(0, "Punkt #" + QString::number(id));
 			waypoint->update();
 			id++;
 		}
@@ -599,11 +631,11 @@ void OknoGlowne::przenumerujPrzeszkody()
 {
 	int id = 0;
 	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
-		if(item->type() == Waypoint::Type) {
-			Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item);
-			waypoint->id = id;
-			this->tabelaElementow.key(waypoint)->setText(0, "Przeszkoda #" + QString::number(id));
-			waypoint->update();
+		if(item->type() == Przeszkoda::Type) {
+			Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item);
+			przeszkoda->id = id;
+			this->tabelaElementow.key(przeszkoda)->setText(0, "Przeszkoda #" + QString::number(id));
+			przeszkoda->update();
 			id++;
 		}
 	}

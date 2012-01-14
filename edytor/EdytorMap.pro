@@ -11,7 +11,8 @@ SOURCES += main.cpp\
     sciezka.cpp \
     oknospecyfikacji.cpp \
     oknoglowne.cpp \
-    gracz.cpp
+    gracz.cpp \
+    oknopojazduobcego.cpp
 
 HEADERS  += \
     scena.h \
@@ -20,11 +21,13 @@ HEADERS  += \
     sciezka.h \
     oknospecyfikacji.h \
     oknoglowne.h \
-    gracz.h
+    gracz.h \
+    oknopojazduobcego.h
 
 FORMS    += \
     oknospecyfikacji.ui \
-    oknoglowne.ui
+    oknoglowne.ui \
+    oknopojazduobcego.ui
 
 RESOURCES += \
     res.qrc

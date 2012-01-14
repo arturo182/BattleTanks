@@ -16,6 +16,8 @@ class Przeszkoda : public QObject, public QGraphicsPolygonItem
 		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 		int type() const { return Type; }
 
+		int id;
+
 	signals:
 		void pozycjaZmieniona();
 		void wierzcholekZmieniony();

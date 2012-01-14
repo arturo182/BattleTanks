@@ -18,7 +18,8 @@ class Scena : public QGraphicsScene
 			DODAWANIE_PRZESZKODY,
 			DODAWANIE_WAYPOINTU,
 			LACZENIE_WAYPOINTOW,
-			POZYCJA_GRACZA
+			POZYCJA_GRACZA,
+			OBCY_POJAZD
 		};
 
 	public:

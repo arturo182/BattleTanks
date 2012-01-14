@@ -10,8 +10,9 @@
 #include <qmath.h>
 
 Przeszkoda::Przeszkoda(const QPolygon &polygon):
-	QGraphicsPolygonItem(polygon),
-	punktUchwytu(-1)
+QGraphicsPolygonItem(polygon),
+id(0),
+punktUchwytu(-1)
 {
 	this->setPen(QPen(Qt::red, 2));
 	this->setBrush(QColor(255, 0, 0, 128));

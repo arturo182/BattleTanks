@@ -40,8 +40,6 @@ ui(new Ui::OknoSpecyfikacji)
 	while(query.next()) {
 		int id = query.value(0).toInt();
 		QString nazwa = query.value(1).toString();
-
-		this->pojazdyBaza.insert(id, nazwa);
 		this->ui->graczComboBox->addItem(QIcon("grafika/pojazdy/" + nazwa + "Korpus.png"), nazwa, id);
 
 		if(id == pojazdGracza)

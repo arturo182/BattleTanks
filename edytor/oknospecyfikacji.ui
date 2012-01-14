@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>Specyfikacja planszy</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="res.qrc">
+    <normaloff>:/ikony/map.png</normaloff>:/ikony/map.png</iconset>
+  </property>
   <layout class="QVBoxLayout" name="verticalLayout_3">
    <property name="margin">
     <number>6</number>
@@ -180,7 +184,9 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="res.qrc"/>
+ </resources>
  <connections>
   <connection>
    <sender>tloPrzegladajButton</sender>

@@ -22,5 +22,6 @@
         <file>ikony/flag_checked.png</file>
         <file>ikony/joystick.png</file>
         <file>ikony/rotate_icon.png</file>
+        <file>ikony/computer.png</file>
     </qresource>
 </RCC>

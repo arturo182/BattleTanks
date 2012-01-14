@@ -35,7 +35,6 @@ class OknoSpecyfikacji : public QDialog
 	private:
 		Ui::OknoSpecyfikacji *ui;
 		QMap<int, QString> pociskiBaza;
-		QMap<int, QString> pojazdyBaza;
 };
 
 #endif // OKNOSPECYFIKACJI_H

@@ -70,6 +70,7 @@
     <addaction name="actionLaczeniePunktowRuchu"/>
     <addaction name="separator"/>
     <addaction name="actionUstawPunktPoczatkowy"/>
+    <addaction name="actionDodajObcyPojazd"/>
    </widget>
    <addaction name="menuPlik"/>
    <addaction name="menuWidok"/>
@@ -130,6 +131,7 @@
    <addaction name="actionDodajPunktRuchu"/>
    <addaction name="actionLaczeniePunktowRuchu"/>
    <addaction name="actionUstawPunktPoczatkowy"/>
+   <addaction name="actionDodajObcyPojazd"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="maximumSize">
@@ -483,6 +485,24 @@
    <property name="toolTip">
     <string>Ustaw punkt początkowy gracza</string>
    </property>
+   <property name="shortcut">
+    <string>Ctrl+8</string>
+   </property>
+  </action>
+  <action name="actionDodajObcyPojazd">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/computer.png</normaloff>:/ikony/computer.png</iconset>
+   </property>
+   <property name="text">
+    <string>Dodaj obcy pojazd</string>
+   </property>
+   <property name="shortcut">
+    <string>Ctrl+9</string>
+   </property>
   </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
@@ -778,6 +798,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionDodajObcyPojazd</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybObcegoPojazdu()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>wczytajPlansze()</slot>
@@ -797,5 +833,6 @@
   <slot>trybDodawaniaWaypointow()</slot>
   <slot>edytujSpecyfikacje()</slot>
   <slot>trybPozycjiGracza()</slot>
+  <slot>trybObcegoPojazdu()</slot>
  </slots>
 </ui>

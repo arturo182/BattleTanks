@@ -8,6 +8,7 @@
 #include <QSqlError>
 #include <QVariant>
 #include <QDebug>
+#include <QDir>
 
 BazaDanych::BazaDanych(){
 }
@@ -55,7 +56,8 @@ bool BazaDanych::polacz(){
 
 	// baza ustawien
 	QSqlDatabase dbUstawienia = QSqlDatabase::addDatabase("QSQLITE", "dbUstawienia");
-	dbUstawienia.setDatabaseName(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "ustawienia.db");
+	QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).mkpath(".");
+	dbUstawienia.setDatabaseName(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/ustawienia.db");
 	if(!dbUstawienia.open()) {
 		qDebug() << "Nie udalo sie poalczyc z baza danych" << dbUstawienia.databaseName() << dbUstawienia.lastError().text();
 		return false;

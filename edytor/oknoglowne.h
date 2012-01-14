@@ -51,6 +51,7 @@ class OknoGlowne : public QMainWindow{
 		void on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 		void trybLaczeniaWaypointow();
 		void trybPozycjiGracza();
+		void trybObcegoPojazdu();
 		void wczytajBazeDanych();
 		void przenumerujWaypointy();
 		void przenumerujPrzeszkody();

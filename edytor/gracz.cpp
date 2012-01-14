@@ -40,7 +40,7 @@ void Gracz::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 	QPoint delta = pos - lastPos;
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
-		if(uchwyt) {
+		if(this->uchwyt) {
 			int kat = qRound(qAtan2(this->pos().x() - event->scenePos().x(), this->pos().y() - event->scenePos().y()) * (180 / M_PI));
 			kat += 90;
 
@@ -60,11 +60,14 @@ void Gracz::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 void Gracz::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
-	QPoint pos = event->pos().toPoint();
-	QRect uchwyt(QPoint(77, -3), QSize(6, 6));
-
-	this->uchwyt = uchwyt.contains(pos);
 	QGraphicsPathItem::mousePressEvent(event);
+
+	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
+		QPoint pos = event->pos().toPoint();
+		QRect uchwyt(QPoint(77, -3), QSize(6, 6));
+
+		this->uchwyt = uchwyt.contains(pos);
+	}
 }
 
 void Gracz::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
