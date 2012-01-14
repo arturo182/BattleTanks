@@ -1,6 +1,7 @@
 #include "silnik.h"
 #include "klawiatura.h"
 #include "bazadanych.h"
+#include "ladowanie.h"
 #include "funkcje.h"
 #include "plansza.h"
 #include "gamepad.h"
@@ -15,35 +16,11 @@
 #include <QDebug>
 
 Silnik::Silnik():
+tryb(LADOWANIE),
 ramki(0),
 milisekundy(0),
 fps(0){
-	this->bazaDanych = new BazaDanych;
-	this->bazaDanych->polacz();
 
-	if(this->bazaDanych->ustawienie("sterowanie", "gamepad").toString() == "gamepad")
-		this->urzadzenieWejscia = new Gamepad;
-	else
-		this->urzadzenieWejscia = new Klawiatura;
-
-	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
-	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
-	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
-//	this->ekran = new Ekran(QSize(1024, 768), jakosc);
-
-	this->plansza = new Plansza(this->ekran);
-
-	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);
-	Tekstura::przeskalujWszystko(Obiekt::skala);
-
-	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza);
-	this->pauza = new Pauza(this->ekran, this->bazaDanych, this->plansza);
-	this->logika = new Logika(this->plansza);
-
-	this->urzadzenieWejscia->otworz();
-	Dzwiek::glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
-
-	this->zaladujSpecyfikacjeObiektow();
 }
 
 Silnik::~Silnik(){
@@ -56,6 +33,70 @@ Silnik::~Silnik(){
 
 	//to robi krzak na koncu programu, do dalszego zbadania
 	//delete this->urzadzenieWejscia;
+}
+
+void Silnik::uruchom()
+{
+	this->czasOstatniegoOdswiezenia = QTime::currentTime();
+
+	//baza danych
+	this->bazaDanych = new BazaDanych;
+	this->bazaDanych->polacz();
+
+	//ekran
+	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
+	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
+
+	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
+//	this->ekran = new Ekran(QSize(1024, 768), jakosc);
+	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);
+
+	//ladowanie
+	this->ladowanie = new Ladowanie(this->ekran);
+	this->ekran->show();
+	this->odswiezLadowanie(0.0, "Ładowanie urządzenia wejścia");
+
+	//urzadzenie wejscia
+	if(this->bazaDanych->ustawienie("sterowanie", "gamepad").toString() == "gamepad")
+		this->urzadzenieWejscia = new Gamepad;
+	else
+		this->urzadzenieWejscia = new Klawiatura;
+	this->odswiezLadowanie(0.05, "Tworzenie planszy");
+
+	//plansza
+	this->plansza = new Plansza(this->ekran);
+	this->odswiezLadowanie(0.1, "Skalowanie tekstur");
+
+	//skalowanie tekstur
+	Tekstura::przeskalujWszystko(Obiekt::skala);
+	this->odswiezLadowanie(0.15, "Tworzenie menu");
+
+	//menu
+	this->menu = new Menu(this->ekran, this->bazaDanych, this->plansza, this->ladowanie);
+	this->odswiezLadowanie(0.70, "Tworzenie ekranu pauzy");
+
+	//pauza
+	this->pauza = new Pauza(this->ekran, this->bazaDanych, this->plansza);
+	this->odswiezLadowanie(0.75, "Tworzenie logiki");
+
+	//logika
+	this->logika = new Logika(this->plansza);
+	this->odswiezLadowanie(0.70, "Inicjalizacja urządzenia wejścia");
+
+	//inicjalizacja urzadzenia wejscia
+	this->urzadzenieWejscia->otworz();
+	this->odswiezLadowanie(0.85, "Ustawienie głośności");
+
+	//glosnosc
+	Dzwiek::glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
+	this->odswiezLadowanie(0.90, "Ładowanie specyfikacji obiektów");
+
+	//ladowanie specyfikacji
+	this->zaladujSpecyfikacjeObiektow();
+	this->odswiezLadowanie(1.0, "Ładowanie ukończone");
+
+	//gotowe!!
+	this->tryb = MENU;
 }
 
 void Silnik::zaladujSpecyfikacjeObiektow(){
@@ -177,6 +218,11 @@ void Silnik::odswiezPauze(int milisekundy)
 		this->pauza->rysuj();
 }
 
+void Silnik::odswiezLadowanie(float postep, const QString &opis)
+{
+	this->ladowanie->odswiez(postep, opis);
+}
+
 Silnik::Akcja Silnik::aktualnaAkcja() const
 {
 	if(urzadzenieWejscia->statusNawigatorWcisniecie() & UrzadzenieWejscia::GORA)
@@ -241,12 +287,6 @@ void Silnik::odswiez(){
 	painter.fillPath(path, QBrush(Qt::yellow));
 
 	this->czasOstatniegoOdswiezenia = czasAktualny;
-}
-
-void Silnik::uruchom(){
-	this->tryb = MENU;
-	this->czasOstatniegoOdswiezenia = QTime::currentTime();
-	this->ekran->show();
 }
 
 bool Silnik::czyWyjsc() const

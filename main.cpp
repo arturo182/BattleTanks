@@ -9,7 +9,6 @@ int main(int argc, char* argv[]){
 
 	Silnik silnik;
 	silnik.uruchom();
-
 	forever {
 		app.processEvents();
 		silnik.odswiez();

@@ -550,14 +550,7 @@ void OknoGlowne::zerujZoom()
 
 void OknoGlowne::trybDodawaniaPrzeszkod()
 {
-	bool ok = false;
-	int boki = QInputDialog::getInt(this, "Podaj ilosc bokow", "Ilosc bokow:", 3, 3, 100, 1, &ok);
-	if(ok) {
-		this->ustawTryb(Scena::DODAWANIE_PRZESZKODY);
-		this->scena->setProperty("boki", boki);
-	} else {
-		this->aktualizujTryb();
-	}
+	this->ustawTryb(Scena::DODAWANIE_PRZESZKODY);
 }
 
 void OknoGlowne::trybDodawaniaWaypointow()

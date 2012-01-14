@@ -13,7 +13,8 @@
 
 Scena::Scena(const QRectF &prostokat):
 QGraphicsScene(prostokat),
-linia(0)
+linia(0),
+przeszkoda(0)
 {
 }
 
@@ -68,19 +69,8 @@ Gracz *Scena::dodajGracza(const QPointF &punkt)
 void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(this->trybSceny == Scena::DODAWANIE_PRZESZKODY) {
-		int boki = this->property("boki").toInt();
-
-		QPointF srodek = event->scenePos();
-		double r = 100.0;
-		QPolygonF poly;
-		float alfa;
-
-		for(int i = 0; i < boki; i++) {
-			alfa = 2.0 * M_PI * i / boki;
-			poly.push_back(srodek + r * QPointF(qSin(alfa), -qCos(alfa)));
-		}
-
-		this->dodajPrzeszkode(poly.toPolygon());
+		this->przeszkoda = new Przeszkoda(QPolygon(QRect(event->scenePos().toPoint(), QSize(1, 1))));
+		this->addItem(this->przeszkoda);
 	} else if(this->trybSceny == Scena::DODAWANIE_WAYPOINTU) {
 		this->dodajWaypoint(event->scenePos().toPoint());
 	} else if(this->trybSceny == Scena::POZYCJA_GRACZA) {
@@ -91,7 +81,7 @@ void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 	} else if(this->trybSceny ==  Scena::LACZENIE_WAYPOINTOW) {
 		this->linia = new QGraphicsLineItem(QLineF(event->scenePos(),  event->scenePos()));
 		this->linia->setPen(QPen(Qt::green, 2));
-		this->addItem(linia);
+		this->addItem(this->linia);
 	}
 
 	QGraphicsScene::mousePressEvent(event);
@@ -99,9 +89,16 @@ void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 void Scena::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 {
-	if(this->trybSceny == Scena::LACZENIE_WAYPOINTOW)
+	if(this->trybSceny == Scena::LACZENIE_WAYPOINTOW) {
 		if(this->linia != 0)
 			this->linia->setLine(QLineF(this->linia->line().p1(), event->scenePos()));
+	} else if(this->trybSceny == Scena::DODAWANIE_PRZESZKODY) {
+		if(this->przeszkoda != 0) {
+			QPointF topLeft = this->przeszkoda->polygon().first();
+
+			this->przeszkoda->setPolygon(QRectF(topLeft, event->scenePos()));
+		}
+	}
 
 	QGraphicsScene::mouseMoveEvent(event);
 }
@@ -140,9 +137,17 @@ void Scena::mouseReleaseEvent(QGraphicsSceneMouseEvent *event)
 				 }
 			 }
 		 }
-	 }
+	} else if(this->przeszkoda != 0 && this->trybSceny == Scena::DODAWANIE_PRZESZKODY) {
+		this->removeItem(this->przeszkoda);
 
-	 this->linia = 0;
+		if(!this->przeszkoda->polygon().boundingRect().isEmpty())
+			this->dodajPrzeszkode(this->przeszkoda->polygon().toPolygon());
+
+		delete this->przeszkoda;
+	}
+
+	this->przeszkoda = 0;
+	this->linia = 0;
 
 	QGraphicsScene::mouseReleaseEvent(event);
 }

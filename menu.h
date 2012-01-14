@@ -14,6 +14,7 @@ namespace Phonon
 }
 
 class BazaDanych;
+class Ladowanie;
 class Plansza;
 class Ekran;
 
@@ -38,18 +39,14 @@ class Menu: public QObject{
 	Ekran* ekran;
 	BazaDanych* bazaDanych;
 	Plansza* plansza;
+	Ladowanie* ladowanie;
 	Tryb tryb;
 	int pozycja;
-	int zaznaczenie;
-	int idGracza;
-	int trybGry;
-	QString nowyProfil;
 	QStringList alfabet;
 	QStringList profile;
 	QList<QStringList> plansze;
 	QMap<QString, QPixmap> miniPlansze;
 	QList<QStringList> rekordy;
-	bool shift;
 	QPixmap tloPixmapa;
 	QPixmap logoPixmapa;
 	QPixmap trybyPixmapa[4];
@@ -60,7 +57,7 @@ class Menu: public QObject{
 	QString sterowanie;
 
   public:
-	Menu(Ekran*, BazaDanych*, Plansza*);
+	Menu(Ekran*, BazaDanych*, Plansza*, Ladowanie*);
 
 	Silnik::Tryb odswiez(int, Silnik::Akcja);
 	void rysuj() const;
@@ -71,6 +68,7 @@ class Menu: public QObject{
 	void zapetlMuzyke();
 
   private:
+	void ustawTryb(Tryb tryb);
 	void wczytajProfile();
 	void wczytajRekordy();
 	void wczytajMuzyke();

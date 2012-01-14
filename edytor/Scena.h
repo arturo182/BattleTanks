@@ -3,6 +3,8 @@
 
 #include <QGraphicsScene>
 
+class Przeszkoda;
+
 class Scena : public QGraphicsScene
 {
 	Q_OBJECT
@@ -47,6 +49,7 @@ class Scena : public QGraphicsScene
 
 	private:
 		QGraphicsLineItem *linia;
+		Przeszkoda *przeszkoda;
 		Tryb trybSceny;
 };
 

@@ -13,8 +13,8 @@ class Przeszkoda : public QObject, public QGraphicsPolygonItem
 		Przeszkoda(const QPolygon &polygon);
 
 		QRectF boundingRect() const;
-		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 		int type() const { return Type; }
+		void setPolygon(const QPolygonF &polygon);
 
 		int id;
 
@@ -23,6 +23,7 @@ class Przeszkoda : public QObject, public QGraphicsPolygonItem
 		void wierzcholekZmieniony();
 
 	protected:
+		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget = 0);
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);
 		void mouseReleaseEvent(QGraphicsSceneMouseEvent *event);
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
@@ -30,6 +31,7 @@ class Przeszkoda : public QObject, public QGraphicsPolygonItem
 
 	private:
 		int uchwytNaPozycji(const QPoint &pos);
+		bool czyWypukly();
 
 	private:
 		int punktUchwytu;

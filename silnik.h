@@ -5,6 +5,7 @@
 
 class UrzadzenieWejscia;
 class BazaDanych;
+class Ladowanie;
 class Plansza;
 class Logika;
 class Ekran;
@@ -16,6 +17,7 @@ class Silnik: public QObject{
 
 	public:
 		enum Tryb{
+			LADOWANIE = 0,
 			MENU,
 			ROZGRYWKA,
 			PAUZA,
@@ -40,6 +42,7 @@ class Silnik: public QObject{
 		BazaDanych* bazaDanych;
 		Plansza* plansza;
 		Menu* menu;
+		Ladowanie *ladowanie;
 		Pauza* pauza;
 		Logika* logika;
 		Tryb tryb;
@@ -52,6 +55,7 @@ class Silnik: public QObject{
 		void odswiezMenu(int);
 		void odswiezRozgrywke(int);
 		void odswiezPauze(int);
+		void odswiezLadowanie(float, const QString &opis);
 		Akcja aktualnaAkcja() const;
 
 	public slots:
