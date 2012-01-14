@@ -25,6 +25,7 @@ shift(false){
 	this->wczytajMuzyke();
 	this->wczytajGrafiki();
 	this->wczytajProfile();
+	this->wczytajMiniPlansze();
 
 	for(int i = 0; i <= 9; i++)
 		this->alfabet.append(QString::number(i));
@@ -42,9 +43,9 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		if(akcja == Silnik::WYBIERZ) {
 			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->trybGry = this->pozycja;
-			this->wczytajMapy();
+			this->wczytajPlansze();
 			this->pozycja = 1;
-			this->tryb = WYBOR_MAPY;
+			this->tryb = WYBOR_PLANSZY;
 		} else if(akcja == Silnik::LEWO) {
 			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
 			this->pozycja = 1;
@@ -56,9 +57,9 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			this->pozycja = 1;
 			this->tryb = MENU_GLOWNE;
 		}
-	} else if(this->tryb == WYBOR_MAPY) {
+	} else if(this->tryb == WYBOR_PLANSZY) {
 		if(akcja == Silnik::WYBIERZ) {
-			this->plansza->zaladuj(this->mapy.at(this->pozycja-1).at(2));
+			this->plansza->zaladuj(this->plansze.at(this->pozycja-1).at(2));
 			this->tryb = MENU_GLOWNE;
 			this->pozycja = 1;
 			this->muzyka->stop();
@@ -71,7 +72,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			if(this->pozycja > 1)
 				this->pozycja--;
 		} else if(akcja == Silnik::PRAWO) {
-			if(this->pozycja < this->mapy.count())
+			if(this->pozycja < this->plansze.count())
 				this->pozycja++;
 		}
 	} else if(this->tryb == REKORDY) {
@@ -549,13 +550,13 @@ void Menu::rysuj() const{
 			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.73, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
 			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.82, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
 		}
-	} else if(this->tryb == WYBOR_MAPY) {
+	} else if(this->tryb == WYBOR_PLANSZY) {
 		painter.setFont(czcionkaTytulu);
-		Widzety::cieniowanyTekst(painter, obszarTytulu, "Mapa:", QTextOption(Qt::AlignHCenter));
+		Widzety::cieniowanyTekst(painter, obszarTytulu, "Plansza:", QTextOption(Qt::AlignHCenter));
 
 		QPixmap pixmapy[5];
 		if(this->pozycja > 2) {
-			pixmapy[0].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-3).at(2)));
+			pixmapy[0] = this->miniPlansze.value(this->plansze.at(this->pozycja-3).at(2));
 			pixmapy[0] = pixmapy[0].scaled(
 				Obiekt::skala * pixmapy[0].size() * 0.8,
 				Qt::IgnoreAspectRatio,
@@ -564,7 +565,7 @@ void Menu::rysuj() const{
 		}
 
 		if(this->pozycja > 1) {
-			pixmapy[1] = QPixmap(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-2).at(2)));
+			pixmapy[1] = this->miniPlansze.value(this->plansze.at(this->pozycja-2).at(2));
 			pixmapy[1] = pixmapy[1].scaled(
 				Obiekt::skala * pixmapy[1].size() * 0.9,
 				Qt::IgnoreAspectRatio,
@@ -572,15 +573,15 @@ void Menu::rysuj() const{
 			);
 		}
 
-		pixmapy[2].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja-1).at(2)));
+		pixmapy[2] = this->miniPlansze.value(this->plansze.at(this->pozycja-1).at(2));
 		pixmapy[2] = pixmapy[2].scaled(
 			Obiekt::skala * pixmapy[2].size(),
 			Qt::IgnoreAspectRatio,
 			(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
 		);
 
-		if(this->pozycja < this->mapy.count()) {
-			pixmapy[3].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja).at(2)));
+		if(this->pozycja < this->plansze.count()) {
+			pixmapy[3] = this->miniPlansze.value(this->plansze.at(this->pozycja).at(2));
 			pixmapy[3] = pixmapy[3].scaled(
 				Obiekt::skala * pixmapy[3].size() * 0.9,
 				Qt::IgnoreAspectRatio,
@@ -588,8 +589,8 @@ void Menu::rysuj() const{
 			);
 		}
 
-		if(this->pozycja+1 < this->mapy.count()) {
-			pixmapy[4].load(QString("plansze/%1_mini.png").arg(this->mapy.at(this->pozycja+1).at(2)));
+		if(this->pozycja+1 < this->plansze.count()) {
+			pixmapy[4] = this->miniPlansze.value(this->plansze.at(this->pozycja+1).at(2));
 			pixmapy[4] = pixmapy[4].scaled(
 				Obiekt::skala * pixmapy[4].size() * 0.8,
 				Qt::IgnoreAspectRatio,
@@ -618,10 +619,10 @@ void Menu::rysuj() const{
 		}
 
 		const int promien = szerokoscEkranu * 0.006;
-		const int szerokosc = this->mapy.count() * promien * 3;
+		const int szerokosc = this->plansze.count() * promien * 3;
 
 		painter.setPen(Qt::NoPen);
-		for(int i = 0; i < this->mapy.count(); i++) {
+		for(int i = 0; i < this->plansze.count(); i++) {
 			if(i == this->pozycja-1) {
 				painter.setBrush(kolorZaznaczenia);
 			} else {
@@ -809,9 +810,19 @@ void Menu::wczytajGrafiki()
 	);
 }
 
-void Menu::wczytajMapy()
+void Menu::wczytajMiniPlansze()
 {
-	this->mapy = this->bazaDanych->mapy(this->trybGry);
+	QList<QStringList> plansze = this->bazaDanych->plansze();
+	foreach(const QStringList &plansza, plansze) {
+		QString nazwa = plansza.at(2);
+
+		this->miniPlansze.insert(nazwa, QPixmap("plansze/" + nazwa + ".png").scaled(QSize(420, 420), Qt::IgnoreAspectRatio, (this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation));
+	}
+}
+
+void Menu::wczytajPlansze()
+{
+	this->plansze = this->bazaDanych->plansze(this->trybGry);
 }
 
 void Menu::wczytajUstawienia()

@@ -16,7 +16,8 @@
 
 Silnik::Silnik():
 ramki(0),
-milisekundy(0){
+milisekundy(0),
+fps(0){
 	this->bazaDanych = new BazaDanych;
 	this->bazaDanych->polacz();
 

@@ -37,7 +37,7 @@ bool BazaDanych::polacz(){
 		"  animacjaCzas       integer "
 		");");
 
-		db.exec("CREATE TABLE mapy ("
+		db.exec("CREATE TABLE plansze ("
 		"  mapa_id integer PRIMARY KEY NOT NULL, "
 		"  tryb smallint, "
 		"  plik varchar(255) "
@@ -75,7 +75,7 @@ bool BazaDanych::polacz(){
 		"  wynik float(4,2), "
 		"  mapa_id integer, "
 		"  FOREIGN KEY (mapa_id) REFERENCES profile(mapa_id), "
-		"  FOREIGN KEY (profil_id) REFERENCES mapy(profil_id) "
+		"  FOREIGN KEY (profil_id) REFERENCES plansze(profil_id) "
 		");");
 
 		dbUstawienia.exec("CREATE TABLE ustawienia ("
@@ -136,12 +136,12 @@ QList<QStringList> BazaDanych::rekordy() const
 	QSqlQuery query(QSqlDatabase::database("dbUstawienia"));
 	query.exec("SELECT "
 			   "  profile.nazwa, "
-			   "  mapy.plik, "
+			   "  plansze.plik, "
 			   "  rekordy.wynik "
 			   "FROM "
 			   "  rekordy "
 			   "  INNER JOIN profile ON (rekordy.profil_id = profile.profil_id) "
-			   "  INNER JOIN mapy ON (rekordy.mapa_id = mapy.mapa_id) "
+			   "  INNER JOIN plansze ON (rekordy.mapa_id = plansze.mapa_id) "
 			   "ORDER BY "
 			   "  wynik DESC;");
 
@@ -161,25 +161,30 @@ QList<QStringList> BazaDanych::rekordy() const
 	return rekordy;
 }
 
-QList<QStringList> BazaDanych::mapy(int tryb) const
+QList<QStringList> BazaDanych::plansze(int tryb) const
 {
 	QSqlQuery query;
-	query.prepare("SELECT * FROM mapy WHERE tryb = :tryb ORDER BY LOWER(plik) ASC");
-	query.bindValue(":tryb", tryb);
-	query.exec();
-
-	QList<QStringList> mapy;
-	while(query.next()) {
-		QStringList mapa;
-
-		mapa << query.value(0).toString();
-		mapa << query.value(1).toString();
-		mapa << query.value(2).toString();
-
-		mapy << mapa;
+	if(tryb > 0) {
+		query.prepare("SELECT * FROM plansze WHERE tryb = :tryb ORDER BY LOWER(plik) ASC;");
+		query.bindValue(":tryb", tryb);
+	} else {
+		query.prepare("SELECT * FROM plansze ORDER BY LOWER(plik) ASC;");
 	}
 
-	return mapy;
+	query.exec();
+
+	QList<QStringList> plansze;
+	while(query.next()) {
+		QStringList plansza;
+
+		plansza << query.value(0).toString();
+		plansza << query.value(1).toString();
+		plansza << query.value(2).toString();
+
+		plansze << plansza;
+	}
+
+	return plansze;
 }
 
 QVariant BazaDanych::ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna) const

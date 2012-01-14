@@ -2,7 +2,6 @@
 #define SILNIK_H
 
 #include <QTime>
-#include <QTimer>
 
 class UrzadzenieWejscia;
 class BazaDanych;

@@ -119,24 +119,24 @@ void OknoGlowne::wczytajPlansze()
 		this->plikTla = plik.absolutePath() + "/" + plik.completeBaseName() + ".png";
 		this->scena->addPixmap(QPixmap(this->plikTla));
 
-		QFile mapaSpecyfikacjaPlik(nazwaPliku);
-		if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly))
+		QFile planszaSpecyfikacjaPlik(nazwaPliku);
+		if(!planszaSpecyfikacjaPlik.open(QIODevice::ReadOnly))
 			return;
 
 		int iloscElementow, id, num1, num2;
 		QPoint punkt;
 		float real;
 
-		QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
+		QDataStream planszaSpecyfikacjaDane(&planszaSpecyfikacjaPlik);
 
 		//przeszkody
-		mapaSpecyfikacjaDane >> iloscElementow;
+		planszaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> num1;
+			planszaSpecyfikacjaDane >> num1;
 
 			QPolygon przeszkoda(num1);
 			for(int j = 0; j < num1; j++){
-				mapaSpecyfikacjaDane >> punkt;
+				planszaSpecyfikacjaDane >> punkt;
 				przeszkoda.setPoint(j, punkt);
 			}
 
@@ -146,9 +146,9 @@ void OknoGlowne::wczytajPlansze()
 		QList<Waypoint*> waypointy;
 
 		//waypointy
-		mapaSpecyfikacjaDane >> iloscElementow;
+		planszaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> punkt;
+			planszaSpecyfikacjaDane >> punkt;
 
 			Waypoint *waypoint = this->scena->dodajWaypoint(punkt);
 
@@ -156,39 +156,39 @@ void OknoGlowne::wczytajPlansze()
 		}
 
 		//sciezki
-		mapaSpecyfikacjaDane >> iloscElementow;
+		planszaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> num1;
-			mapaSpecyfikacjaDane >> num2;
+			planszaSpecyfikacjaDane >> num1;
+			planszaSpecyfikacjaDane >> num2;
 
 			this->scena->dodajSciezke(waypointy.at(num1), waypointy.at(num2));
 		}
 
 
 		//pozycja gracza
-		mapaSpecyfikacjaDane >> this->pojazdGracza;
-		mapaSpecyfikacjaDane >> punkt;
-		mapaSpecyfikacjaDane >> real;
+		planszaSpecyfikacjaDane >> this->pojazdGracza;
+		planszaSpecyfikacjaDane >> punkt;
+		planszaSpecyfikacjaDane >> real;
 
 		if(!punkt.isNull())
 			this->scena->dodajGracza(punkt)->setRotation(-(real * 180 / M_PI));
 
 		//pociski
-		mapaSpecyfikacjaDane >> iloscElementow;
+		planszaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> id;
-			mapaSpecyfikacjaDane >> num1;
+			planszaSpecyfikacjaDane >> id;
+			planszaSpecyfikacjaDane >> num1;
 
 			this->pociskiGracza.insert(id, num1);
 		}
 
 		//pojazdy obce
-		mapaSpecyfikacjaDane >> iloscElementow;
+		planszaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
-			mapaSpecyfikacjaDane >> id;
-			mapaSpecyfikacjaDane >> num1;
-			mapaSpecyfikacjaDane >> real;
-			mapaSpecyfikacjaDane >> num2;
+			planszaSpecyfikacjaDane >> id;
+			planszaSpecyfikacjaDane >> num1;
+			planszaSpecyfikacjaDane >> real;
+			planszaSpecyfikacjaDane >> num2;
 
 			Waypoint *waypoint = waypointy.at(num1);
 			waypoint->obcyPojazd->pojazd = id;
@@ -197,7 +197,7 @@ void OknoGlowne::wczytajPlansze()
 			waypoint->aktualizujKsztalt();
 		}
 
-		mapaSpecyfikacjaPlik.close();
+		planszaSpecyfikacjaPlik.close();
 
 		if(this->scena->items().count())
 			this->scena->setSceneRect(this->scena->itemsBoundingRect());
@@ -386,8 +386,8 @@ bool OknoGlowne::zapiszPlanszeJako()
 
 bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 {
-	QFile mapaSpecyfikacjaPlik(nazwaPliku);
-	if(!mapaSpecyfikacjaPlik.open(QFile::WriteOnly)) {
+	QFile planszaSpecyfikacjaPlik(nazwaPliku);
+	if(!planszaSpecyfikacjaPlik.open(QFile::WriteOnly)) {
 		return false;
 	}
 
@@ -397,7 +397,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 		QFile::copy(this->plikTla, nazwaGrafiki);
 	}
 
-	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
+	QDataStream planszaSpecyfikacjaDane(&planszaSpecyfikacjaPlik);
 
 	QList<Przeszkoda*> przeszkody;
 	QList<Waypoint*> waypointy;
@@ -426,50 +426,50 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 		}
 	}
 
-	mapaSpecyfikacjaDane << przeszkody.count();
+	planszaSpecyfikacjaDane << przeszkody.count();
 	foreach(Przeszkoda *poly, przeszkody) {
-		mapaSpecyfikacjaDane << poly->polygon().count();
+		planszaSpecyfikacjaDane << poly->polygon().count();
 
 		QPoint wierzcholek;
 		for(int j = 0; j < poly->polygon().count(); j++) {
 			poly->polygon().toPolygon().point(j, &wierzcholek.rx(), &wierzcholek.ry());
 			wierzcholek += poly->pos().toPoint();
-			mapaSpecyfikacjaDane << wierzcholek;
+			planszaSpecyfikacjaDane << wierzcholek;
 		}
 	}
 
-	mapaSpecyfikacjaDane << waypointy.count();
+	planszaSpecyfikacjaDane << waypointy.count();
 	foreach(Waypoint *waypoint, waypointy)
-		mapaSpecyfikacjaDane << waypoint->pos().toPoint();
+		planszaSpecyfikacjaDane << waypoint->pos().toPoint();
 
-	mapaSpecyfikacjaDane << sciezki.count();
+	planszaSpecyfikacjaDane << sciezki.count();
 	foreach(Sciezka *sciezka, sciezki)
-		mapaSpecyfikacjaDane << waypointy.indexOf(sciezka->poczatek()) << waypointy.indexOf(sciezka->koniec());
+		planszaSpecyfikacjaDane << waypointy.indexOf(sciezka->poczatek()) << waypointy.indexOf(sciezka->koniec());
 
-	mapaSpecyfikacjaDane << this->pojazdGracza;
-	mapaSpecyfikacjaDane << pozycjaGracza;
-	mapaSpecyfikacjaDane << zwrotGracza * M_PI / 180;
+	planszaSpecyfikacjaDane << this->pojazdGracza;
+	planszaSpecyfikacjaDane << pozycjaGracza;
+	planszaSpecyfikacjaDane << zwrotGracza * M_PI / 180;
 
-	mapaSpecyfikacjaDane << this->pociskiGracza.count();
+	planszaSpecyfikacjaDane << this->pociskiGracza.count();
 	QMapIterator<int, int> it(this->pociskiGracza);
 	while(it.hasNext()) {
 		it.next();
 
-		mapaSpecyfikacjaDane << it.key() << it.value();
+		planszaSpecyfikacjaDane << it.key() << it.value();
 	}
 
-	mapaSpecyfikacjaDane << obcePojazdy;
+	planszaSpecyfikacjaDane << obcePojazdy;
 	foreach(Waypoint *waypoint, waypointy) {
 		if(waypoint->obcyPojazd->pojazd > -1) {
-			mapaSpecyfikacjaDane << waypoint->obcyPojazd->pojazd;
-			mapaSpecyfikacjaDane << waypointy.indexOf(waypoint);
-			mapaSpecyfikacjaDane << waypoint->obcyPojazd->zwrot;
-			mapaSpecyfikacjaDane << waypoint->obcyPojazd->pocisk;
+			planszaSpecyfikacjaDane << waypoint->obcyPojazd->pojazd;
+			planszaSpecyfikacjaDane << waypointy.indexOf(waypoint);
+			planszaSpecyfikacjaDane << waypoint->obcyPojazd->zwrot;
+			planszaSpecyfikacjaDane << waypoint->obcyPojazd->pocisk;
 		}
 	}
 
 
-	mapaSpecyfikacjaPlik.close();
+	planszaSpecyfikacjaPlik.close();
 
 	this->plikPlanszy = nazwaPliku;
 	this->setWindowModified(false);

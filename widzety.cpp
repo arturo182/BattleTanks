@@ -77,10 +77,10 @@ void Widzety::tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QSt
 	kolumnaGracza.adjust(10, 0, 0, 0);
 	cieniowanyTekst(painter, kolumnaGracza, "Gracz");
 
-	QRectF kolumnaMapy(r.left() + r.width() * 0.4, r.top(), r.width() * 0.4, wysokosc);
-	painter.drawRect(kolumnaMapy);
-	kolumnaMapy.adjust(10, 0, 0, 0);
-	cieniowanyTekst(painter, kolumnaMapy, "Mapa");
+	QRectF kolumnaPlansze(r.left() + r.width() * 0.4, r.top(), r.width() * 0.4, wysokosc);
+	painter.drawRect(kolumnaPlansze);
+	kolumnaPlansze.adjust(10, 0, 0, 0);
+	cieniowanyTekst(painter, kolumnaPlansze, "Plansza");
 
 	QRectF kolumnaWyniku(r.left() + r.width() * 0.8, r.top(), r.width() * 0.2, wysokosc);
 	painter.drawRect(kolumnaWyniku);
@@ -89,11 +89,11 @@ void Widzety::tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QSt
 
 	for(int i = na_strone * (strona - 1); i < qMin(rekordy.size(), na_strone * strona); i++) {
 		kolumnaGracza.adjust(0, wysokosc, 0, wysokosc);
-		kolumnaMapy.adjust(0, wysokosc, 0, wysokosc);
+		kolumnaPlansze.adjust(0, wysokosc, 0, wysokosc);
 		kolumnaWyniku.adjust(0, wysokosc, 0, wysokosc);
 
 		cieniowanyTekst(painter, kolumnaGracza, rekordy.at(i).at(0));
-		cieniowanyTekst(painter, kolumnaMapy, rekordy.at(i).at(1));
+		cieniowanyTekst(painter, kolumnaPlansze, rekordy.at(i).at(1));
 		cieniowanyTekst(painter, kolumnaWyniku, rekordy.at(i).at(2));
 	}
 }

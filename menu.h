@@ -1,10 +1,12 @@
 #ifndef MENU_H
 #define MENU_H
 
+#include "silnik.h"
+
 #include <QTextOption>
 #include <QPainter>
 #include <QPoint>
-#include "silnik.h"
+#include <QMap>
 
 namespace Phonon
 {
@@ -24,7 +26,7 @@ class Menu: public QObject{
 	  TWORZENIE_PROFILU,
 	  MENU_GLOWNE,
 	  WYBOR_TRYBU,
-	  WYBOR_MAPY,
+	  WYBOR_PLANSZY,
 	  REKORDY,
 	  USTAWIENIA_POMOC,
 	  USTAWIENIA,
@@ -44,7 +46,8 @@ class Menu: public QObject{
 	QString nowyProfil;
 	QStringList alfabet;
 	QStringList profile;
-	QList<QStringList> mapy;
+	QList<QStringList> plansze;
+	QMap<QString, QPixmap> miniPlansze;
 	QList<QStringList> rekordy;
 	bool shift;
 	QPixmap tloPixmapa;
@@ -72,7 +75,8 @@ class Menu: public QObject{
 	void wczytajRekordy();
 	void wczytajMuzyke();
 	void wczytajGrafiki();
-	void wczytajMapy();
+	void wczytajMiniPlansze();
+	void wczytajPlansze();
 	void wczytajUstawienia();
 	void zapiszUstawienia();
 };

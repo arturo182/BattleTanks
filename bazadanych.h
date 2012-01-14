@@ -15,7 +15,7 @@ class BazaDanych{
 	int idProfilu(const QString &nazwa) const;
 
 	QList<QStringList> rekordy() const;
-	QList<QStringList> mapy(int tryb) const;
+	QList<QStringList> plansze(int tryb = 0) const;
 
 	QVariant ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna = QVariant()) const;
 	void zapiszUstawienie(const QString &nazwa, const QVariant &wartosc);
