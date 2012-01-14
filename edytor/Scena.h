@@ -21,9 +21,6 @@ class Scena : public QGraphicsScene
 			POZYCJA_GRACZA
 		};
 
-		int przeszkody;
-		int waypointy;
-
 	public:
 		Scena(const QRectF &prostokat = QRectF());
 

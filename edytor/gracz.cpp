@@ -41,13 +41,14 @@ void Gracz::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		if(uchwyt) {
-			float kat = qAtan2(this->pos().x() - event->scenePos().x(), this->pos().y() - event->scenePos().y()) * (180 / M_PI);
+			int kat = qRound(qAtan2(this->pos().x() - event->scenePos().x(), this->pos().y() - event->scenePos().y()) * (180 / M_PI));
 			kat += 90;
 
 			if(kat < 0)
 				kat += 360;
 
-			this->setRotation(-kat);
+			if(!(event->modifiers() & Qt::ShiftModifier) || (kat % 30 == 0))
+				this->setRotation(-kat);
 		} else {
 			this->prepareGeometryChange();
 			this->moveBy(delta.x(), delta.y());

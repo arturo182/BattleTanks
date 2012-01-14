@@ -18,6 +18,7 @@ class Przeszkoda : public QObject, public QGraphicsPolygonItem
 
 	signals:
 		void pozycjaZmieniona();
+		void wierzcholekZmieniony();
 
 	protected:
 		void mousePressEvent(QGraphicsSceneMouseEvent *event);

@@ -112,6 +112,7 @@ void Przeszkoda::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 
 			this->prepareGeometryChange();
 			this->setPolygon(poly);
+			emit wierzcholekZmieniony();
 		}
 	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		this->prepareGeometryChange();

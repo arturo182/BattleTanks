@@ -4,11 +4,13 @@
 
 #include <QGraphicsSceneMouseEvent>
 #include <QCursor>
+#include <QPainter>
 
 Waypoint::Waypoint(const QPointF &srodek):
-QGraphicsPathItem()
+QGraphicsPathItem(),
+id(0)
 {
-	int rozmiar = 60;
+	const int rozmiar = 60;
 
 	QPainterPath path;
 
@@ -75,4 +77,16 @@ QVariant Waypoint::itemChange(QGraphicsItem::GraphicsItemChange change, const QV
 			sciezka->aktualizujPozycje();
 
 	return value;
+}
+
+void Waypoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
+{
+	QGraphicsPathItem::paint(painter, option, widget);
+
+	const int rozmiar = 60;
+
+	QFont f = painter->font();
+	f.setPointSize(6);
+	painter->setFont(f);
+	painter->drawText(QRectF(-rozmiar * 0.250, -rozmiar * 0.975, rozmiar * 0.5, rozmiar * 0.5), QString::number(this->id), QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
 }

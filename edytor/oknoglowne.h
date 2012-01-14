@@ -52,6 +52,8 @@ class OknoGlowne : public QMainWindow{
 		void trybLaczeniaWaypointow();
 		void trybPozycjiGracza();
 		void wczytajBazeDanych();
+		void przenumerujWaypointy();
+		void przenumerujPrzeszkody();
 
 	private:
 		bool sprawdzZapis();

@@ -13,18 +13,15 @@
 
 Scena::Scena(const QRectF &prostokat):
 QGraphicsScene(prostokat),
-przeszkody(0),
-waypointy(0),
 linia(0)
 {
 }
 
 Przeszkoda *Scena::dodajPrzeszkode(const QPolygon &poly)
 {
-	this->przeszkody++;
-
 	Przeszkoda *przeszkoda = new Przeszkoda(poly);
 	connect(przeszkoda, SIGNAL(pozycjaZmieniona()), SIGNAL(elementPrzesuniety()));
+	connect(przeszkoda, SIGNAL(wierzcholekZmieniony()), SIGNAL(elementPrzesuniety()));
 	this->addItem(przeszkoda);
 
 	emit przeszkodaDodana();
@@ -34,8 +31,6 @@ Przeszkoda *Scena::dodajPrzeszkode(const QPolygon &poly)
 
 Waypoint *Scena::dodajWaypoint(const QPoint &punkt)
 {
-	this->waypointy++;
-
 	Waypoint *waypoint = new Waypoint(punkt);
 	connect(waypoint, SIGNAL(pozycjaZmieniona()), SIGNAL(elementPrzesuniety()));
 	this->addItem(waypoint);

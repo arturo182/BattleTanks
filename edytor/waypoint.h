@@ -21,10 +21,13 @@ class Waypoint : public QObject, public QGraphicsPathItem
 		void dodajSciezke(Sciezka *sciezka);
 		QList<Sciezka*> sciezki() const { return this->sciezkiWaypointu; }
 
+		int id;
+
 	signals:
 		void pozycjaZmieniona();
 
 	protected:
+		void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 		void mouseMoveEvent(QGraphicsSceneMouseEvent *event);
 		void hoverMoveEvent(QGraphicsSceneHoverEvent *event);
 		QVariant itemChange(GraphicsItemChange change, const QVariant &value);

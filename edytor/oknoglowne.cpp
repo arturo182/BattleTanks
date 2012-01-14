@@ -97,9 +97,6 @@ void OknoGlowne::nowaPlansza()
 		qDeleteAll(this->ui->treeWidget->topLevelItem(0)->takeChildren());
 		qDeleteAll(this->ui->treeWidget2->topLevelItem(0)->takeChildren());
 
-		this->scena->przeszkody = 0;
-		this->scena->waypointy = 0;
-
 		this->scena->clear();
 		this->scena->setSceneRect(QRectF(0, 0, 1000, 1000));
 		this->tabelaElementow.clear();
@@ -237,7 +234,7 @@ void OknoGlowne::edytujSpecyfikacje()
 
 			if(!this->plikTla.isEmpty()) {
 				bool ustawiony = false;
-				foreach(QGraphicsItem *item, this->scena->items()) {
+				foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
 					if(item->type() == QGraphicsPixmapItem::Type) {
 						if(QGraphicsPixmapItem *pixmap = qgraphicsitem_cast<QGraphicsPixmapItem*>(item)) {
 							pixmap->setPixmap(QPixmap(this->plikTla));
@@ -294,6 +291,9 @@ void OknoGlowne::usunZaznaczony()
 		delete element;
 		this->scenaZmieniona();
 	}
+
+	this->przenumerujWaypointy();
+	this->przenumerujPrzeszkody();
 }
 
 void OknoGlowne::scenaZmieniona()
@@ -308,13 +308,12 @@ void OknoGlowne::aktualizujTryb()
 
 void OknoGlowne::aktualizujDrzewkoPrzeszkod()
 {
-	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
-		QGraphicsItem *item = this->scena->items().at(i);
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
 		if(item->type() == Przeszkoda::Type) {
 			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item)) {
 				if(!this->tabelaElementow.key(przeszkoda)) {
 					QTreeWidgetItem *galaz = new QTreeWidgetItem(ui->treeWidget->topLevelItem(0));
-					galaz->setText(0, QString("Przeszkoda #%1").arg(this->scena->przeszkody));
+					galaz->setText(0, "Przeszkoda #x");
 					galaz->setIcon(0, QIcon(":/ikony/shape_square.png"));
 
 					this->tabelaElementow.insert(galaz, przeszkoda);
@@ -325,17 +324,18 @@ void OknoGlowne::aktualizujDrzewkoPrzeszkod()
 			}
 		}
 	}
+
+	this->przenumerujPrzeszkody();
 }
 
 void OknoGlowne::aktualizujDrzewkoWaypointow()
 {
-	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
-		QGraphicsItem *item = this->scena->items().at(i);
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
 		if(item->type() == Waypoint::Type) {
 			if(Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item)) {
 				if(!this->tabelaElementow.key(waypoint)) {
 					QTreeWidgetItem *galaz = new QTreeWidgetItem(this->ui->treeWidget2->topLevelItem(0));
-					galaz->setText(0, QString("Punkt #%1").arg(this->scena->waypointy));
+					galaz->setText(0, "Punkt #x");
 					galaz->setIcon(0, QIcon(":/ikony/flag_yellow.png"));
 
 					this->tabelaElementow.insert(galaz, waypoint);
@@ -346,6 +346,8 @@ void OknoGlowne::aktualizujDrzewkoWaypointow()
 			}
 		}
 	}
+
+	this->przenumerujWaypointy();
 }
 
 bool OknoGlowne::sprawdzZapis()
@@ -392,8 +394,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 	QPoint pozycjaGracza;
 	float zwrotGracza;
 
-	for(int i = this->scena->items().count() - 1;  i >= 0; i--) {
-		QGraphicsItem *item = this->scena->items().at(i);
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
 		if(item->type() == Przeszkoda::Type) {
 			if(Przeszkoda *przeszkoda = qgraphicsitem_cast<Przeszkoda*>(item))
 				przeszkody << przeszkoda;
@@ -558,7 +559,7 @@ void OknoGlowne::trybLaczeniaWaypointow()
 
 void OknoGlowne::trybPozycjiGracza()
 {
-	foreach(QGraphicsItem *item, this->scena->items()) {
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
 		if(item->type() == Gracz::Type) {
 			this->ui->graphicsView->ensureVisible(item);
 			QMessageBox::information(this, "Punkt już ustawiony", "Punkt początkowy jest już wstawiony na planszy.<br>Jeśli chcesz go przenieść, użyj narzędzia przesuwania lub usuń go i dodaj nowy.");
@@ -578,4 +579,32 @@ void OknoGlowne::wczytajBazeDanych()
 
 	if(!db.open())
 		qDebug() << "Nie udalo sie poalczyc z baza danych" << db.databaseName() << db.lastError().text();
+}
+
+void OknoGlowne::przenumerujWaypointy()
+{
+	int id = 0;
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
+		if(item->type() == Waypoint::Type) {
+			Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item);
+			waypoint->id = id;
+			this->tabelaElementow.key(waypoint)->setText(0, "Przeszkoda #" + QString::number(id));
+			waypoint->update();
+			id++;
+		}
+	}
+}
+
+void OknoGlowne::przenumerujPrzeszkody()
+{
+	int id = 0;
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
+		if(item->type() == Waypoint::Type) {
+			Waypoint *waypoint = qgraphicsitem_cast<Waypoint*>(item);
+			waypoint->id = id;
+			this->tabelaElementow.key(waypoint)->setText(0, "Przeszkoda #" + QString::number(id));
+			waypoint->update();
+			id++;
+		}
+	}
 }

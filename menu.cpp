@@ -43,6 +43,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
 			this->trybGry = this->pozycja;
 			this->wczytajMapy();
+			this->pozycja = 1;
 			this->tryb = WYBOR_MAPY;
 		} else if(akcja == Silnik::LEWO) {
 			Dzwiek::odtworz("dzwieki/menu_zmiana.mp3");
