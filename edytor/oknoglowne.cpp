@@ -132,11 +132,11 @@ void OknoGlowne::wczytajPlansze()
 		QDataStream planszaSpecyfikacjaDane(&planszaSpecyfikacjaPlik);
 
 		//tryb
-		/*planszaSpecyfikacjaDane >> id;
+		planszaSpecyfikacjaDane >> id;
 		if(id == LABIRYNT) {
 			planszaSpecyfikacjaDane >> punkt;
 			this->scena->dodajMete(punkt);
-		}*/
+		}
 
 		//przeszkody
 		planszaSpecyfikacjaDane >> iloscElementow;

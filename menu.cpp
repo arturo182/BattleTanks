@@ -73,7 +73,10 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 	} else if(this->tryb == WYBOR_PLANSZY) {
 		if(akcja == Silnik::WYBIERZ) {
-			this->plansza->zaladuj(this->plansze.at(this->pozycja-1).at(2));
+			int id = this->plansze.at(this->pozycja-1).at(0).toInt();
+			QString nazwa = this->plansze.at(this->pozycja-1).at(2);
+
+			this->plansza->zaladuj(id, nazwa);
 			this->ustawTryb(MENU_GLOWNE);
 			this->pozycja = 1;
 			this->muzyka->stop();
