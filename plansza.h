@@ -6,6 +6,7 @@
 #include "specyfikacjapojazdu.h"
 #include "specyfikacjapocisku.h"
 #include "specyfikacjaanimacji.h"
+#include "graf.h"
 #include "animacja.h"
 
 #define WYSOKOSC_WIDOKU 1080
@@ -25,6 +26,7 @@ class Plansza{
 		Tekstura* mapa;
 		QPoint widok;
 		QList<QPolygonF> przeszkody;
+		Graf graf;
 		PojazdGracza* pojazdGracza;
 		Tekstura celownik;
 		QList<PojazdObcy*> pojazdyObce;
