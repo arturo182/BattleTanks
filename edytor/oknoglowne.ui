@@ -132,6 +132,7 @@
    <addaction name="actionLaczeniePunktowRuchu"/>
    <addaction name="actionUstawPunktPoczatkowy"/>
    <addaction name="actionDodajObcyPojazd"/>
+   <addaction name="actionUstawMeteLabiryntu"/>
   </widget>
   <widget class="QDockWidget" name="dockWidget">
    <property name="maximumSize">
@@ -504,6 +505,15 @@
     <string>Ctrl+9</string>
    </property>
   </action>
+  <action name="actionUstawMeteLabiryntu">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/ikony/flag_checked.png</normaloff>:/ikony/flag_checked.png</iconset>
+   </property>
+   <property name="text">
+    <string>Ustaw metę labiryntu</string>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
@@ -814,6 +824,22 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>actionUstawMeteLabiryntu</sender>
+   <signal>triggered()</signal>
+   <receiver>OknoGlowne</receiver>
+   <slot>trybMety()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>-1</x>
+     <y>-1</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>366</x>
+     <y>208</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <slot>wczytajPlansze()</slot>
@@ -834,5 +860,6 @@
   <slot>edytujSpecyfikacje()</slot>
   <slot>trybPozycjiGracza()</slot>
   <slot>trybObcegoPojazdu()</slot>
+  <slot>trybMety()</slot>
  </slots>
 </ui>

@@ -17,6 +17,13 @@ class OknoGlowne : public QMainWindow{
 	Q_OBJECT
 
 	public:
+		enum TrybGry
+		{
+			DEMOLKA = 0,
+			LABIRYNT
+		};
+
+	public:
 		explicit OknoGlowne(QWidget *parent = 0);
 		~OknoGlowne();
 
@@ -52,6 +59,7 @@ class OknoGlowne : public QMainWindow{
 		void trybLaczeniaWaypointow();
 		void trybPozycjiGracza();
 		void trybObcegoPojazdu();
+		void trybMety();
 		void wczytajBazeDanych();
 		void przenumerujWaypointy();
 		void przenumerujPrzeszkody();
@@ -64,6 +72,7 @@ class OknoGlowne : public QMainWindow{
 	private:
 		QString plikPlanszy;
 		QString plikTla;
+		int trybGry;
 		int pojazdGracza;
 		QMap<int, int> pociskiGracza;
 		Scena *scena;

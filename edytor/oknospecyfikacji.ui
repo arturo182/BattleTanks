@@ -63,6 +63,29 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="trybGroupBox">
+     <property name="title">
+      <string>Tryb gry</string>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <item>
+       <widget class="QComboBox" name="trybComboBox">
+        <item>
+         <property name="text">
+          <string>Demolka</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Labirynt</string>
+         </property>
+        </item>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="graczGroupBox">
      <property name="title">
       <string>Pojazd gracza</string>
@@ -211,8 +234,8 @@
    <slot>dodajPocisk()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>343</x>
-     <y>149</y>
+     <x>383</x>
+     <y>222</y>
     </hint>
     <hint type="destinationlabel">
      <x>256</x>
@@ -227,8 +250,8 @@
    <slot>usunPocisk()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>339</x>
-     <y>358</y>
+     <x>382</x>
+     <y>381</y>
     </hint>
     <hint type="destinationlabel">
      <x>130</x>
@@ -275,8 +298,8 @@
    <slot>sprawdzDodajPocisk(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>127</x>
-     <y>151</y>
+     <x>143</x>
+     <y>220</y>
     </hint>
     <hint type="destinationlabel">
      <x>199</x>
@@ -291,8 +314,8 @@
    <slot>sprawdzDodajPocisk(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>269</x>
-     <y>154</y>
+     <x>302</x>
+     <y>220</y>
     </hint>
     <hint type="destinationlabel">
      <x>5</x>
@@ -307,12 +330,28 @@
    <slot>zmienGracza(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>312</x>
-     <y>91</y>
+     <x>328</x>
+     <y>160</y>
     </hint>
     <hint type="destinationlabel">
      <x>396</x>
      <y>57</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>trybComboBox</sender>
+   <signal>currentIndexChanged(int)</signal>
+   <receiver>OknoSpecyfikacji</receiver>
+   <slot>zmienTryb(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>43</x>
+     <y>90</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>2</x>
+     <y>119</y>
     </hint>
    </hints>
   </connection>
@@ -323,5 +362,6 @@
   <slot>usunPocisk()</slot>
   <slot>sprawdzDodajPocisk(int)</slot>
   <slot>zmienGracza(int)</slot>
+  <slot>zmienTryb(int)</slot>
  </slots>
 </ui>

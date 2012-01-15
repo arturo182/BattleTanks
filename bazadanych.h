@@ -15,7 +15,9 @@ class BazaDanych{
 	int idProfilu(const QString &nazwa) const;
 
 	QList<QStringList> rekordy() const;
-	QList<QStringList> plansze(int tryb = 0) const;
+	void zapiszRekord(int idGracza, int idPlanszy, float wynik);
+
+	QList<QStringList> plansze(int tryb = -1) const;
 
 	QVariant ustawienie(const QString &nazwa, const QVariant &wartoscDomyslna = QVariant()) const;
 	void zapiszUstawienie(const QString &nazwa, const QVariant &wartosc);

@@ -5,21 +5,21 @@
 #include <QSqlQuery>
 #include <QDebug>
 
-OknoSpecyfikacji::OknoSpecyfikacji(const QString &plikTla, const int &pojazdGracza, const QMap<int, int> &pociskiGracza, QWidget *parent) :
+OknoSpecyfikacji::OknoSpecyfikacji(const QString &plikTla, const int &trybGry, const int &pojazdGracza, const QMap<int, int> &pociskiGracza, QWidget *parent) :
 QDialog(parent),
 plikTla(plikTla),
+trybGry(trybGry),
 pojazdGracza(pojazdGracza),
 pociskiGracza(pociskiGracza),
 ui(new Ui::OknoSpecyfikacji)
 {
-	qDebug() << pociskiGracza;
-
 	this->ui->setupUi(this);
 
 	connect(this->ui->buttonBox, SIGNAL(accepted()), SLOT(accept()));
 	connect(this->ui->buttonBox, SIGNAL(rejected()), SLOT(reject()));
 
 	this->ui->tloEdit->setText(this->plikTla);
+	this->ui->trybComboBox->setCurrentIndex(trybGry);
 
 	int i = 0;
 	QSqlQuery query("SELECT * FROM pociski;");
@@ -106,6 +106,11 @@ void OknoSpecyfikacji::sprawdzDodajPocisk(int)
 void OknoSpecyfikacji::zmienGracza(int index)
 {
 	this->pojazdGracza = this->ui->graczComboBox->itemData(index).toInt();
+}
+
+void OknoSpecyfikacji::zmienTryb(int index)
+{
+	this->trybGry = index;
 }
 
 void OknoSpecyfikacji::on_pociskiTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)

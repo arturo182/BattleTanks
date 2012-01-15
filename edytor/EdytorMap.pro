@@ -12,7 +12,8 @@ SOURCES += main.cpp\
     oknospecyfikacji.cpp \
     oknoglowne.cpp \
     gracz.cpp \
-    oknopojazduobcego.cpp
+    oknopojazduobcego.cpp \
+    meta.cpp
 
 HEADERS  += \
     scena.h \
@@ -22,7 +23,8 @@ HEADERS  += \
     oknospecyfikacji.h \
     oknoglowne.h \
     gracz.h \
-    oknopojazduobcego.h
+    oknopojazduobcego.h \
+    meta.h
 
 FORMS    += \
     oknospecyfikacji.ui \

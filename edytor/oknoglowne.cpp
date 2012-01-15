@@ -7,6 +7,7 @@
 #include "sciezka.h"
 #include "gracz.h"
 #include "scena.h"
+#include "meta.h"
 
 #include <QGraphicsPolygonItem>
 #include <QInputDialog>
@@ -20,6 +21,7 @@
 
 OknoGlowne::OknoGlowne(QWidget *parent):
 QMainWindow(parent),
+trybGry(0),
 pojazdGracza(1),
 ui(new Ui::OknoGlowne)
 {
@@ -129,6 +131,13 @@ void OknoGlowne::wczytajPlansze()
 
 		QDataStream planszaSpecyfikacjaDane(&planszaSpecyfikacjaPlik);
 
+		//tryb
+		/*planszaSpecyfikacjaDane >> id;
+		if(id == LABIRYNT) {
+			planszaSpecyfikacjaDane >> punkt;
+			this->scena->dodajMete(punkt);
+		}*/
+
 		//przeszkody
 		planszaSpecyfikacjaDane >> iloscElementow;
 		for(int i = 0; i < iloscElementow; i++){
@@ -237,7 +246,7 @@ void OknoGlowne::zaznaczGalaz()
 
 void OknoGlowne::edytujSpecyfikacje()
 {
-	OknoSpecyfikacji spec(this->plikTla, this->pojazdGracza, this->pociskiGracza, this);
+	OknoSpecyfikacji spec(this->plikTla, this->trybGry, this->pojazdGracza, this->pociskiGracza, this);
 	if(spec.exec() == QDialog::Accepted) {
 		if(this->plikTla != spec.plikTla) {
 			this->plikTla = spec.plikTla;
@@ -258,6 +267,11 @@ void OknoGlowne::edytujSpecyfikacje()
 				if(!ustawiony)
 					this->scena->addPixmap(QPixmap(this->plikTla))->setZValue(-100);
 			}
+		}
+
+		if(this->trybGry != spec.trybGry) {
+			this->trybGry = spec.trybGry;
+			this->scenaZmieniona();
 		}
 
 		if(this->pojazdGracza != spec.pojazdGracza) {
@@ -386,6 +400,21 @@ bool OknoGlowne::zapiszPlanszeJako()
 
 bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 {
+	bool meta = false;
+	if(this->trybGry == LABIRYNT) {
+		foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
+			if(item->type() == Meta::Type) {
+				meta = true;
+				break;
+			}
+		}
+
+		if(!meta) {
+			QMessageBox::warning(this, "Brak mety", "Wybrałeś tryb Labirynt ale nie ustawiłeś mety, za karę nie pozwolę Ci zapisać planszy!");
+			return false;
+		}
+	}
+
 	QFile planszaSpecyfikacjaPlik(nazwaPliku);
 	if(!planszaSpecyfikacjaPlik.open(QFile::WriteOnly)) {
 		return false;
@@ -403,6 +432,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 	QList<Waypoint*> waypointy;
 	QList<Sciezka*> sciezki;
 	QPoint pozycjaGracza;
+	QPoint pozycjaMety;
 	float zwrotGracza;
 	int obcePojazdy = 0;
 
@@ -423,8 +453,14 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 		} else if(item->type() == Gracz::Type) {
 			pozycjaGracza = item->pos().toPoint();
 			zwrotGracza = -item->rotation();
+		} else if(item->type() == Meta::Type) {
+			pozycjaMety = item->pos().toPoint();
 		}
 	}
+
+	planszaSpecyfikacjaDane << this->trybGry;
+	if(this->trybGry == LABIRYNT)
+		planszaSpecyfikacjaDane << pozycjaMety;
 
 	planszaSpecyfikacjaDane << przeszkody.count();
 	foreach(Przeszkoda *poly, przeszkody) {
@@ -492,6 +528,7 @@ void OknoGlowne::ustawTryb(Scena::Tryb tryb)
 	this->ui->actionLaczeniePunktowRuchu->setChecked(tryb == Scena::LACZENIE_WAYPOINTOW);
 	this->ui->actionUstawPunktPoczatkowy->setChecked(tryb == Scena::POZYCJA_GRACZA);
 	this->ui->actionDodajObcyPojazd->setChecked(tryb == Scena::OBCY_POJAZD);
+	this->ui->actionUstawMeteLabiryntu->setChecked(tryb == Scena::META_LABIRYNTU);
 
 	this->ui->graphicsView->setDragMode((tryb == Scena::PRZESUWANIE_WIDOKU) ? QGraphicsView::ScrollHandDrag : QGraphicsView::NoDrag);
 
@@ -594,6 +631,20 @@ void OknoGlowne::trybPozycjiGracza()
 void OknoGlowne::trybObcegoPojazdu()
 {
 	this->ustawTryb(Scena::OBCY_POJAZD);
+}
+
+void OknoGlowne::trybMety()
+{
+	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
+		if(item->type() == Meta::Type) {
+			this->ui->graphicsView->ensureVisible(item);
+			QMessageBox::information(this, "Meta już ustawiona", "Meta jest już wstawiona na planszy.<br>Jeśli chcesz ją przenieść, użyj narzędzia przesuwania lub usuń ją i dodaj ponownie.");
+			this->aktualizujTryb();
+			return;
+		}
+	}
+
+	this->ustawTryb(Scena::META_LABIRYNTU);
 }
 
 void OknoGlowne::wczytajBazeDanych()

@@ -21,7 +21,7 @@ void Ekran::paintEvent(QPaintEvent*){
 	QPainter painter(this);
 
 	if(this->jakosc == "wysoka")
-		painter.setRenderHint(QPainter::SmoothPixmapTransform, true);
+		painter.setRenderHint(QPainter::SmoothPixmapTransform);
 
 	painter.drawPixmap(this->rect(), this->buforObrazu);
 	painter.end();

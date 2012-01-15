@@ -4,6 +4,7 @@
 #include "waypoint.h"
 #include "sciezka.h"
 #include "gracz.h"
+#include "meta.h"
 
 #include <QGraphicsSceneMouseEvent>
 #include <QPainter>
@@ -66,6 +67,16 @@ Gracz *Scena::dodajGracza(const QPointF &punkt)
 	return gracz;
 }
 
+Meta *Scena::dodajMete(const QPointF &punkt)
+{
+	Meta *meta = new Meta(punkt);
+	connect(meta, SIGNAL(pozycjaZmieniona()), SIGNAL(elementPrzesuniety()));
+	this->addItem(meta);
+	emit elementPrzesuniety();
+
+	return meta;
+}
+
 void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
 	if(this->trybSceny == Scena::DODAWANIE_PRZESZKODY) {
@@ -75,6 +86,11 @@ void Scena::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		this->dodajWaypoint(event->scenePos().toPoint());
 	} else if(this->trybSceny == Scena::POZYCJA_GRACZA) {
 		this->dodajGracza(event->scenePos());
+
+		this->trybSceny = Scena::ZAZNACZANIE;
+		emit trybZmieniony();
+	} else if(this->trybSceny == Scena::META_LABIRYNTU) {
+		this->dodajMete(event->scenePos());
 
 		this->trybSceny = Scena::ZAZNACZANIE;
 		emit trybZmieniony();

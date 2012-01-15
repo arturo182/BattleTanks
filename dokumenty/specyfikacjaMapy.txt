@@ -1,3 +1,5 @@
+<int trybMapy> // 0 - demolka, 1 - labirynt
+<QPoint pozycjaMety> // tylko dla trybMapy = 1
 <int iloscPrzeszkod>
  <int iloscWierzcholkow>
   <QPoint wierzcholek>

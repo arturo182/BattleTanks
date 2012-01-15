@@ -49,10 +49,14 @@ void Przeszkoda::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 		painter->setPen(Qt::black);
 		painter->setBrush(Qt::white);
 
+		int i = 0;
 		foreach(QPoint wierzcholek, this->polygon().toPolygon()) {
 			wierzcholek -= QPoint(5, 5);
 
 			painter->drawRect(QRect(wierzcholek, QSize(10, 10)));
+			painter->drawText(QRect(wierzcholek, QSize(10, 10)), QString::number(i), QTextOption(Qt::AlignHCenter | Qt::AlignVCenter));
+
+			i++;
 		}
 	}
 }

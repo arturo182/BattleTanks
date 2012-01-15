@@ -21,7 +21,8 @@ class Scena : public QGraphicsScene
 			DODAWANIE_WAYPOINTU,
 			LACZENIE_WAYPOINTOW,
 			POZYCJA_GRACZA,
-			OBCY_POJAZD
+			OBCY_POJAZD,
+			META_LABIRYNTU
 		};
 
 	public:
@@ -31,6 +32,7 @@ class Scena : public QGraphicsScene
 		class Waypoint *dodajWaypoint(const QPoint &punkt);
 		class Sciezka *dodajSciezke(Waypoint *poczatek, Waypoint *koniec);
 		class Gracz *dodajGracza(const QPointF &punkt);
+		class Meta *dodajMete(const QPointF &punkt);
 
 		Tryb tryb() const { return this->trybSceny; }
 		void ustawTryb(Tryb tryb) { this->trybSceny = tryb; }

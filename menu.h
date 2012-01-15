@@ -62,6 +62,7 @@ class Menu: public QObject{
 	Silnik::Tryb odswiez(int, Silnik::Akcja);
 	void rysuj() const;
 
+	int idGracza() const;
 	void odtwarzajMuzyke();
 
   private slots:

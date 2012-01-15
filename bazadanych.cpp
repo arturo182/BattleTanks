@@ -26,7 +26,7 @@ bool BazaDanych::polacz(){
 	// sprawdzamy czy tabele w bazie danych istnieją
 	if(!db.tables().count()) {
 		db.exec("CREATE TABLE pociski ("
-		"  pocisk_id          integer PRIMARY KEY NOT NULL, "
+		"  pocisk_id          integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, "
 		"  nazwa              varchar(255), "
 		"  zasieg             integer, "
 		"  predkosc           integer, "
@@ -38,13 +38,13 @@ bool BazaDanych::polacz(){
 		");");
 
 		db.exec("CREATE TABLE plansze ("
-		"  mapa_id integer PRIMARY KEY NOT NULL, "
+		"  mapa_id integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, "
 		"  tryb smallint, "
 		"  plik varchar(255) "
 		");");
 
 		db.exec("CREATE TABLE pojazdy ("
-		"  pojazd_id             integer PRIMARY KEY NOT NULL, "
+		"  pojazd_id             integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, "
 		"  nazwa                 varchar(255), "
 		"  przesuniecieOsKorpus  float(6,2), "
 		"  przesuniencieOsWieza  float(6,2), "
@@ -70,12 +70,11 @@ bool BazaDanych::polacz(){
 		");");
 
 		dbUstawienia.exec("CREATE TABLE rekordy ("
-		"  rekord_id integer, "
+		"  rekord_id integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, "
 		"  profil_id integer, "
 		"  wynik float(4,2), "
 		"  mapa_id integer, "
-		"  FOREIGN KEY (mapa_id) REFERENCES profile(mapa_id), "
-		"  FOREIGN KEY (profil_id) REFERENCES plansze(profil_id) "
+		"  FOREIGN KEY (profil_id) REFERENCES profile(profil_id) "
 		");");
 
 		dbUstawienia.exec("CREATE TABLE ustawienia ("
@@ -161,10 +160,20 @@ QList<QStringList> BazaDanych::rekordy() const
 	return rekordy;
 }
 
+void BazaDanych::zapiszRekord(int idGracza, int idPlanszy, float wynik)
+{
+	QSqlQuery query(QSqlDatabase::database("dbUstawienia"));
+	query.prepare("INSERT INTO rekordy(profil_id, wynik, mapa_id) VALUES (:profil_id, :wynik, :mapa_id);");
+	query.bindValue(":profil_id", idGracza);
+	query.bindValue(":wynik", wynik);
+	query.bindValue(":mapa_id", idPlanszy);
+	query.exec();
+}
+
 QList<QStringList> BazaDanych::plansze(int tryb) const
 {
 	QSqlQuery query;
-	if(tryb > 0) {
+	if(tryb > -1) {
 		query.prepare("SELECT * FROM plansze WHERE tryb = :tryb ORDER BY LOWER(plik) ASC;");
 		query.bindValue(":tryb", tryb);
 	} else {

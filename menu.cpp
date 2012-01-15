@@ -56,7 +56,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 	if(this->tryb == WYBOR_TRYBU) {
 		if(akcja == Silnik::WYBIERZ) {
 			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
-			this->setProperty("trybGry", this->pozycja);
+			this->setProperty("trybGry", this->pozycja - 1);
 			this->wczytajPlansze();
 			this->pozycja = 1;
 			this->ustawTryb(WYBOR_PLANSZY);
@@ -754,6 +754,11 @@ void Menu::rysuj() const{
 
 	painter.end();
 	this->ekran->update();
+}
+
+int Menu::idGracza() const
+{
+	return this->property("idGracza").toInt();
 }
 
 void Menu::odtwarzajMuzyke()

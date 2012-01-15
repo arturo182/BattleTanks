@@ -16,10 +16,11 @@ class OknoSpecyfikacji : public QDialog
 	Q_OBJECT
 
 	public:
-		explicit OknoSpecyfikacji(const QString &plikTla, const int &pojazdGracza, const QMap<int, int> &pociskiGracza, QWidget *parent = 0);
+		explicit OknoSpecyfikacji(const QString &plikTla, const int &trybGry, const int &pojazdGracza, const QMap<int, int> &pociskiGracza, QWidget *parent = 0);
 		~OknoSpecyfikacji();
 
 		QString plikTla;
+		int trybGry;
 		int pojazdGracza;
 		QMap<int, int> pociskiGracza;
 
@@ -30,6 +31,7 @@ class OknoSpecyfikacji : public QDialog
 		void usunPocisk();
 		void sprawdzDodajPocisk(int);
 		void zmienGracza(int index);
+		void zmienTryb(int index);
 		void on_pociskiTreeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous);
 
 	private:

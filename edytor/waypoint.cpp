@@ -191,7 +191,6 @@ void Waypoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		if(okno.exec() == QDialog::Accepted) {
 			this->obcyPojazd->pojazd = okno.obcyPojazd.pojazd;
 			this->obcyPojazd->pocisk = okno.obcyPojazd.pocisk;
-			qDebug() << this->obcyPojazd->pocisk;
 			this->aktualizujKsztalt();
 		}
 	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {

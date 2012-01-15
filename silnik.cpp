@@ -118,29 +118,16 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 			)
 		);
 	}
-/*
-	QSqlQuery pociski("SELECT * FROM pociski");
-	while(pociski.next()) {
-		this->plansza->dodajSpecyfikacje(
-			new SpecyfikacjaPocisku(
-				QPixmap("grafika/pociski/" + pociski.value(1).toString() + ".png"),
-				pociski.value(2).toInt(), // zasieg
-				pociski.value(3).toInt(), // predkosc
-				pociski.value(4).toInt(), // silaRazenie
-				pociski.value(5).toInt()  // promienRazenie
-			)
-		);
-	}
-*/
 
 	QString nazwaBroni;
-	for(int i = 1; i <= 2; i++){
-		nazwaBroni = "grafika/bronie/bron" + QString::number(i);
+	QSqlQuery pociski("SELECT * FROM pociski");
+	while(pociski.next()) {
+		nazwaBroni = "grafika/bronie/" + pociski.value(1).toString();
 
 		SpecyfikacjaAnimacji* animacja = new SpecyfikacjaAnimacji(
 			QPixmap(nazwaBroni + "Eksplozja.png"),	//	tekstury
-			QSize(4, 4),	//	iloscKlatek
-			1000	//	czasTrwaniaMilisekundy
+			QSize(pociski.value(6).toInt(), pociski.value(7).toInt()),	//	iloscKlatek
+			pociski.value(8).toInt()	//	czasTrwaniaMilisekundy
 		);
 
 		this->plansza->dodajSpecyfikacje(animacja);
@@ -148,10 +135,10 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 		this->plansza->dodajSpecyfikacje(
 			new SpecyfikacjaPocisku(
 				QPixmap(nazwaBroni + "Pocisk.png"),
-				i * 500,
-				i * 500,
-				i * 100,
-				i * 100,
+				pociski.value(2).toInt(), // zasieg
+				pociski.value(3).toInt(), // predkosc
+				pociski.value(4).toInt(), // silaRazenie
+				pociski.value(5).toInt(),  // promienRazenie
 				animacja
 			)
 		);
