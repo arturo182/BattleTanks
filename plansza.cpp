@@ -92,7 +92,6 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		mapaSpecyfikacjaDane >> nrSpecyfikacjiPociskow >> n;
 		this->pojazdGracza->dodajPociski(nrSpecyfikacjiPociskow, n);
 	}
-	this->pojazdGracza->ustawBron();
 	
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
@@ -100,12 +99,15 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		this->pojazdyObce.append(
 			new PojazdObcy(
 				this->specyfikacjePojazdow[nrSpecyfikacjiPojazdu],
-				punkt,
+				this->graf.pozycjaWierzcholka(v),
+				v,
 				zwrot,
 				nrSpecyfikacjiPociskow
 			)
 		);
 	}
+	
+	this->zainicjalizowana = false;
 	
 	mapaSpecyfikacjaPlik.close();
 	return true;
@@ -143,6 +145,41 @@ void Plansza::rysuj(){
 	this->odswiezWidok();
 	this->rysujMape(painter);
 	
+	
+	
+	//	DEBUG BEGIN
+	//	usunac przyjazn z klas: Graf, Wierzcholek, PojazdObcy
+	
+	painter.setPen(Qt::NoPen);
+	painter.setBrush(QColor(255, 0, 0, 128));
+	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++)
+		painter.drawPolygon(i->translated(-widok));
+	
+	painter.setPen(Qt::blue);
+	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
+		for(QList<int>::iterator j = this->graf.wierzcholki[i]->krawedzie.begin(); j != this->graf.wierzcholki[i]->krawedzie.end(); j++)
+			painter.drawLine(this->graf.wierzcholki[i]->pozycja - widok, this->graf.pozycjaWierzcholka(*j) - widok);
+	
+	painter.setPen(Qt::red);
+	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++){
+		int v = (*i)->v;
+		while(v != this->graf.nastepnyWierzcholek(v)){
+			painter.drawLine(this->graf.pozycjaWierzcholka(v) - widok, this->graf.pozycjaWierzcholka(this->graf.nastepnyWierzcholek(v)) - widok);
+			v = this->graf.nastepnyWierzcholek(v);
+		}
+	}
+	
+	painter.setPen(Qt::NoPen);
+	painter.setBrush(Qt::blue);
+	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
+		painter.drawEllipse(this->graf.pozycjaWierzcholka(i) - widok, 5, 5);
+		
+	//	DEBUG END
+		
+		
+	
+	
+	
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
 		(*i)->rysuj(painter, this->widok);
 	this->pojazdGracza->rysuj(painter, this->widok);
@@ -166,12 +203,6 @@ void Plansza::rysuj(){
 		" x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow()))
 	);*/
 	
-	//	DEBUG
-/*	painter.setPen(Qt::red);
-	painter.setBrush(QColor(0, 255, 0, 128));
-	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++)
-		painter.drawPolygon(i->translated(-widok));*/
-
 	painter.end();
 	this->ekran->update();
 }

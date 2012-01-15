@@ -16,12 +16,10 @@
 #include <QDebug>
 
 Silnik::Silnik():
-tryb(LADOWANIE),
-ramki(0),
-milisekundy(0),
-fps(0){
-
-}
+	tryb(LADOWANIE),
+	ramki(0),
+	milisekundy(0),
+	fps(0){}
 
 Silnik::~Silnik(){
 	delete this->logika;

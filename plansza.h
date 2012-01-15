@@ -33,6 +33,7 @@ class Plansza{
 		QList<Pocisk*> pociski;
 		QList<Animacja*> animacje;
 		QList<Animacja*> bonusy;
+		bool zainicjalizowana;
 		
 		void odswiezWidok();
 		void rysujMape(QPainter&);
