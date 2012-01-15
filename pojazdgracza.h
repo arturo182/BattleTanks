@@ -5,6 +5,7 @@
 
 class PojazdGracza: public Pojazd{
 	private:
+		int najblizszyWierzcholek;
 		int iloscRodzajowPociskow;
 		int* zasobyPociskow;
 	
@@ -16,6 +17,8 @@ class PojazdGracza: public Pojazd{
 		inline int zapasPociskow() const;
 		bool ustawBron();
 		bool zmienBron(int);
+	
+	friend class Logika;
 };
 
 int PojazdGracza::zapasPociskow() const{

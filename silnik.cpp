@@ -16,12 +16,10 @@
 #include <QDebug>
 
 Silnik::Silnik():
-tryb(LADOWANIE),
-ramki(0),
-milisekundy(0),
-fps(0){
-
-}
+	tryb(LADOWANIE),
+	ramki(0),
+	milisekundy(0),
+	fps(0){}
 
 Silnik::~Silnik(){
 	delete this->logika;
@@ -191,7 +189,9 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 
 	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal);
 
-	//	sprawdzic czy koniec gry
+//	if(this->plansza->koniecGry())
+//		zakonczyc gre
+//		wyniki wkrotce :P
 
 	if(this->tryb == ROZGRYWKA)
 		this->plansza->rysuj();

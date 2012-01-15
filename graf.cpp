@@ -32,7 +32,7 @@ void Graf::dodajKrawedz(int v, int w){
 	this->wierzcholki[w]->krawedzie.append(v);
 }
 
-int Graf::najblizszyWierzcholek(const QPoint& pozycja) const{
+int Graf::najblizszyWierzcholek(const QPointF& pozycja) const{
 	float tmp, min;
 	int v;
 	
@@ -51,7 +51,7 @@ int Graf::najblizszyWierzcholek(const QPoint& pozycja) const{
 
 void Graf::ustawKorzen(int v){
 	int v_tmp;
-	int odleglosc_tmp;
+	float odleglosc_tmp;
 	
 	for(int i = 0; i < this->iloscWierzcholkow; i++)
 		this->odleglosci[i] = FLT_MAX;
@@ -68,9 +68,10 @@ void Graf::ustawKorzen(int v){
 		for(QList<int>::iterator i = this->wierzcholki[v_tmp]->krawedzie.begin(); i != this->wierzcholki[v_tmp]->krawedzie.end(); i++){
 			odleglosc_tmp = this->odleglosci[v_tmp] + sqrt(pow(double(this->wierzcholki[v_tmp]->pozycja.x() - this->wierzcholki[*i]->pozycja.x()), 2.0) + pow(double(this->wierzcholki[v_tmp]->pozycja.y() - this->wierzcholki[*i]->pozycja.y()), 2.0));
 			if(odleglosc_tmp < this->odleglosci[*i]){
-				this->odleglosci[*i] = odleglosc_tmp;
 				this->kolejka.erase(this->kolejka.find(*i));
+				this->odleglosci[*i] = odleglosc_tmp;
 				this->kolejka.insert(*i);
+				this->drzewoPoprzednikow[*i] = v_tmp;
 			}
 		}
 	}
