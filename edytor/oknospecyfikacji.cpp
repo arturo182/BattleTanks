@@ -12,6 +12,8 @@ pojazdGracza(pojazdGracza),
 pociskiGracza(pociskiGracza),
 ui(new Ui::OknoSpecyfikacji)
 {
+	qDebug() << pociskiGracza;
+
 	this->ui->setupUi(this);
 
 	connect(this->ui->buttonBox, SIGNAL(accepted()), SLOT(accept()));
@@ -19,31 +21,35 @@ ui(new Ui::OknoSpecyfikacji)
 
 	this->ui->tloEdit->setText(this->plikTla);
 
+	int i = 0;
 	QSqlQuery query("SELECT * FROM pociski;");
 	while(query.next()) {
-		int id = query.value(0).toInt();
 		QString nazwa = query.value(1).toString();
 
-		this->pociskiBaza.insert(id, nazwa);
-		this->ui->pociskiComboBox->addItem(QIcon("grafika/bronie/" + nazwa + "Pocisk.png"), nazwa, id);
+		this->pociskiBaza.insert(i, nazwa);
+		this->ui->pociskiComboBox->addItem(QIcon("grafika/bronie/" + nazwa + "Pocisk.png"), nazwa, i);
 
-		if(pociskiGracza.contains(id)) {
+		if(pociskiGracza.contains(i)) {
 			QTreeWidgetItem *item = new QTreeWidgetItem(this->ui->pociskiTreeWidget);
 			item->setIcon(0, QIcon("grafika/bronie/" + nazwa + "Pocisk.png"));
 			item->setText(0, nazwa);
-			item->setText(1, QString::number(pociskiGracza.value(id)));
-			item->setText(2, QString::number(id));
+			item->setText(1, QString::number(pociskiGracza.value(i)));
+			item->setText(2, QString::number(i));
 		}
+
+		i++;
 	}
 
+	i = 0;
 	query.exec("SELECT * FROM pojazdy;");
 	while(query.next()) {
-		int id = query.value(0).toInt();
 		QString nazwa = query.value(1).toString();
-		this->ui->graczComboBox->addItem(QIcon("grafika/pojazdy/" + nazwa + "Korpus.png"), nazwa, id);
+		this->ui->graczComboBox->addItem(QIcon("grafika/pojazdy/" + nazwa + "Korpus.png"), nazwa, i);
 
-		if(id == pojazdGracza)
+		if(i == pojazdGracza)
 			this->ui->graczComboBox->setCurrentIndex(this->ui->graczComboBox->count() - 1);
+
+		i++;
 	}
 }
 
@@ -82,7 +88,7 @@ void OknoSpecyfikacji::usunPocisk()
 {
 	QTreeWidgetItem *current = this->ui->pociskiTreeWidget->currentItem();
 
-	int id = current->text(3).toInt();
+	int id = current->text(2).toInt();
 	this->pociskiGracza.remove(id);
 
 	delete current;

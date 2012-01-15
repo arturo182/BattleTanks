@@ -16,27 +16,31 @@ ui(new Ui::OknoPojazduObcego)
 	this->obcyPojazd.pojazd = pojazd;
 	this->obcyPojazd.pocisk = pocisk;
 
+	int i = 0;
 	QSqlQuery query("SELECT * FROM pociski;");
 	while(query.next()) {
-		int id = query.value(0).toInt();
 		QString nazwa = query.value(1).toString();
 
-		this->ui->pociskiComboBox->addItem(QIcon("grafika/bronie/" + nazwa + "Pocisk.png"), nazwa, id);
-		if(id == pocisk)
+		this->ui->pociskiComboBox->addItem(QIcon("grafika/bronie/" + nazwa + "Pocisk.png"), nazwa, i);
+		if(i == pocisk)
 			this->ui->pociskiComboBox->setCurrentIndex(this->ui->pociskiComboBox->count() - 1);
+
+		i++;
 	}
 
 	this->ui->pojazdyComboBox->addItem("Brak obcego pojazdu", "-1");
 
+	i = 0;
 	query.exec("SELECT * FROM pojazdy;");
 	while(query.next()) {
-		int id = query.value(0).toInt();
 		QString nazwa = query.value(1).toString();
 
-		this->ui->pojazdyComboBox->addItem(QIcon("grafika/pojazdy/" + nazwa + "Korpus.png"), nazwa, id);
+		this->ui->pojazdyComboBox->addItem(QIcon("grafika/pojazdy/" + nazwa + "Korpus.png"), nazwa, i);
 
-		if(id == pojazd)
+		if(i == pojazd)
 			this->ui->pojazdyComboBox->setCurrentIndex(this->ui->pojazdyComboBox->count() - 1);
+
+		i++;
 	}
 }
 
@@ -47,7 +51,6 @@ OknoPojazduObcego::~OknoPojazduObcego()
 
 void OknoPojazduObcego::ustawPocisk(int index)
 {
-		qDebug() << this->ui->pociskiComboBox->itemData(index).toInt();
 	this->obcyPojazd.pocisk = this->ui->pociskiComboBox->itemData(index).toInt();
 }
 
