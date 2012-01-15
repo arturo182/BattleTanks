@@ -39,7 +39,7 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 	if(mapaTekstura.isNull())
 		return false;
 	this->mapa = new Tekstura(mapaTekstura);
-	this->widok = Obiekt::skala * QPoint(0, 0);
+	this->widok = QPoint(0, 0);
 	
 	QFile mapaSpecyfikacjaPlik("plansze/" + nazwaPlanszy + ".dat");
 	if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly)){
@@ -48,26 +48,64 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 	}
 	
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
-	int iloscPrzeszkod, iloscWierzcholkow;
-	QPoint wierzcholek;
+	int iloscElementow, n;
+	QPoint punkt;
 
-	mapaSpecyfikacjaDane >> iloscPrzeszkod;
-	for(int i = 0; i < iloscPrzeszkod; i++){
-		mapaSpecyfikacjaDane >> iloscWierzcholkow;
-
+	mapaSpecyfikacjaDane >> iloscElementow;
+	for(int i = 0; i < iloscElementow; i++){
+		mapaSpecyfikacjaDane >> n;
 		QPolygonF przeszkoda;
-		for(int j = 0; j < iloscWierzcholkow; j++){
-			mapaSpecyfikacjaDane >> wierzcholek;
-			przeszkoda << wierzcholek;
+		for(int j = 0; j < n; j++){
+			mapaSpecyfikacjaDane >> punkt;
+			przeszkoda << punkt;
 		}
 		this->przeszkody.append(przeszkoda);
 	}
 	
-	//	LADOWAC ZE SPECYFIKACJI
-	this->pojazdGracza = new PojazdGracza(this->specyfikacjePojazdow[0], QPointF(100, 100), 0.0, this->specyfikacjePociskow.size());
-	this->pojazdGracza->dodajPociski(0, -1);
-	this->pojazdGracza->dodajPociski(1, 10);
+	mapaSpecyfikacjaDane >> iloscElementow;
+	this->graf.utworz(iloscElementow);
+	for(int i = 0; i < iloscElementow; i++){
+		mapaSpecyfikacjaDane >> punkt;
+		this->graf.ustawWierzcholek(i, punkt);
+	}
+	
+	mapaSpecyfikacjaDane >> iloscElementow;
+	int v, w;
+	for(int i = 0; i < iloscElementow; i++){
+		mapaSpecyfikacjaDane >> v >> w;
+		this->graf.dodajKrawedz(v, w);
+	}
+	
+	int nrSpecyfikacjiPojazdu, nrSpecyfikacjiPociskow;
+	float zwrot;
+	
+	mapaSpecyfikacjaDane >> nrSpecyfikacjiPojazdu >> punkt >> zwrot;
+	this->pojazdGracza = new PojazdGracza(
+		this->specyfikacjePojazdow[nrSpecyfikacjiPojazdu],
+		punkt,
+		zwrot,
+		this->specyfikacjePociskow.size()
+	);
+	
+	mapaSpecyfikacjaDane >> iloscElementow;
+	for(int i = 0; i < iloscElementow; i++){
+		mapaSpecyfikacjaDane >> nrSpecyfikacjiPociskow >> n;
+		this->pojazdGracza->dodajPociski(nrSpecyfikacjiPociskow, n);
+	}
 	this->pojazdGracza->ustawBron();
+	
+	mapaSpecyfikacjaDane >> iloscElementow;
+	for(int i = 0; i < iloscElementow; i++){
+		mapaSpecyfikacjaDane >> nrSpecyfikacjiPojazdu >> v >> zwrot >> nrSpecyfikacjiPociskow;
+		this->pojazdyObce.append(
+			new PojazdObcy(
+				this->specyfikacjePojazdow[nrSpecyfikacjiPojazdu],
+				punkt,
+				zwrot,
+				nrSpecyfikacjiPociskow
+			)
+		);
+	}
 	
 	mapaSpecyfikacjaPlik.close();
 	return true;
@@ -81,6 +119,7 @@ void Plansza::czysc(){
 	this->pojazdGracza = 0;
 
 	this->przeszkody.clear();
+	this->graf.czysc();
 
 	qDeleteAll(this->pojazdyObce);
 	this->pojazdyObce.clear();
@@ -103,7 +142,11 @@ void Plansza::rysuj(){
 	
 	this->odswiezWidok();
 	this->rysujMape(painter);
+	
+	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
+		(*i)->rysuj(painter, this->widok);
 	this->pojazdGracza->rysuj(painter, this->widok);
+	
 	this->rysujAnimacje(painter);
 	this->rysujPociski(painter);
 	this->rysujCelownik(painter);

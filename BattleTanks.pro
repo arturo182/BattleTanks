@@ -29,7 +29,10 @@ SOURCES += \
     pauza.cpp \
     widzety.cpp \
     funkcje.cpp \
-    ladowanie.cpp
+    ladowanie.cpp \
+    graf.cpp \
+    wierzcholek.cpp \
+    porownajsciezki.cpp
 
 HEADERS += \
         silnik.h \
@@ -55,6 +58,17 @@ HEADERS += \
     pauza.h \
     widzety.h \
     funkcje.h \
-    ladowanie.h
+    ladowanie.h \
+    graf.h \
+    porownajsciezki.h \
+    wierzcholek.h
 
 RC_FILE     = res.rc
+
+
+
+
+
+
+
+
