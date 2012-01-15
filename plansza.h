@@ -18,12 +18,21 @@ class PojazdObcy;
 class Pocisk;
 
 class Plansza{
+	public:
+		enum TrybGry{
+			DEMOLKA,
+			LABIRYNT
+		};
+		
 	private:
 		Ekran* ekran;
 		QList<SpecyfikacjaPojazdu*> specyfikacjePojazdow;
 		QList<SpecyfikacjaPocisku*> specyfikacjePociskow;
 		QList<SpecyfikacjaAnimacji*> specyfikacjeAnimacji;
+		TrybGry trybGry;
+		int idPlanszy;
 		Tekstura* mapa;
+		QPoint wyjscie;
 		QPoint widok;
 		QList<QPolygonF> przeszkody;
 		Graf graf;
@@ -33,7 +42,7 @@ class Plansza{
 		QList<Pocisk*> pociski;
 		QList<Animacja*> animacje;
 		QList<Animacja*> bonusy;
-		bool zainicjalizowana;
+		int status;
 		
 		void odswiezWidok();
 		void rysujMape(QPainter&);
@@ -47,11 +56,21 @@ class Plansza{
 		void dodajSpecyfikacje(SpecyfikacjaPojazdu*);
 		void dodajSpecyfikacje(SpecyfikacjaPocisku*);
 		void dodajSpecyfikacje(SpecyfikacjaAnimacji*);
-		bool zaladuj(QString);
+		bool zaladuj(int, QString);
 		void czysc();
 		void rysuj();
+		inline int id() const;
+		inline bool koniecGry() const;
 	
 	friend class Logika;
 };
+
+int Plansza::id() const{
+	return this->idPlanszy;
+}
+
+bool Plansza::koniecGry() const{
+	return this->status == 3;
+}
 
 #endif // PLANSZA_H

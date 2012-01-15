@@ -14,9 +14,13 @@ Logika::Logika(Plansza* plansza):
 void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predkoscGasienicyPrawej, int rotacjaWiezy, int zmianaBroni, int zmianaZasiegu, bool wystrzal){
 	float czas = float(milisekundy) / 1000.0;
 	
-	if(!this->plansza->zainicjalizowana)
-		this->inicjalizuj();
-		
+	switch(this->plansza->status){
+		case 1:
+			this->inicjalizuj();
+		case 3:
+			return;
+	}
+	
 	this->odswiezPojazdGracza(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal, czas);
 	this->odswiezObcePojazdy(czas);
 	
@@ -26,10 +30,10 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
 		(*i)->odswiez(milisekundy);
 		
-	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
-		if(!(*i)->sprawdzStatus()){
-			delete *i;
-			this->plansza->animacje.removeOne(*i);
+	for(int i = this->plansza->animacje.size() - 1; i >= 0; i--)
+		if(!this->plansza->animacje[i]->sprawdzStatus()){
+			delete this->plansza->animacje[i];
+			this->plansza->animacje.removeAt(i);
 		}
 	
 	for(int i = this->plansza->pociski.size() - 1; i >= 0; i--)
@@ -43,6 +47,9 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 			delete this->plansza->pociski[i];
 			this->plansza->pociski.removeAt(i);
 		}
+	
+	if(this->plansza->trybGry == Plansza::LABIRYNT && this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->wyjscie) < ODLEGLOSC_OD_PUNKTU_WYJSCIA)
+		this->plansza->status = 3;
 }
 
 QPolygonF Logika::wyznaczOtoczke(const Pojazd& pojazd) const{
@@ -73,7 +80,7 @@ void Logika::inicjalizuj() const{
 	for(QList<PojazdObcy*>::iterator i = this->plansza->pojazdyObce.begin(); i < this->plansza->pojazdyObce.end(); i++)
 		(*i)->otoczka = this->wyznaczOtoczke(**i);
 		
-	this->plansza->zainicjalizowana = true;
+	this->plansza->status = 2;
 }
 
 bool Logika::sprawdzOtoczki(QPolygonF& otoczka1, QPolygonF& otoczka2) const{

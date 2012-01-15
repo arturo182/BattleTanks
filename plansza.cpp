@@ -10,9 +10,11 @@
 
 Plansza::Plansza(Ekran* ekran):
 	ekran(ekran),
+	idPlanszy(-1),
 	mapa(0),
 	pojazdGracza(0),
-	celownik(QPixmap("grafika/celownik.png")){}
+	celownik(QPixmap("grafika/celownik.png")),
+	status(0){}
 
 Plansza::~Plansza(){
 	this->czysc();
@@ -33,7 +35,7 @@ void Plansza::dodajSpecyfikacje(SpecyfikacjaAnimacji* specyfikacja){
 	this->specyfikacjeAnimacji.append(specyfikacja);
 }
 
-bool Plansza::zaladuj(QString nazwaPlanszy){
+bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 	QPixmap mapaTekstura("plansze/" + nazwaPlanszy + ".png");
 
 	if(mapaTekstura.isNull())
@@ -47,10 +49,19 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		return false;
 	}
 	
+	this->idPlanszy = id;
+	
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 	int iloscElementow, n;
 	QPoint punkt;
 
+	mapaSpecyfikacjaDane >> n;
+	this->trybGry = static_cast<TrybGry>(n);
+	if(this->trybGry == LABIRYNT){
+		mapaSpecyfikacjaDane >> punkt;
+		this->wyjscie = punkt;
+	}
+	
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> n;
@@ -107,7 +118,7 @@ bool Plansza::zaladuj(QString nazwaPlanszy){
 		);
 	}
 	
-	this->zainicjalizowana = false;
+	this->status = 1;
 	
 	mapaSpecyfikacjaPlik.close();
 	return true;
@@ -134,10 +145,13 @@ void Plansza::czysc(){
 
 	qDeleteAll(this->bonusy);
 	this->bonusy.clear();
+	
+	this->idPlanszy = -1;
+	this->status = 0;
 }
 
 void Plansza::rysuj(){
-	if(!this->mapa)
+	if(this->status == 0)
 		return;
 	
 	QPainter painter(&this->ekran->buforObrazu);
