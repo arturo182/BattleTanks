@@ -49,6 +49,8 @@ class Plansza{
 		QList<Pocisk*> pociski;
 		QList<Animacja*> animacje;
 		QList<Animacja*> bonusy;
+		bool wygrana;
+		int punkty;
 
 		void odswiezWidok();
 		void rysujMape(QPainter&);
@@ -67,6 +69,8 @@ class Plansza{
 		void rysuj();
 		inline int id() const;
 		inline bool koniecGry() const;
+		inline bool sprawdzWygrana() const;
+		inline int sprawdzPunkty() const;
 
 	friend class Logika;
 };
@@ -76,7 +80,15 @@ int Plansza::id() const{
 }
 
 bool Plansza::koniecGry() const{
-	return this->status == 3;
+	return this->status == ROZGRYWKA_ZAKONCZONA;
+}
+
+bool Plansza::sprawdzWygrana() const{
+	return this->wygrana;
+}
+
+int Plansza::sprawdzPunkty() const{
+	return this->punkty;
 }
 
 #endif // PLANSZA_H

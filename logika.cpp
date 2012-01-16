@@ -19,23 +19,37 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 	if(this->plansza->status == Plansza::NIEZAINICJALIZOWANA)
 		this->inicjalizuj();
 	
-	this->odswiezPojazdGracza(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal, czas);
-	this->odswiezObcePojazdy(milisekundy, czas);
 	
-	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
-		(*i)->odswiez(milisekundy);
+	for(int i = this->plansza->animacje.size() - 1; i >= 0; i--){
+		this->plansza->animacje[i]->odswiez(milisekundy);
 		
-	for(QList<Pocisk*>::iterator i = this->plansza->pociski.begin(); i != this->plansza->pociski.end(); i++)
-		(*i)->odswiez(milisekundy);
-		
-	for(int i = this->plansza->animacje.size() - 1; i >= 0; i--)
 		if(!this->plansza->animacje[i]->sprawdzStatus()){
 			delete this->plansza->animacje[i];
 			this->plansza->animacje.removeAt(i);
 		}
+	}
 	
-	for(int i = this->plansza->pociski.size() - 1; i >= 0; i--)
+	float odleglosc;
+	int obrazenia;
+	
+	for(int i = this->plansza->pociski.size() - 1; i >= 0; i--){
+		this->plansza->pociski[i]->odswiez(milisekundy);
+		
 		if(!this->plansza->pociski[i]->sprawdzStatus()){
+			odleglosc = this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->pociski[i]->pozycja);
+			if(odleglosc < this->plansza->pociski[i]->specyfikacja->promienRazenia){
+				obrazenia = this->plansza->pociski[i]->specyfikacja->silaRazenia * odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia;
+				this->plansza->pojazdGracza->zdrowie -= obrazenia;
+			}
+			
+			for(QList<PojazdObcy*>::iterator j = this->plansza->pojazdyObce.begin(); j < this->plansza->pojazdyObce.end(); j++){
+				odleglosc = this->odleglosc((*j)->pozycja, this->plansza->pociski[i]->pozycja);
+				if(odleglosc < this->plansza->pociski[i]->specyfikacja->promienRazenia){
+					obrazenia = this->plansza->pociski[i]->specyfikacja->silaRazenia * odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia;
+					(*j)->zdrowie -= obrazenia;
+				}
+			}
+			
 			this->plansza->animacje.append(
 				new Animacja(
 					this->plansza->pociski[i]->specyfikacja->animacja(),
@@ -45,9 +59,31 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 			delete this->plansza->pociski[i];
 			this->plansza->pociski.removeAt(i);
 		}
+	}
 	
-	if(this->plansza->tryb == Plansza::LABIRYNT && this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->wyjscie) < ODLEGLOSC_OD_PUNKTU_WYJSCIA)
+	if(this->plansza->pojazdGracza->zdrowie <= 0){
 		this->plansza->status = Plansza::ROZGRYWKA_ZAKONCZONA;
+		this->plansza->wygrana = false;
+		return;
+	}
+	
+	this->odswiezPojazdGracza(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal, czas);
+	this->odswiezObcePojazdy(milisekundy, czas);
+	
+	switch(this->plansza->tryb){
+		case Plansza::DEMOLKA:
+			if(this->plansza->pojazdyObce.empty()){
+				this->plansza->status = Plansza::ROZGRYWKA_ZAKONCZONA;
+				this->plansza->wygrana = true;
+			}
+			break;
+		case Plansza::LABIRYNT:
+			if(this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->wyjscie) < ODLEGLOSC_OD_PUNKTU_WYJSCIA){
+				this->plansza->status = Plansza::ROZGRYWKA_ZAKONCZONA;
+				this->plansza->wygrana = true;
+			}
+			break;
+	}
 }
 
 QPolygonF Logika::wyznaczOtoczke(const Pojazd& pojazd) const{
@@ -340,27 +376,30 @@ void Logika::przemiescKorpusNaSciezce(PojazdObcy& pojazd, float czas){
 }
 
 void Logika::odswiezObcePojazdy(int milisekundy, float czas){
-	for(QList<PojazdObcy*>::iterator i = this->plansza->pojazdyObce.begin(); i < this->plansza->pojazdyObce.end(); i++){
-		if(this->odleglosc(this->plansza->pojazdGracza->pozycja, (*i)->pozycja) < PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW){
-			if((*i)->licznik == 0){
-				this->wybierzSciezke(**i);
-				if((*i)->w >= 0){
-					if((*i)->ustawZwrot)
-						this->ustawZwrotKorpusu(**i, czas);
+	for(int i = this->plansza->pojazdyObce.size() - 1; i >= 0; i--){
+		if(this->plansza->pojazdyObce[i]->zdrowie <= 0){
+			delete this->plansza->pojazdyObce[i];
+			this->plansza->pojazdyObce.removeAt(i);
+		}else if(this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->pojazdyObce[i]->pozycja) < PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW){
+			if(this->plansza->pojazdyObce[i]->licznik == 0){
+				this->wybierzSciezke(*this->plansza->pojazdyObce[i]);
+				if(this->plansza->pojazdyObce[i]->w >= 0){
+					if(this->plansza->pojazdyObce[i]->ustawZwrot)
+						this->ustawZwrotKorpusu(*this->plansza->pojazdyObce[i], czas);
 					else
-						this->przemiescKorpusNaSciezce(**i, czas);
+						this->przemiescKorpusNaSciezce(*this->plansza->pojazdyObce[i], czas);
 				}
 				
 				//	aktualizacja
-				(*i)->zwrotWiezyWektor = QVector2D(
-					cos((*i)->zwrotKorpusuKat + (*i)->zwrotWiezyWzgledemKorpusuKat),
-					-sin((*i)->zwrotKorpusuKat + (*i)->zwrotWiezyWzgledemKorpusuKat)
+				this->plansza->pojazdyObce[i]->zwrotWiezyWektor = QVector2D(
+					cos(this->plansza->pojazdyObce[i]->zwrotKorpusuKat + this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat),
+					-sin(this->plansza->pojazdyObce[i]->zwrotKorpusuKat + this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat)
 				);
-			}else if((*i)->licznik > milisekundy)
-				(*i)->licznik -= milisekundy;
+			}else if(this->plansza->pojazdyObce[i]->licznik > milisekundy)
+				this->plansza->pojazdyObce[i]->licznik -= milisekundy;
 			else
-				(*i)->licznik = 0;
-		}else if((*i)->licznik > 0)
-			(*i)->licznik = 0;
+				this->plansza->pojazdyObce[i]->licznik = 0;
+		}else if(this->plansza->pojazdyObce[i]->licznik > 0)
+			this->plansza->pojazdyObce[i]->licznik = 0;
 	}
 }

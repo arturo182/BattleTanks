@@ -14,7 +14,8 @@ Plansza::Plansza(Ekran* ekran):
 	idPlanszy(-1),
 	mapa(0),
 	pojazdGracza(0),
-	celownik(QPixmap("grafika/celownik.png")){}
+	celownik(QPixmap("grafika/celownik.png")),
+	punkty(0){}
 
 Plansza::~Plansza(){
 	this->czysc();
@@ -147,6 +148,7 @@ void Plansza::czysc(){
 	this->bonusy.clear();
 	
 	this->idPlanszy = -1;
+	this->punkty = 0;
 	this->status = PLANSZA_PUSTA;
 }
 
