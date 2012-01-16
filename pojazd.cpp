@@ -39,10 +39,6 @@ void Pojazd::rysuj(QPainter& painter, QPoint widok) const{
 		teksturaWieza
 	);
 	
-	//	TEST
-/*	painter.setPen(Qt::red);
-	painter.setBrush(QColor(0, 0, 255, 128));
-	painter.drawPolygon(this->otoczka.translated(-widok));
-	for(int i = 0; i < 4; i++)
-		painter.drawText(this->otoczka[i] - widok, QString::number(i));*/
+	painter.fillRect(QRectF(Obiekt::skala * QPointF(this->pozycja.x() - 50, this->pozycja.y() - 40) - widok, Obiekt::skala * QSize(80, 4)), Qt::red);
+	painter.fillRect(QRectF(Obiekt::skala * QPointF(this->pozycja.x() - 50, this->pozycja.y() - 40) - widok, Obiekt::skala * QSize(80 * this->zdrowie / this->specyfikacja->wytrzymalosc, 4)), Qt::green);
 }
