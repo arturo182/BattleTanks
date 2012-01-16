@@ -433,7 +433,7 @@ bool OknoGlowne::zapiszPlik(const QString &nazwaPliku)
 	QList<Sciezka*> sciezki;
 	QPoint pozycjaGracza;
 	QPoint pozycjaMety;
-	float zwrotGracza;
+	float zwrotGracza = 0.0f;
 	int obcePojazdy = 0;
 
 	foreach(QGraphicsItem *item, this->scena->items(Qt::AscendingOrder)) {
