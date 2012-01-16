@@ -137,6 +137,7 @@ void OknoGlowne::wczytajPlansze()
 			planszaSpecyfikacjaDane >> punkt;
 			this->scena->dodajMete(punkt);
 		}
+		this->trybGry = id;
 
 		//przeszkody
 		planszaSpecyfikacjaDane >> iloscElementow;
