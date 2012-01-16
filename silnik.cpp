@@ -133,6 +133,7 @@ void Silnik::zaladujSpecyfikacjeObiektow(){
 		this->plansza->dodajSpecyfikacje(
 			new SpecyfikacjaPocisku(
 				QPixmap(nazwaBroni + "Pocisk.png"),
+				"dzwieki/" + pociski.value(1).toString() + "_wystrzal.mp3",
 				pociski.value(2).toInt(), // zasieg
 				pociski.value(3).toInt(), // predkosc
 				pociski.value(4).toInt(), // silaRazenie

@@ -20,7 +20,7 @@ Dzwiek::~Dzwiek()
 	delete this->media;
 }
 
-void Dzwiek::odtworz()
+void Dzwiek::odtworz() const
 {
 	this->media->play();
 }
