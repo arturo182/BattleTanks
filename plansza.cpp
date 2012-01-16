@@ -166,27 +166,31 @@ void Plansza::rysuj(){
 	
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QColor(255, 0, 0, 128));
-	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++)
-		painter.drawPolygon(i->translated(-widok));
+	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++){
+		QPolygonF poligon;
+		for(int j = 0; j < i->size(); j++)
+			poligon << Obiekt::skala * (*i)[j] - widok;
+		painter.drawPolygon(poligon);
+	}
 	
-	painter.setPen(Qt::blue);
+	painter.setPen(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		for(QList<int>::iterator j = this->graf.wierzcholki[i]->krawedzie.begin(); j != this->graf.wierzcholki[i]->krawedzie.end(); j++)
-			painter.drawLine(this->graf.wierzcholki[i]->pozycja - widok, this->graf.pozycjaWierzcholka(*j) - widok);
+			painter.drawLine(Obiekt::skala * this->graf.wierzcholki[i]->pozycja - widok, Obiekt::skala * this->graf.pozycjaWierzcholka(*j) - widok);
 	
-	painter.setPen(Qt::red);
+	painter.setPen(Qt::green);
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++){
 		int v = (*i)->v;
 		while(v != this->graf.nastepnyWierzcholek(v)){
-			painter.drawLine(this->graf.pozycjaWierzcholka(v) - widok, this->graf.pozycjaWierzcholka(this->graf.nastepnyWierzcholek(v)) - widok);
+			painter.drawLine(Obiekt::skala * this->graf.pozycjaWierzcholka(v) - widok, Obiekt::skala * this->graf.pozycjaWierzcholka(this->graf.nastepnyWierzcholek(v)) - widok);
 			v = this->graf.nastepnyWierzcholek(v);
 		}
 	}
 	
 	painter.setPen(Qt::NoPen);
-	painter.setBrush(Qt::blue);
+	painter.setBrush(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
-		painter.drawEllipse(this->graf.pozycjaWierzcholka(i) - widok, 5, 5);
+		painter.drawEllipse(Obiekt::skala * QPointF(this->graf.pozycjaWierzcholka(i)) - widok, Obiekt::skala * 5, Obiekt::skala * 5);
 		
 	//	DEBUG END
 		

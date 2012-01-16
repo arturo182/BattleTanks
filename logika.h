@@ -21,15 +21,15 @@ class Logika{
 			KRAWEDZIE_MAPY = 1,
 			PRZESZKODY = 2,
 			POJAZDY = 4,
-			POJAZDY2 = 8
+			POJAZDY_NA_SCIEZKACH = 8
 		};
 		
 		Plansza* plansza;
 		
 		inline float odleglosc(QPointF, QPointF) const;
 		inline float wyznacznikMacierzyWspolliniowosci(QPointF, QPointF, QPointF) const;
-		bool sprawdzOtoczki(QPolygonF&, QPolygonF&) const;
 		QPolygonF wyznaczOtoczke(const Pojazd&) const;
+		bool sprawdzOtoczki(QPolygonF&, QPolygonF&) const;
 		void inicjalizuj() const;
 		bool sprawdzKolizje(Pojazd&, int) const;
 		bool przemiescKorpus(Pojazd&, float, float, float);
@@ -38,6 +38,9 @@ class Logika{
 		bool wystrzelPocisk(Pojazd&, bool);
 		void odswiezPojazdGracza(float, float, int, int, int, bool, float);
 		inline bool pojazdNaWierzcholku(const PojazdObcy&) const;
+		void wybierzSciezke(PojazdObcy&);
+		void ustawZwrotKorpusu(PojazdObcy&, float);
+		void przemiescKorpusNaSciezce(PojazdObcy&, float);
 		void odswiezObcePojazdy(int, float);
 		
 	public:
