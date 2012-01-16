@@ -23,9 +23,9 @@ uchwyt(false)
 	this->marker.addEllipse(-rozmiar * 0.125, -rozmiar * 0.85, rozmiar * 0.25, rozmiar * 0.25);
 
 	this->czolg.setFillRule(Qt::WindingFill);
-	this->czolg.addRect(-50, -35, 100, 70);
-	this->czolg.addEllipse(QPointF(), 20, 20);
-	this->czolg.addRect(20, -5, 60, 10);
+	this->czolg.addRect(-37, -25, 75, 50);
+	this->czolg.addEllipse(QPointF(), 15, 15);
+	this->czolg.addRect(15, -4, 50, 8);
 
 	this->setPath(this->marker);
 	this->setPos(srodek);
@@ -117,7 +117,7 @@ void Waypoint::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		QPoint pos = event->pos().toPoint();
 
-		QRect uchwyt(QPoint(77, -3), QSize(6, 6));
+		QRect uchwyt(QPoint(60, -5), QSize(10, 10));
 
 		if(uchwyt.contains(pos))
 			this->setCursor(QPixmap(":/ikony/rotate_icon.png"));
@@ -150,7 +150,7 @@ void Waypoint::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, 
 			painter->setPen(Qt::black);
 			painter->setBrush(Qt::white);
 
-			painter->drawRect(QRect(QPoint(77, -3), QSize(6, 6)));
+			painter->drawRect(QRect(QPoint(60, -5), QSize(10, 10)));
 		}
 	}
 
@@ -195,7 +195,7 @@ void Waypoint::mousePressEvent(QGraphicsSceneMouseEvent *event)
 		}
 	} else if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		QPoint pos = event->pos().toPoint();
-		QRect uchwyt(QPoint(77, -3), QSize(6, 6));
+		QRect uchwyt(QPoint(60, -5), QSize(10, 10));
 
 		this->uchwyt = uchwyt.contains(pos);
 	}

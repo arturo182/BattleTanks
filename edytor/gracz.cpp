@@ -13,9 +13,9 @@ uchwyt(false)
 {
 	QPainterPath path;
 	path.setFillRule(Qt::WindingFill);
-	path.addRect(-50, -35, 100, 70);
-	path.addEllipse(QPointF(), 20, 20);
-	path.addRect(20, -5, 60, 10);
+	path.addRect(-37, -25, 75, 50);
+	path.addEllipse(QPointF(), 15, 15);
+	path.addRect(15, -4, 50, 8);
 	this->setPath(path);
 
 	this->setPen(QPen(Qt::black, 2));
@@ -28,7 +28,7 @@ uchwyt(false)
 QRectF Gracz::boundingRect() const
 {
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU)
-		return QGraphicsPathItem::boundingRect().adjusted(0, 0, 3, 0);
+		return QGraphicsPathItem::boundingRect().adjusted(0, 0, 5, 0);
 	else
 		return QGraphicsPathItem::boundingRect();
 }
@@ -64,7 +64,7 @@ void Gracz::mousePressEvent(QGraphicsSceneMouseEvent *event)
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
 		QPoint pos = event->pos().toPoint();
-		QRect uchwyt(QPoint(77, -3), QSize(6, 6));
+		QRect uchwyt(QPoint(60, -5), QSize(10, 10));
 
 		this->uchwyt = uchwyt.contains(pos);
 	}
@@ -81,7 +81,7 @@ void Gracz::hoverMoveEvent(QGraphicsSceneHoverEvent *event)
 	QPoint pos = event->pos().toPoint();
 
 	if(this->scene()->property("tryb").toInt() == Scena::PRZESUWANIE_ELEMENTU) {
-		QRect uchwyt(QPoint(77, -3), QSize(6, 6));
+		QRect uchwyt(QPoint(60, -5), QSize(10, 10));
 
 		if(uchwyt.contains(pos))
 			this->setCursor(QPixmap(":/ikony/rotate_icon.png"));
@@ -100,6 +100,6 @@ void Gracz::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWi
 		painter->setPen(Qt::black);
 		painter->setBrush(Qt::white);
 
-		painter->drawRect(QRect(QPoint(77, -3), QSize(6, 6)));
+		painter->drawRect(QRect(QPoint(60, -5), QSize(10, 10)));
 	}
 }

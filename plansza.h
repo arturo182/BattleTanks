@@ -10,7 +10,7 @@
 #include "animacja.h"
 
 #define WYSOKOSC_WIDOKU 1080
-#define MARGINES 400
+#define MARGINES 530
 
 class Ekran;
 class PojazdGracza;
@@ -23,7 +23,7 @@ class Plansza{
 			DEMOLKA,
 			LABIRYNT
 		};
-		
+
 	private:
 		Ekran* ekran;
 		QList<SpecyfikacjaPojazdu*> specyfikacjePojazdow;
@@ -43,13 +43,13 @@ class Plansza{
 		QList<Animacja*> animacje;
 		QList<Animacja*> bonusy;
 		int status;
-		
+
 		void odswiezWidok();
 		void rysujMape(QPainter&);
 		void rysujAnimacje(QPainter&);
 		void rysujPociski(QPainter&);
 		void rysujCelownik(QPainter&);
-		
+
 	public:
 		Plansza(Ekran*);
 		~Plansza();
@@ -61,7 +61,7 @@ class Plansza{
 		void rysuj();
 		inline int id() const;
 		inline bool koniecGry() const;
-	
+
 	friend class Logika;
 };
 
