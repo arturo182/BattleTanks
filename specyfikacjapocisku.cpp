@@ -7,5 +7,5 @@ SpecyfikacjaPocisku::SpecyfikacjaPocisku(const QPixmap& tekstura, const QString 
 	rozmiar(this->tekstura.teksturaOryginalna.size()),
 	zasieg(zasieg),
 	predkosc(predkosc),
-	silaRazenie(silaRazenie),
-	promienRazenie(promienRazenie){}
+	silaRazenia(silaRazenia),
+	promienRazenia(promienRazenia){}

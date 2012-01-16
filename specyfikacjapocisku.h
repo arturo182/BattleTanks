@@ -16,8 +16,8 @@ class SpecyfikacjaPocisku{
 		QSize rozmiar;
 		int zasieg;
 		int predkosc;
-		int silaRazenie;
-		int promienRazenie;
+		int silaRazenia;
+		int promienRazenia;
 
 		SpecyfikacjaPocisku(const QPixmap&, const QString&, int, int, int, int, const SpecyfikacjaAnimacji*);
 		inline const SpecyfikacjaAnimacji* animacja() const;
