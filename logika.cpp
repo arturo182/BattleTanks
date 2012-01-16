@@ -20,7 +20,7 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 		this->inicjalizuj();
 	
 	this->odswiezPojazdGracza(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal, czas);
-	this->odswiezObcePojazdy(czas);
+	this->odswiezObcePojazdy(milisekundy, czas);
 	
 	for(QList<Animacja*>::iterator i = this->plansza->animacje.begin(); i != this->plansza->animacje.end(); i++)
 		(*i)->odswiez(milisekundy);
@@ -232,104 +232,125 @@ void Logika::odswiezPojazdGracza(float predkoscGasienicyLewej, float predkoscGas
 		this->wystrzelPocisk(*this->plansza->pojazdGracza, true);
 }
 
-void Logika::odswiezObcePojazdy(float czas){
+void Logika::odswiezObcePojazdy(int milisekundy, float czas){
 	float dystans;
 
 	for(QList<PojazdObcy*>::iterator i = this->plansza->pojazdyObce.begin(); i < this->plansza->pojazdyObce.end(); i++){
 		dystans = this->odleglosc(this->plansza->pojazdGracza->pozycja, (*i)->pozycja);
 		if(dystans < PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW){
 		
-			if(dystans > this->plansza->specyfikacjePociskow[(*i)->aktualnaBron]->zasieg){
-				if(this->pojazdNaWierzcholku(**i)){
-					if((*i)->w != this->plansza->graf.nastepnyWierzcholek((*i)->v)){
-						(*i)->w = this->plansza->graf.nastepnyWierzcholek((*i)->v);
+			if((*i)->licznik == 0){
+				if(dystans > this->plansza->specyfikacjePociskow[(*i)->aktualnaBron]->zasieg){
+					if(this->pojazdNaWierzcholku(**i)){
+						if((*i)->w != this->plansza->graf.nastepnyWierzcholek((*i)->v)){
+							(*i)->w = this->plansza->graf.nastepnyWierzcholek((*i)->v);
+							(*i)->ustawZwrot = true;
+						}
+					}else if(this->plansza->graf.odleglosc((*i)->v) + this->odleglosc((*i)->pozycja, this->plansza->graf.pozycjaWierzcholka((*i)->v)) < this->plansza->graf.odleglosc((*i)->w) + this->odleglosc((*i)->pozycja, this->plansza->graf.pozycjaWierzcholka((*i)->w))){
+						int tmp = (*i)->w;
+						(*i)->w = (*i)->v;
+						(*i)->v = tmp;
 						(*i)->ustawZwrot = true;
 					}
-				}else if(this->plansza->graf.odleglosc((*i)->v) + this->odleglosc((*i)->pozycja, this->plansza->graf.pozycjaWierzcholka((*i)->v)) < this->plansza->graf.odleglosc((*i)->w) + this->odleglosc((*i)->pozycja, this->plansza->graf.pozycjaWierzcholka((*i)->w))){
-					int tmp = (*i)->w;
-					(*i)->w = (*i)->v;
-					(*i)->v = tmp;
+				}else if((*i)->w < 0 && this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size() > 0){
+					int iloscSciezek = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size();
+					
+					if(iloscSciezek == 1)
+						(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.first();
+					else if((*i)->vPoprzedni < 0)
+						(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[rand() % iloscSciezek];
+					else{
+						int pozycjaPoprzedniego = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.indexOf((*i)->vPoprzedni);
+						int pozycjaWylosowana = rand() % (iloscSciezek - 1);
+						if(pozycjaWylosowana >= pozycjaPoprzedniego)
+							pozycjaWylosowana++;
+						(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[pozycjaWylosowana];
+					}
 					(*i)->ustawZwrot = true;
 				}
-			}else if((*i)->w < 0 && this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size() > 0){
-				int iloscSciezek = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size();
 				
-				if(iloscSciezek == 1)
-					(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.first();
-				else if((*i)->vPoprzedni < 0)
-					(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[rand() % iloscSciezek];
-				else{
-					int pozycjaPoprzedniego = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.indexOf((*i)->vPoprzedni);
-					int pozycjaWylosowana = rand() % (iloscSciezek - 1);
-					if(pozycjaWylosowana >= pozycjaPoprzedniego)
-						pozycjaWylosowana++;
-					(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[pozycjaWylosowana];
-				}
-				(*i)->ustawZwrot = true;
-			}
-			
-			if((*i)->w >= 0){
-				QPointF poprzedniaPozycja = (*i)->pozycja;
-				float poprzedniZwrotKat = (*i)->zwrotKorpusuKat;
-				QVector2D poprzedniZwrotWektor = (*i)->zwrotKorpusuWektor;
-				QPolygonF poprzedniaOtoczka = (*i)->otoczka;
-	
-				if((*i)->ustawZwrot){
-					QPoint punktDocelowy = this->plansza->graf.pozycjaWierzcholka((*i)->w);
-					float zwrotKatDocelowy, odchylenieKat, rotacjaKat;
-					
-					zwrotKatDocelowy = atan2((*i)->pozycja.y() - punktDocelowy.y(), punktDocelowy.x() - (*i)->pozycja.x());
-					if(zwrotKatDocelowy < 0.0)
-						zwrotKatDocelowy += 2.0 * M_PI;
+				if((*i)->w >= 0){
+					QPointF poprzedniaPozycja = (*i)->pozycja;
+					float poprzedniZwrotKat = (*i)->zwrotKorpusuKat;
+					QVector2D poprzedniZwrotWektor = (*i)->zwrotKorpusuWektor;
+					QPolygonF poprzedniaOtoczka = (*i)->otoczka;
+		
+					if((*i)->ustawZwrot){
+						QPoint punktDocelowy = this->plansza->graf.pozycjaWierzcholka((*i)->w);
+						float zwrotKatDocelowy, odchylenieKat, rotacjaKat;
 						
-					odchylenieKat = zwrotKatDocelowy - (*i)->zwrotKorpusuKat;
-					rotacjaKat = 2.0 * WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW * (*i)->specyfikacja->predkoscMaksymalnaPojazdu * czas / (*i)->specyfikacja->rozmiarKorpus.width();
-					
-					if(odchylenieKat > M_PI)
-						odchylenieKat = 2.0 * M_PI - odchylenieKat;
-					else if(odchylenieKat <= -M_PI)
-						odchylenieKat += 2.0 * M_PI;
+						zwrotKatDocelowy = atan2((*i)->pozycja.y() - punktDocelowy.y(), punktDocelowy.x() - (*i)->pozycja.x());
+						if(zwrotKatDocelowy < 0.0)
+							zwrotKatDocelowy += 2.0 * M_PI;
+							
+						odchylenieKat = zwrotKatDocelowy - (*i)->zwrotKorpusuKat;
+						rotacjaKat = 2.0 * WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW * (*i)->specyfikacja->predkoscMaksymalnaPojazdu * czas / (*i)->specyfikacja->rozmiarKorpus.width();
 						
-					if(rotacjaKat < fabs(odchylenieKat)){
-						(*i)->zwrotKorpusuKat = fmod((*i)->zwrotKorpusuKat + (odchylenieKat > 0 ? rotacjaKat : -rotacjaKat), 2.0 * M_PI);
-						(*i)->zwrotKorpusuWektor = QVector2D(cos((*i)->zwrotKorpusuKat), -sin((*i)->zwrotKorpusuKat));
-						(*i)->otoczka = this->wyznaczOtoczke(**i);
-						if(this->sprawdzKolizje(**i, POJAZDY)){
-							(*i)->zwrotKorpusuKat = poprzedniZwrotKat;
-							(*i)->zwrotKorpusuWektor = poprzedniZwrotWektor;
-							(*i)->otoczka = poprzedniaOtoczka;
-						}
-					}else{
-						(*i)->zwrotKorpusuKat = zwrotKatDocelowy;
-						(*i)->zwrotKorpusuWektor = QVector2D(cos((*i)->zwrotKorpusuKat), -sin((*i)->zwrotKorpusuKat));
-						(*i)->otoczka = this->wyznaczOtoczke(**i);
-						if(this->sprawdzKolizje(**i, POJAZDY)){
-							(*i)->zwrotKorpusuKat = poprzedniZwrotKat;
-							(*i)->zwrotKorpusuWektor = poprzedniZwrotWektor;
-							(*i)->otoczka = poprzedniaOtoczka;
-						}else
-							(*i)->ustawZwrot = false;
-					}
-				}else{
-					float odlegloscWierzcholka = this->odleglosc((*i)->pozycja, this->plansza->graf.pozycjaWierzcholka((*i)->w));
-					float drogaPojazdu = WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW * (*i)->specyfikacja->predkoscMaksymalnaPojazdu * czas;
-					
-					if(drogaPojazdu < odlegloscWierzcholka){
-						(*i)->pozycja += drogaPojazdu * (*i)->zwrotKorpusuWektor.toPointF();
-						(*i)->otoczka = this->wyznaczOtoczke(**i);
-						if(this->sprawdzKolizje(**i, POJAZDY2)){
-							(*i)->pozycja = poprzedniaPozycja;
-							(*i)->otoczka = poprzedniaOtoczka;
-						}
-					}else{
-						(*i)->pozycja = this->plansza->graf.pozycjaWierzcholka((*i)->w);(*i)->otoczka = this->wyznaczOtoczke(**i);
-						if(this->sprawdzKolizje(**i, POJAZDY2)){
-							(*i)->pozycja = poprzedniaPozycja;
-							(*i)->otoczka = poprzedniaOtoczka;
+						if(odchylenieKat > M_PI)
+							odchylenieKat -= 2.0 * M_PI;
+						else if(odchylenieKat <= -M_PI)
+							odchylenieKat += 2.0 * M_PI;
+						
+						if(rotacjaKat < fabs(odchylenieKat)){
+							(*i)->zwrotKorpusuKat = fmod((*i)->zwrotKorpusuKat + (odchylenieKat > 0 ? rotacjaKat : -rotacjaKat), 2.0 * M_PI);
+							(*i)->zwrotKorpusuWektor = QVector2D(cos((*i)->zwrotKorpusuKat), -sin((*i)->zwrotKorpusuKat));
+							(*i)->otoczka = this->wyznaczOtoczke(**i);
+							if(this->sprawdzKolizje(**i, POJAZDY)){
+								(*i)->zwrotKorpusuKat = poprzedniZwrotKat;
+								(*i)->zwrotKorpusuWektor = poprzedniZwrotWektor;
+								(*i)->otoczka = poprzedniaOtoczka;
+							}
 						}else{
-							(*i)->vPoprzedni = (*i)->v;
-							(*i)->v = (*i)->w;
-							(*i)->w = -1;
+							(*i)->zwrotKorpusuKat = zwrotKatDocelowy;
+							(*i)->zwrotKorpusuWektor = QVector2D(cos((*i)->zwrotKorpusuKat), -sin((*i)->zwrotKorpusuKat));
+							(*i)->otoczka = this->wyznaczOtoczke(**i);
+							if(this->sprawdzKolizje(**i, POJAZDY)){
+								(*i)->zwrotKorpusuKat = poprzedniZwrotKat;
+								(*i)->zwrotKorpusuWektor = poprzedniZwrotWektor;
+								(*i)->otoczka = poprzedniaOtoczka;
+							}else
+								(*i)->ustawZwrot = false;
+						}
+					}else{
+						float odlegloscWierzcholka = this->odleglosc((*i)->pozycja, this->plansza->graf.pozycjaWierzcholka((*i)->w));
+						float drogaPojazdu = WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW * (*i)->specyfikacja->predkoscMaksymalnaPojazdu * czas;
+						
+						if(drogaPojazdu < odlegloscWierzcholka){
+							(*i)->pozycja += drogaPojazdu * (*i)->zwrotKorpusuWektor.toPointF();
+							(*i)->otoczka = this->wyznaczOtoczke(**i);
+							if(this->sprawdzKolizje(**i, POJAZDY2)){
+								(*i)->pozycja = poprzedniaPozycja;
+								(*i)->otoczka = poprzedniaOtoczka;
+								
+								if(rand() % 2){
+									int tmp = (*i)->w;
+									(*i)->w = (*i)->v;
+									(*i)->v = tmp;
+									(*i)->vPoprzedni = -1;
+									(*i)->ustawZwrot = true;
+								}else
+									(*i)->licznik = CZAS_OCZEKIWANIA_OBCYCH_POJAZDOW;
+							}
+						}else{
+							(*i)->pozycja = this->plansza->graf.pozycjaWierzcholka((*i)->w);
+							(*i)->otoczka = this->wyznaczOtoczke(**i);
+							if(this->sprawdzKolizje(**i, POJAZDY2)){
+								(*i)->pozycja = poprzedniaPozycja;
+								(*i)->otoczka = poprzedniaOtoczka;
+								
+								if(rand() % 2){
+									int tmp = (*i)->w;
+									(*i)->w = (*i)->v;
+									(*i)->v = tmp;
+									(*i)->vPoprzedni = -1;
+									(*i)->ustawZwrot = true;
+								}else
+									(*i)->licznik = CZAS_OCZEKIWANIA_OBCYCH_POJAZDOW;
+							}else{
+								(*i)->vPoprzedni = (*i)->v;
+								(*i)->v = (*i)->w;
+								(*i)->w = -1;
+							}
 						}
 					}
 				}
@@ -339,7 +360,12 @@ void Logika::odswiezObcePojazdy(float czas){
 					cos((*i)->zwrotKorpusuKat + (*i)->zwrotWiezyWzgledemKorpusuKat),
 					-sin((*i)->zwrotKorpusuKat + (*i)->zwrotWiezyWzgledemKorpusuKat)
 				);
-			}
-		}
+			}else if((*i)->licznik > milisekundy)
+				(*i)->licznik -= milisekundy;
+			else
+				(*i)->licznik = 0;
+				
+		}else if((*i)->licznik > 0)
+			(*i)->licznik = 0;
 	}
 }

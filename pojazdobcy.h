@@ -7,6 +7,7 @@ class PojazdObcy: public Pojazd{
 	private:
 		int v, w, vPoprzedni;
 		bool ustawZwrot;
+		int licznik;
 	
 	public:
 		PojazdObcy(const SpecyfikacjaPojazdu*, QPointF, int, float, int);
