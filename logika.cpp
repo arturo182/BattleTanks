@@ -38,14 +38,14 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 		if(!this->plansza->pociski[i]->sprawdzStatus()){
 			odleglosc = this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->pociski[i]->pozycja);
 			if(odleglosc < this->plansza->pociski[i]->specyfikacja->promienRazenia){
-				obrazenia = this->plansza->pociski[i]->specyfikacja->silaRazenia * odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia;
+				obrazenia = (1.0 - odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia) * this->plansza->pociski[i]->specyfikacja->silaRazenia;
 				this->plansza->pojazdGracza->zdrowie -= obrazenia;
 			}
 			
 			for(QList<PojazdObcy*>::iterator j = this->plansza->pojazdyObce.begin(); j < this->plansza->pojazdyObce.end(); j++){
 				odleglosc = this->odleglosc((*j)->pozycja, this->plansza->pociski[i]->pozycja);
 				if(odleglosc < this->plansza->pociski[i]->specyfikacja->promienRazenia){
-					obrazenia = this->plansza->pociski[i]->specyfikacja->silaRazenia * odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia;
+					obrazenia = (1.0 - odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia) * this->plansza->pociski[i]->specyfikacja->silaRazenia;
 					(*j)->zdrowie -= obrazenia;
 				}
 			}
@@ -232,8 +232,8 @@ bool Logika::wystrzelPocisk(Pojazd& pojazd, bool pociskGracza){
 	if(wystrzelonyPocisk < 0)
 		return false;
 		
-
 	Dzwiek::odtworz(this->plansza->specyfikacjePociskow[wystrzelonyPocisk]->dzwiekWystrzalu);
+	
 	this->plansza->pociski.append(
 		new Pocisk(
 			this->plansza->specyfikacjePociskow[wystrzelonyPocisk],
