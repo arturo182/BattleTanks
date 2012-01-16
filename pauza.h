@@ -9,7 +9,8 @@ class Pauza{
 	public:
 		enum Tryb{
 			MENU_GLOWNE = 0,
-			USTAWIENIA
+			USTAWIENIA,
+			KONIEC_ROZGRYWKI
 		};
 
 	private:

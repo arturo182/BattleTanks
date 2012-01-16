@@ -190,9 +190,10 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 
 	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal);
 
-//	if(this->plansza->koniecGry())
-//		zakonczyc gre
-//		wyniki wkrotce :P
+	if(this->plansza->koniecGry()) {
+		this->bazaDanych->zapiszRekord(this->menu->idGracza(), this->plansza->sprawdzPunkty());
+		this->tryb = PAUZA;
+	}
 
 	if(this->tryb == ROZGRYWKA)
 		this->plansza->rysuj();

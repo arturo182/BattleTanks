@@ -20,6 +20,17 @@ tryb(MENU_GLOWNE)
 }
 
 Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
+	if(this->plansza->koniecGry()) {
+		QPixmap tlo("grafika/tlo_menu.png");
+		this->tlo = tlo.scaled(
+			Obiekt::skala * tlo.size(),
+			Qt::IgnoreAspectRatio,
+			(this->jakosc == "wysoka") ? Qt::SmoothTransformation : Qt::FastTransformation
+		);
+
+		this->tryb = KONIEC_ROZGRYWKI;
+	}
+
 	if(this->tryb == MENU_GLOWNE) {
 		if(akcja == Silnik::START) {
 			this->pozycja = 1;
@@ -110,6 +121,8 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 					this->sterowanie = "klawiatura";
 			}
 		}
+	} else if(this->tryb == KONIEC_ROZGRYWKI) {
+
 	}
 
 	return Silnik::PAUZA;
@@ -117,7 +130,11 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 
 void Pauza::rysuj() const{
 	QPainter painter(&this->ekran->buforObrazu);
-	painter.drawPixmap(this->ekran->buforObrazu.rect(), this->tlo);
+
+	if(this->tryb == KONIEC_ROZGRYWKI)
+		painter.drawTiledPixmap(this->ekran->buforObrazu.rect(), this->tlo);
+	else
+		painter.drawPixmap(this->ekran->buforObrazu.rect(), this->tlo);
 
 	const QColor kolorZaznaczenia("#278fbb");
 
@@ -184,6 +201,16 @@ void Pauza::rysuj() const{
 			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Akceptuj          Anuluj").width() - 70 * Obiekt::skala, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Enter");
 			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Anuluj").width() - 70 * Obiekt::skala, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
 		}
+	} else if(this->tryb == KONIEC_ROZGRYWKI) {
+		painter.setFont(czcionkaTytulu);
+		Widzety::cieniowanyTekst(painter, obszarTytulu, this->plansza->sprawdzWygrana() ? "ZWYCIĘSTWO" : "PORAŻKA", QTextOption(Qt::AlignHCenter));
+
+		painter.setFont(czcionkaNormalna);
+		if(this->pozycja == 1) { painter.setPen(kolorZaznaczenia); } else { painter.setPen(Qt::white); }
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.5, szerokoscEkranu, 500), "Zagraj ponownie", QTextOption(Qt::AlignHCenter));
+
+		if(this->pozycja == 2) { painter.setPen(kolorZaznaczenia); } else { painter.setPen(Qt::white); }
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.55, szerokoscEkranu, 500), "Wróć do menu", QTextOption(Qt::AlignHCenter));
 	}
 
 	painter.end();
