@@ -12,6 +12,7 @@
 #define PREDKOSC_CELOWNIKA 300
 #define PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW 2000
 #define WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW 0.8
+#define CZAS_OCZEKIWANIA_OBCYCH_POJAZDOW 2000
 #define ODLEGLOSC_OD_PUNKTU_WYJSCIA 50
 
 class Logika{
@@ -37,7 +38,7 @@ class Logika{
 		bool wystrzelPocisk(Pojazd&, bool);
 		void odswiezPojazdGracza(float, float, int, int, int, bool, float);
 		inline bool pojazdNaWierzcholku(const PojazdObcy&) const;
-		void odswiezObcePojazdy(float);
+		void odswiezObcePojazdy(int, float);
 		
 	public:
 		Logika(Plansza*);
