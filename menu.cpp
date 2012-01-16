@@ -764,14 +764,9 @@ int Menu::idGracza() const
 	return this->property("idGracza").toInt();
 }
 
-void Menu::odtwarzajMuzyke()
-{
-	this->muzyka->play();
-}
-
 void Menu::zapetlMuzyke()
 {
-	this->muzyka->enqueue(qApp->applicationDirPath() + "/dzwieki/muzyka/menu.mp3");
+	this->muzyka->enqueue(QString("dzwieki/muzyka/menu.mp3"));
 }
 
 void Menu::ustawTryb(Menu::Tryb tryb)

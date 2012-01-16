@@ -149,6 +149,8 @@ void Silnik::odswiezMenu(int milisekundy){
 
 	if(this->tryb == MENU)
 		this->menu->rysuj();
+	else
+		this->pauza->grajMuzyke();
 }
 
 void Silnik::odswiezRozgrywke(int milisekundy){

@@ -43,15 +43,16 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		return false;
 	this->mapa = new Tekstura(mapaTekstura);
 	this->widok = QPoint(0, 0);
-	
+
 	QFile mapaSpecyfikacjaPlik("plansze/" + nazwaPlanszy + ".dat");
 	if(!mapaSpecyfikacjaPlik.open(QIODevice::ReadOnly)){
 		delete this->mapa;
 		return false;
 	}
-	
+
 	this->idPlanszy = id;
-	
+	this->nazwaPlanszy = nazwaPlanszy;
+
 	QDataStream mapaSpecyfikacjaDane(&mapaSpecyfikacjaPlik);
 	int iloscElementow, n;
 	QPoint punkt;
@@ -62,7 +63,7 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		mapaSpecyfikacjaDane >> punkt;
 		this->wyjscie = punkt;
 	}
-	
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> n;
@@ -73,24 +74,24 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		}
 		this->przeszkody.append(przeszkoda);
 	}
-	
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	this->graf.utworz(iloscElementow);
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> punkt;
 		this->graf.ustawWierzcholek(i, punkt);
 	}
-	
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	int v, w;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> v >> w;
 		this->graf.dodajKrawedz(v, w);
 	}
-	
+
 	int nrSpecyfikacjiPojazdu, nrSpecyfikacjiPociskow;
 	float zwrot;
-	
+
 	mapaSpecyfikacjaDane >> nrSpecyfikacjiPojazdu >> punkt >> zwrot;
 	this->pojazdGracza = new PojazdGracza(
 		this->specyfikacjePojazdow[nrSpecyfikacjiPojazdu],
@@ -98,13 +99,13 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		zwrot,
 		this->specyfikacjePociskow.size()
 	);
-	
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> nrSpecyfikacjiPociskow >> n;
 		this->pojazdGracza->dodajPociski(nrSpecyfikacjiPociskow, n);
 	}
-	
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> nrSpecyfikacjiPojazdu >> v >> zwrot >> nrSpecyfikacjiPociskow;
@@ -118,9 +119,9 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 			)
 		);
 	}
-	
+
 	this->status = NIEZAINICJALIZOWANA;
-	
+
 	mapaSpecyfikacjaPlik.close();
 	return true;
 }
@@ -146,26 +147,32 @@ void Plansza::czysc(){
 
 	qDeleteAll(this->bonusy);
 	this->bonusy.clear();
-	
+
 	this->idPlanszy = -1;
 	this->punkty = 0;
 	this->status = PLANSZA_PUSTA;
 }
 
+void Plansza::restartuj()
+{
+	this->czysc();
+	this->zaladuj(this->id(), this->nazwaPlanszy);
+}
+
 void Plansza::rysuj(){
 	if(this->status != ROZGRYWKA_TRWA && this->status != ROZGRYWKA_ZAKONCZONA)
 		return;
-	
+
 	QPainter painter(&this->ekran->buforObrazu);
-	
+
 	this->odswiezWidok();
 	this->rysujMape(painter);
-	
-	
-	
+
+
+
 	//	DEBUG BEGIN
 	//	usunac przyjazn z klas: Graf, Wierzcholek, PojazdObcy
-	
+
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QColor(255, 0, 0, 128));
 	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++){
@@ -174,12 +181,12 @@ void Plansza::rysuj(){
 			poligon << Obiekt::skala * (*i)[j] - widok;
 		painter.drawPolygon(poligon);
 	}
-	
+
 	painter.setPen(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		for(QList<int>::iterator j = this->graf.wierzcholki[i]->krawedzie.begin(); j != this->graf.wierzcholki[i]->krawedzie.end(); j++)
 			painter.drawLine(Obiekt::skala * this->graf.wierzcholki[i]->pozycja - widok, Obiekt::skala * this->graf.pozycjaWierzcholka(*j) - widok);
-	
+
 	painter.setPen(Qt::green);
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++){
 		int v = (*i)->v;
@@ -188,26 +195,26 @@ void Plansza::rysuj(){
 			v = this->graf.nastepnyWierzcholek(v);
 		}
 	}
-	
+
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		painter.drawEllipse(Obiekt::skala * QPointF(this->graf.pozycjaWierzcholka(i)) - widok, Obiekt::skala * 5, Obiekt::skala * 5);
-		
+
 	//	DEBUG END
-		
-		
-	
-	
-	
+
+
+
+
+
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
 		(*i)->rysuj(painter, this->widok);
 	this->pojazdGracza->rysuj(painter, this->widok);
-	
+
 	this->rysujAnimacje(painter);
 	this->rysujPociski(painter);
 	this->rysujCelownik(painter);
-	
+
 	painter.drawPixmap(
 		Obiekt::skala * QPointF(20.0, WYSOKOSC_WIDOKU - this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.height() - 20),
 		this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaPrzeskalowana
@@ -222,7 +229,7 @@ void Plansza::rysuj(){
 		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 23),
 		" x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow()))
 	);*/
-	
+
 	painter.end();
 	this->ekran->update();
 }

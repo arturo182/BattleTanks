@@ -31,12 +31,13 @@ class Plansza{
 			ROZGRYWKA_TRWA,
 			ROZGRYWKA_ZAKONCZONA
 		} status;
-		
+
 		Ekran* ekran;
 		QList<SpecyfikacjaPojazdu*> specyfikacjePojazdow;
 		QList<SpecyfikacjaPocisku*> specyfikacjePociskow;
 		QList<SpecyfikacjaAnimacji*> specyfikacjeAnimacji;
 		TrybGry tryb;
+		QString nazwaPlanszy;
 		int idPlanszy;
 		Tekstura* mapa;
 		QPoint wyjscie;
@@ -66,6 +67,7 @@ class Plansza{
 		void dodajSpecyfikacje(SpecyfikacjaAnimacji*);
 		bool zaladuj(int, QString);
 		void czysc();
+		void restartuj();
 		void rysuj();
 		inline int id() const;
 		inline bool koniecGry() const;

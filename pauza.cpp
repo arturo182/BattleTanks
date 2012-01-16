@@ -6,9 +6,11 @@
 #include "dzwiek.h"
 #include "ekran.h"
 
+#include <Phonon/AudioOutput>
 #include <QTextOption>
 #include <QSqlQuery>
 #include <QPainter>
+#include <ctime>
 
 Pauza::Pauza(Ekran *ekran, BazaDanych *bazaDanych, Plansza *plansza):
 ekran(ekran),
@@ -17,6 +19,18 @@ plansza(plansza),
 pozycja(1),
 tryb(MENU_GLOWNE)
 {
+	qsrand(time(NULL));
+
+	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, Phonon::MediaSource("dzwieki/muzyka/gra_" + QString::number(qrand() % 3 + 1) + ".mp3"));
+	this->muzyka->pause();
+	this->muzyka->setTransitionTime(-2000);
+
+	Phonon::Path sciezka = this->muzyka->outputPaths().first();
+	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+	wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
+
+	connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
+	this->zapetlMuzyke();
 }
 
 Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
@@ -41,6 +55,10 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 				return Silnik::ROZGRYWKA;
 			} else if(this->pozycja == 2) {
 				this->pozycja = 1;
+				this->plansza->restartuj();
+				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+				this->muzyka->play();
+				return Silnik::ROZGRYWKA;
 			} else if(this->pozycja == 3) {
 				this->pozycja = 1;
 				this->wczytajUstawienia();
@@ -48,6 +66,7 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 			} else if(this->pozycja == 4) {
 				this->pozycja = 1;
 				this->plansza->czysc();
+				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				return Silnik::MENU;
 			}
 		} else if(akcja == Silnik::GORA) {
@@ -122,7 +141,27 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 			}
 		}
 	} else if(this->tryb == KONIEC_ROZGRYWKI) {
-
+		if(akcja == Silnik::WYBIERZ) {
+			if(this->pozycja == 1) {
+				this->tryb = MENU_GLOWNE;
+				this->pozycja = 1;
+				this->plansza->restartuj();
+				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+				this->muzyka->play();
+				return Silnik::ROZGRYWKA;
+			} else if(this->pozycja == 2) {
+				this->pozycja = 1;
+				this->plansza->czysc();
+				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+				return Silnik::MENU;
+			}
+		} else if(akcja == Silnik::GORA) {
+			if(this->pozycja == 2)
+				this->pozycja = 1;
+		} else if(akcja == Silnik::DOL) {
+			if(this->pozycja == 1)
+				this->pozycja = 2;
+		}
 	}
 
 	return Silnik::PAUZA;
@@ -205,12 +244,14 @@ void Pauza::rysuj() const{
 		painter.setFont(czcionkaTytulu);
 		Widzety::cieniowanyTekst(painter, obszarTytulu, this->plansza->sprawdzWygrana() ? "ZWYCIĘSTWO" : "PORAŻKA", QTextOption(Qt::AlignHCenter));
 
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.3, szerokoscEkranu, 500), "Twoj wynik: " + QString::number(this->plansza->sprawdzPunkty()), QTextOption(Qt::AlignHCenter));
+
 		painter.setFont(czcionkaNormalna);
 		if(this->pozycja == 1) { painter.setPen(kolorZaznaczenia); } else { painter.setPen(Qt::white); }
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.5, szerokoscEkranu, 500), "Zagraj ponownie", QTextOption(Qt::AlignHCenter));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.6, szerokoscEkranu, 500), "Zagraj ponownie", QTextOption(Qt::AlignHCenter));
 
 		if(this->pozycja == 2) { painter.setPen(kolorZaznaczenia); } else { painter.setPen(Qt::white); }
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.55, szerokoscEkranu, 500), "Wróć do menu", QTextOption(Qt::AlignHCenter));
+		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.65, szerokoscEkranu, 500), "Wróć do menu", QTextOption(Qt::AlignHCenter));
 	}
 
 	painter.end();
@@ -224,6 +265,21 @@ void Pauza::ustawTlo()
 	painter.end();
 
 	this->tlo = this->ekran->buforObrazu;
+}
+
+void Pauza::grajMuzyke()
+{
+	this->muzyka->play();
+}
+
+void Pauza::zapetlMuzyke()
+{
+	int muz[3] = { 1, 2, 3};
+	for(int i = 0; i < 3; i++)
+		qSwap(muz[i], muz[qrand() % 3]);
+
+	for(int i = 0; i < 3; i++)
+		this->muzyka->enqueue("dzwieki/muzyka/gra_" + QString::number(muz[i]) + ".mp3");
 }
 
 void Pauza::wczytajUstawienia()
@@ -243,6 +299,10 @@ void Pauza::zapiszUstawienia()
 	this->bazaDanych->zapiszUstawienie("rozdzielczosc", this->rozdzielczosc);
 	this->bazaDanych->zapiszUstawienie("sterowanie", this->sterowanie);
 	QSqlQuery("END;", QSqlDatabase::database("dbUstawienia"));
+
+	Phonon::Path sciezka = this->muzyka->outputPaths().first();
+	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+	wyjscie->setVolume(this->glosnosc / 10.0);
 
 	this->ekran->ustawRozdzielczosc(qStringToSize(this->rozdzielczosc));
 	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);

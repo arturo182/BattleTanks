@@ -135,22 +135,27 @@ QList<QStringList> BazaDanych::rekordy() const
 	QSqlQuery query(QSqlDatabase::database("dbUstawienia"));
 	query.exec("SELECT "
 			   "  profile.nazwa, "
-			   "  plansze.plik, "
+			   "  rekordy.mapa_id, "
 			   "  rekordy.wynik "
 			   "FROM "
 			   "  rekordy "
 			   "  INNER JOIN profile ON (rekordy.profil_id = profile.profil_id) "
-			   "  INNER JOIN plansze ON (rekordy.mapa_id = plansze.mapa_id) "
 			   "ORDER BY "
 			   "  wynik DESC;");
 
 	QList<QStringList> rekordy;
 
+	QSqlQuery query2;
 	while(query.next()) {
 		QStringList rekord;
 
+		query2.prepare("SELECT plik FROM plansze WHERE mapa_id = :mapa_id ;");
+		query2.bindValue(":mapa_id", query.value(1));
+		query2.exec();
+		query2.next();
+
 		rekord << query.value(0).toString();
-		rekord << query.value(1).toString();
+		rekord << query2.value(0).toString();
 		rekord << query.value(2).toString();
 
 

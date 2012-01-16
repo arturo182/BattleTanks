@@ -63,7 +63,6 @@ class Menu: public QObject{
 	void rysuj() const;
 
 	int idGracza() const;
-	void odtwarzajMuzyke();
 
   private slots:
 	void zapetlMuzyke();

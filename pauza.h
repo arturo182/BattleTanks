@@ -3,9 +3,13 @@
 
 #include "silnik.h"
 
+#include <Phonon/MediaObject>
 #include <QPixmap>
 
-class Pauza{
+class Pauza: public QObject
+{
+	Q_OBJECT
+
 	public:
 		enum Tryb{
 			MENU_GLOWNE = 0,
@@ -20,6 +24,7 @@ class Pauza{
 		QPixmap tlo;
 		int pozycja;
 		Tryb tryb;
+		Phonon::MediaObject *muzyka;
 		int glosnosc;
 		QString rozdzielczosc;
 		QString jakosc;
@@ -32,6 +37,10 @@ class Pauza{
 		void rysuj() const;
 
 		void ustawTlo();
+		void grajMuzyke();
+
+	private slots:
+		void zapetlMuzyke();
 
 	private:
 		void wczytajUstawienia();
