@@ -7,6 +7,7 @@ class PojazdObcy: public Pojazd{
 	private:
 		int v, w, vPoprzedni;
 		bool ustawZwrot;
+		bool szykujWystrzal;
 		int licznik;
 	
 	public:

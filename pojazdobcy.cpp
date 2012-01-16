@@ -6,6 +6,7 @@ PojazdObcy::PojazdObcy(const SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja,
 	w(-1),
 	vPoprzedni(-1),
 	ustawZwrot(false),
+	szykujWystrzal(false),
 	licznik(0){}
 	
 int PojazdObcy::wystrzelPocisk(){
