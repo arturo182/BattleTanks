@@ -4,6 +4,7 @@ PojazdObcy::PojazdObcy(const SpecyfikacjaPojazdu* specyfikacja, QPointF pozycja,
 	Pojazd(specyfikacja, pozycja, zwrotKorpusu, bron),
 	v(wierzcholek),
 	w(-1),
+	vPoprzedni(-1),
 	ustawZwrot(false){}
 	
 int PojazdObcy::wystrzelPocisk(){

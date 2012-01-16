@@ -19,7 +19,8 @@ class Logika{
 		enum RodzajKolizji{
 			KRAWEDZIE_MAPY = 1,
 			PRZESZKODY = 2,
-			POJAZDY = 4
+			POJAZDY = 4,
+			POJAZDY2 = 8
 		};
 		
 		Plansza* plansza;

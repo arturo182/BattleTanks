@@ -14,12 +14,10 @@ Logika::Logika(Plansza* plansza):
 void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predkoscGasienicyPrawej, int rotacjaWiezy, int zmianaBroni, int zmianaZasiegu, bool wystrzal){
 	float czas = float(milisekundy) / 1000.0;
 	
-	switch(this->plansza->status){
-		case 1:
-			this->inicjalizuj();
-		case 3:
-			return;
-	}
+	if(this->plansza->status == Plansza::ROZGRYWKA_ZAKONCZONA)
+		return;
+	if(this->plansza->status == Plansza::NIEZAINICJALIZOWANA)
+		this->inicjalizuj();
 	
 	this->odswiezPojazdGracza(predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal, czas);
 	this->odswiezObcePojazdy(czas);
@@ -48,8 +46,8 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 			this->plansza->pociski.removeAt(i);
 		}
 	
-	if(this->plansza->trybGry == Plansza::LABIRYNT && this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->wyjscie) < ODLEGLOSC_OD_PUNKTU_WYJSCIA)
-		this->plansza->status = 3;
+	if(this->plansza->tryb == Plansza::LABIRYNT && this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->wyjscie) < ODLEGLOSC_OD_PUNKTU_WYJSCIA)
+		this->plansza->status = Plansza::ROZGRYWKA_ZAKONCZONA;
 }
 
 QPolygonF Logika::wyznaczOtoczke(const Pojazd& pojazd) const{
@@ -80,7 +78,7 @@ void Logika::inicjalizuj() const{
 	for(QList<PojazdObcy*>::iterator i = this->plansza->pojazdyObce.begin(); i < this->plansza->pojazdyObce.end(); i++)
 		(*i)->otoczka = this->wyznaczOtoczke(**i);
 		
-	this->plansza->status = 2;
+	this->plansza->status = Plansza::ROZGRYWKA_TRWA;
 }
 
 bool Logika::sprawdzOtoczki(QPolygonF& otoczka1, QPolygonF& otoczka2) const{
@@ -116,7 +114,14 @@ bool Logika::sprawdzKolizje(Pojazd& pojazd, int rodzajeKolizji) const{
 			if(this->sprawdzOtoczki(pojazd.otoczka, *i))
 				return true;
 	
-	if(rodzajeKolizji & POJAZDY){
+	if(rodzajeKolizji & POJAZDY2){
+		for(QList<PojazdObcy*>::iterator i = this->plansza->pojazdyObce.begin(); i != this->plansza->pojazdyObce.end(); i++)
+			if(*i != &pojazd && this->odleglosc(pojazd.pozycja, (*i)->pozycja) < 0.6 * (sqrt(pow(pojazd.specyfikacja->rozmiarKorpus.width(), 2.0) + pow(pojazd.specyfikacja->rozmiarKorpus.height(), 2.0)) + sqrt(pow((*i)->specyfikacja->rozmiarKorpus.width(), 2.0) + pow((*i)->specyfikacja->rozmiarKorpus.height(), 2.0))))
+				return true;
+		
+		if(this->plansza->pojazdGracza && this->sprawdzOtoczki(pojazd.otoczka, this->plansza->pojazdGracza->otoczka))
+			return true;
+	}else if(rodzajeKolizji & POJAZDY){
 		for(QList<PojazdObcy*>::iterator i = this->plansza->pojazdyObce.begin(); i != this->plansza->pojazdyObce.end(); i++)
 			if(*i != &pojazd && this->sprawdzOtoczki(pojazd.otoczka, (*i)->otoczka))
 				return true;
@@ -247,7 +252,19 @@ void Logika::odswiezObcePojazdy(float czas){
 					(*i)->ustawZwrot = true;
 				}
 			}else if((*i)->w < 0 && this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size() > 0){
-				(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[rand() % this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size()];
+				int iloscSciezek = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.size();
+				
+				if(iloscSciezek == 1)
+					(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.first();
+				else if((*i)->vPoprzedni < 0)
+					(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[rand() % iloscSciezek];
+				else{
+					int pozycjaPoprzedniego = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie.indexOf((*i)->vPoprzedni);
+					int pozycjaWylosowana = rand() % (iloscSciezek - 1);
+					if(pozycjaWylosowana >= pozycjaPoprzedniego)
+						pozycjaWylosowana++;
+					(*i)->w = this->plansza->graf.wierzcholki[(*i)->v]->krawedzie[pozycjaWylosowana];
+				}
 				(*i)->ustawZwrot = true;
 			}
 			
@@ -300,16 +317,17 @@ void Logika::odswiezObcePojazdy(float czas){
 					if(drogaPojazdu < odlegloscWierzcholka){
 						(*i)->pozycja += drogaPojazdu * (*i)->zwrotKorpusuWektor.toPointF();
 						(*i)->otoczka = this->wyznaczOtoczke(**i);
-						if(this->sprawdzKolizje(**i, POJAZDY)){
+						if(this->sprawdzKolizje(**i, POJAZDY2)){
 							(*i)->pozycja = poprzedniaPozycja;
 							(*i)->otoczka = poprzedniaOtoczka;
 						}
 					}else{
 						(*i)->pozycja = this->plansza->graf.pozycjaWierzcholka((*i)->w);(*i)->otoczka = this->wyznaczOtoczke(**i);
-						if(this->sprawdzKolizje(**i, POJAZDY)){
+						if(this->sprawdzKolizje(**i, POJAZDY2)){
 							(*i)->pozycja = poprzedniaPozycja;
 							(*i)->otoczka = poprzedniaOtoczka;
 						}else{
+							(*i)->vPoprzedni = (*i)->v;
 							(*i)->v = (*i)->w;
 							(*i)->w = -1;
 						}

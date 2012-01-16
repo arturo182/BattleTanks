@@ -25,11 +25,18 @@ class Plansza{
 		};
 
 	private:
+		enum StatusGry{
+			PLANSZA_PUSTA,
+			NIEZAINICJALIZOWANA,
+			ROZGRYWKA_TRWA,
+			ROZGRYWKA_ZAKONCZONA
+		} status;
+		
 		Ekran* ekran;
 		QList<SpecyfikacjaPojazdu*> specyfikacjePojazdow;
 		QList<SpecyfikacjaPocisku*> specyfikacjePociskow;
 		QList<SpecyfikacjaAnimacji*> specyfikacjeAnimacji;
-		TrybGry trybGry;
+		TrybGry tryb;
 		int idPlanszy;
 		Tekstura* mapa;
 		QPoint wyjscie;
@@ -42,7 +49,6 @@ class Plansza{
 		QList<Pocisk*> pociski;
 		QList<Animacja*> animacje;
 		QList<Animacja*> bonusy;
-		int status;
 
 		void odswiezWidok();
 		void rysujMape(QPainter&);

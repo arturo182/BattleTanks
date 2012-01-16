@@ -9,12 +9,12 @@
 #include "widzety.h"
 
 Plansza::Plansza(Ekran* ekran):
+	status(PLANSZA_PUSTA),
 	ekran(ekran),
 	idPlanszy(-1),
 	mapa(0),
 	pojazdGracza(0),
-	celownik(QPixmap("grafika/celownik.png")),
-	status(0){}
+	celownik(QPixmap("grafika/celownik.png")){}
 
 Plansza::~Plansza(){
 	this->czysc();
@@ -56,8 +56,8 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 	QPoint punkt;
 
 	mapaSpecyfikacjaDane >> n;
-	this->trybGry = static_cast<TrybGry>(n);
-	if(this->trybGry == LABIRYNT){
+	this->tryb = static_cast<TrybGry>(n);
+	if(this->tryb == LABIRYNT){
 		mapaSpecyfikacjaDane >> punkt;
 		this->wyjscie = punkt;
 	}
@@ -118,7 +118,7 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		);
 	}
 	
-	this->status = 1;
+	this->status = NIEZAINICJALIZOWANA;
 	
 	mapaSpecyfikacjaPlik.close();
 	return true;
@@ -147,11 +147,11 @@ void Plansza::czysc(){
 	this->bonusy.clear();
 	
 	this->idPlanszy = -1;
-	this->status = 0;
+	this->status = PLANSZA_PUSTA;
 }
 
 void Plansza::rysuj(){
-	if(this->status == 0)
+	if(this->status != ROZGRYWKA_TRWA && this->status != ROZGRYWKA_ZAKONCZONA)
 		return;
 	
 	QPainter painter(&this->ekran->buforObrazu);
