@@ -749,9 +749,9 @@ void Menu::rysuj() const{
 			Widzety::przyciskKlawiatury(painter, QRectF(szerokoscEkranu * 0.9 - painter.fontMetrics().boundingRect("  Wróć").width() - 70 * Obiekt::skala, wysokoscEkranu * 0.902, 70 * Obiekt::skala, 35 * Obiekt::skala), "Backspace");
 	} else if(this->tryb == POMOC) {
 		if(this->pozycja == 1) {
-			painter.drawPixmap(0, 0, szerokoscEkranu, wysokoscEkranu, QPixmap(qApp->applicationDirPath() + QString("/pomoc/%1.png").arg((sterowanie == "gamepad")?"pad":"klawiatura")));
+			painter.drawPixmap(0, 0, szerokoscEkranu, wysokoscEkranu, QPixmap(QString("pomoc/%1.png").arg((sterowanie == "gamepad")?"pad":"klawiatura")));
 		} else if(this->pozycja == 2) {
-
+			painter.drawPixmap(0, 0, szerokoscEkranu, wysokoscEkranu, QPixmap("pomoc/interfejs.png"));
 		}
 	}
 

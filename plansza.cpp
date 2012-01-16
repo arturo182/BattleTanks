@@ -168,11 +168,9 @@ void Plansza::rysuj(){
 	this->odswiezWidok();
 	this->rysujMape(painter);
 
-
-
 	//	DEBUG BEGIN
 	//	usunac przyjazn z klas: Graf, Wierzcholek, PojazdObcy
-
+	/*
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QColor(255, 0, 0, 128));
 	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++){
@@ -200,12 +198,8 @@ void Plansza::rysuj(){
 	painter.setBrush(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		painter.drawEllipse(Obiekt::skala * QPointF(this->graf.pozycjaWierzcholka(i)) - widok, Obiekt::skala * 5, Obiekt::skala * 5);
-
+	*/
 	//	DEBUG END
-
-
-
-
 
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
 		(*i)->rysuj(painter, this->widok);
@@ -225,7 +219,7 @@ void Plansza::rysuj(){
 		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 50),
 		QSize(100, 50)
 	), " x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow())));
-	
+
 	Widzety::cieniowanyTekst(painter, QRectF(
 		Obiekt::skala * QPointF(200.0, WYSOKOSC_WIDOKU - 50),
 		QSize(200, 50)
@@ -235,6 +229,33 @@ void Plansza::rysuj(){
 		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 23),
 		" x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow()))
 	);*/
+
+	//minimapa
+	int szerokoscEkranu = this->ekran->buforObrazu.width();
+	int wysokoscEkranu = this->ekran->buforObrazu.height();
+	float skala = (szerokoscEkranu * 0.15) / this->mapa->teksturaOryginalna.width();
+
+	painter.setPen(QPen(Qt::black, 2.0));
+	painter.setBrush(QColor(255, 255, 255, 128));
+	painter.drawRect(QRectF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05, szerokoscEkranu * 0.15, szerokoscEkranu * 0.15));
+
+	painter.setBrush(Qt::black);
+	painter.translate(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05);
+	painter.scale(skala, skala);
+
+	foreach(QPolygonF poly, this->przeszkody)
+		painter.drawPolygon(poly);
+
+	painter.resetTransform();
+
+	painter.setBrush(Qt::red);
+	painter.setPen(Qt::NoPen);
+	foreach(PojazdObcy *pojazd, this->pojazdyObce)
+		painter.drawEllipse(QPointF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05) +  QPointF(pojazd->pozycja.x() * skala, pojazd->pozycja.y() * skala), szerokoscEkranu * 0.003, szerokoscEkranu * 0.003);
+
+	painter.setBrush(Qt::green);
+	painter.drawEllipse(QPointF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05) +  QPointF(this->pojazdGracza->pozycja.x() * skala, this->pojazdGracza->pozycja.y() * skala), szerokoscEkranu * 0.003, szerokoscEkranu * 0.003);
+
 
 	painter.end();
 	this->ekran->update();
