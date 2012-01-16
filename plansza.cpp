@@ -218,6 +218,12 @@ void Plansza::rysuj(){
 		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 50),
 		QSize(100, 50)
 	), " x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow())));
+	
+	Widzety::cieniowanyTekst(painter, QRectF(
+		Obiekt::skala * QPointF(200.0, WYSOKOSC_WIDOKU - 50),
+		QSize(200, 50)
+	), QString::number(this->punkty));
+
 /*	painter.drawText(
 		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 23),
 		" x " + (this->pojazdGracza->zapasPociskow() < 0 ? "INF" : QString::number(this->pojazdGracza->zapasPociskow()))

@@ -47,6 +47,9 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 				if(odleglosc < this->plansza->pociski[i]->specyfikacja->promienRazenia){
 					obrazenia = (1.0 - odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia) * this->plansza->pociski[i]->specyfikacja->silaRazenia;
 					(*j)->zdrowie -= obrazenia;
+					
+					if(this->plansza->pociski[i]->pociskGracza)
+						this->plansza->punkty += obrazenia;
 				}
 			}
 			
@@ -243,6 +246,11 @@ bool Logika::wystrzelPocisk(Pojazd& pojazd, bool pociskGracza){
 			pojazd.celownikOdleglosc
 		)
 	);
+	
+	this->plansza->punkty -= this->plansza->specyfikacjePociskow[wystrzelonyPocisk]->silaRazenia / 10;
+	if(this->plansza->punkty < 0)
+		this->plansza->punkty = 0;
+	
 	return true;
 }
 
@@ -378,25 +386,70 @@ void Logika::przemiescKorpusNaSciezce(PojazdObcy& pojazd, float czas){
 }
 
 void Logika::odswiezObcePojazdy(int milisekundy, float czas){
+	float odleglosc;
+	
 	for(int i = this->plansza->pojazdyObce.size() - 1; i >= 0; i--){
 		if(this->plansza->pojazdyObce[i]->zdrowie <= 0){
 			delete this->plansza->pojazdyObce[i];
 			this->plansza->pojazdyObce.removeAt(i);
-		}else if(this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->pojazdyObce[i]->pozycja) < PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW){
+			continue;
+		}
+		
+		odleglosc = this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->pojazdyObce[i]->pozycja);
+		if(odleglosc < PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW){
 			if(this->plansza->pojazdyObce[i]->licznik == 0){
-				this->wybierzSciezke(*this->plansza->pojazdyObce[i]);
-				if(this->plansza->pojazdyObce[i]->w >= 0){
-					if(this->plansza->pojazdyObce[i]->ustawZwrot)
-						this->ustawZwrotKorpusu(*this->plansza->pojazdyObce[i], czas);
-					else
-						this->przemiescKorpusNaSciezce(*this->plansza->pojazdyObce[i], czas);
+			
+				if(!this->plansza->pojazdyObce[i]->szykujWystrzal){
+				
+					this->wybierzSciezke(*this->plansza->pojazdyObce[i]);
+					if(this->plansza->pojazdyObce[i]->w >= 0){
+						if(this->plansza->pojazdyObce[i]->ustawZwrot)
+							this->ustawZwrotKorpusu(*this->plansza->pojazdyObce[i], czas);
+						else
+							this->przemiescKorpusNaSciezce(*this->plansza->pojazdyObce[i], czas);
+					}
+					
 				}
 				
-				//	aktualizacja
+				bool strzal = false;
+				if(odleglosc < this->plansza->specyfikacjePociskow[this->plansza->pojazdyObce[i]->aktualnaBron]->zasieg && odleglosc > MINIMALNA_ODLEGLOSC_CELOWNIKA){
+					if(this->plansza->pojazdyObce[i]->szykujWystrzal){
+						QPointF pozycjaOsiWiezy = this->plansza->pojazdyObce[i]->pozycja - this->plansza->pojazdyObce[i]->zwrotKorpusuWektor.toPointF() * this->plansza->pojazdyObce[i]->specyfikacja->przesuniecieOsiDlaKorpusu;
+						float zwrotKatDocelowy = atan2(pozycjaOsiWiezy.y() - this->plansza->pojazdGracza->pozycja.y(), this->plansza->pojazdGracza->pozycja.x() - pozycjaOsiWiezy.x());
+						if(zwrotKatDocelowy < 0.0)
+							zwrotKatDocelowy += 2.0 * M_PI;
+						float odchylenieKat = zwrotKatDocelowy - fmod(this->plansza->pojazdyObce[i]->zwrotKorpusuKat + this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat, 2.0 * M_PI);
+						float rotacjaKat = WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW * this->plansza->pojazdyObce[i]->specyfikacja->predkoscRotacjiWiezy * czas;
+						
+						if(odchylenieKat > M_PI)
+							odchylenieKat -= 2.0 * M_PI;
+						else if(odchylenieKat <= -M_PI)
+							odchylenieKat += 2.0 * M_PI;
+						
+						if(rotacjaKat < fabs(odchylenieKat))
+							this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat = fmod(this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat + (odchylenieKat > 0 ? rotacjaKat : -rotacjaKat), 2.0 * M_PI);
+						else{
+							this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat = fmod(zwrotKatDocelowy - this->plansza->pojazdyObce[i]->zwrotKorpusuKat + 2.0 * M_PI, 2.0 * M_PI);
+							this->plansza->pojazdyObce[i]->szykujWystrzal = false;
+							strzal = true;
+						}
+					}else if(rand() % (1 + (10000 / milisekundy)) == 0)
+						this->plansza->pojazdyObce[i]->szykujWystrzal = true;
+				}else if(this->plansza->pojazdyObce[i]->szykujWystrzal)
+					this->plansza->pojazdyObce[i]->szykujWystrzal = false;
+				
 				this->plansza->pojazdyObce[i]->zwrotWiezyWektor = QVector2D(
 					cos(this->plansza->pojazdyObce[i]->zwrotKorpusuKat + this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat),
 					-sin(this->plansza->pojazdyObce[i]->zwrotKorpusuKat + this->plansza->pojazdyObce[i]->zwrotWiezyWzgledemKorpusuKat)
 				);
+				
+				if(strzal){
+					this->plansza->pojazdyObce[i]->celownikOdleglosc = this->odleglosc(this->plansza->pojazdyObce[i]->punktWylotuLufy(), this->plansza->pojazdGracza->pozycja);
+					this->wystrzelPocisk(*this->plansza->pojazdyObce[i], false);
+				}
+				
+				
+				
 			}else if(this->plansza->pojazdyObce[i]->licznik > milisekundy)
 				this->plansza->pojazdyObce[i]->licznik -= milisekundy;
 			else
