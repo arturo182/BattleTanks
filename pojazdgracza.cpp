@@ -22,12 +22,12 @@ bool PojazdGracza::dodajPociski(int numerPociskow, int iloscPociskow){
 int PojazdGracza::wystrzelPocisk(){
 	if(this->zasobyPociskow[this->aktualnaBron] == 0)
 		return -1;
-	
+
 	int wystrzelonyPocisk = this->aktualnaBron;
 	if(this->zasobyPociskow[this->aktualnaBron] > 0)
 		if(--this->zasobyPociskow[this->aktualnaBron] == 0)
 			this->ustawBron();
-	
+
 	return wystrzelonyPocisk;
 }
 
@@ -38,7 +38,7 @@ bool PojazdGracza::ustawBron(){
 bool PojazdGracza::zmienBron(int kierunek){
 	int bron = this->aktualnaBron;
 	int zmiana = kierunek < 0 ? -1 : 1;
-	
+
 	do{
 		bron += zmiana;
 		if(bron == this->iloscRodzajowPociskow)
@@ -46,10 +46,10 @@ bool PojazdGracza::zmienBron(int kierunek){
 		else if(bron < 0)
 			bron = this->iloscRodzajowPociskow - 1;
 	}while(this->zasobyPociskow[bron] == 0 && bron != this->aktualnaBron);
-	
+
 	if(bron == this->aktualnaBron)
 		return false;
-	
+
 	this->aktualnaBron = bron;
 	return true;
 }

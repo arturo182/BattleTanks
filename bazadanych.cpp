@@ -152,12 +152,11 @@ QList<QStringList> BazaDanych::rekordy() const
 		query2.prepare("SELECT plik FROM plansze WHERE mapa_id = :mapa_id ;");
 		query2.bindValue(":mapa_id", query.value(1));
 		query2.exec();
-		query2.next();
-
-		rekord << query.value(0).toString();
-		rekord << query2.value(0).toString();
-		rekord << query.value(2).toString();
-
+		if(query2.next()) {
+			rekord << query.value(0).toString();
+			rekord << query2.value(0).toString();
+			rekord << query.value(2).toString();
+		}
 
 		rekordy << rekord;
 	}

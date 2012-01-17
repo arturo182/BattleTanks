@@ -155,8 +155,11 @@ void Plansza::czysc(){
 
 void Plansza::restartuj()
 {
+	int id = this->id();
+	QString nazwa = this->nazwaPlanszy;
+
 	this->czysc();
-	this->zaladuj(this->id(), this->nazwaPlanszy);
+	this->zaladuj(id, nazwa);
 }
 
 void Plansza::rysuj(){
@@ -170,7 +173,7 @@ void Plansza::rysuj(){
 
 	//	DEBUG BEGIN
 	//	usunac przyjazn z klas: Graf, Wierzcholek, PojazdObcy
-	/*
+
 	painter.setPen(Qt::NoPen);
 	painter.setBrush(QColor(255, 0, 0, 128));
 	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++){
@@ -198,7 +201,7 @@ void Plansza::rysuj(){
 	painter.setBrush(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		painter.drawEllipse(Obiekt::skala * QPointF(this->graf.pozycjaWierzcholka(i)) - widok, Obiekt::skala * 5, Obiekt::skala * 5);
-	*/
+
 	//	DEBUG END
 
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)

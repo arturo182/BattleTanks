@@ -243,9 +243,11 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 
 		//aktualizacja glosnosci
-		Phonon::Path sciezka = this->muzyka->outputPaths().first();
-		Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-		wyjscie->setVolume(this->glosnosc / 10.0);
+		if(this->muzyka->outputPaths().count()) {
+			Phonon::Path sciezka = this->muzyka->outputPaths().first();
+			Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+			wyjscie->setVolume(this->glosnosc / 10.0);
+		}
 	} else if(this->tryb == AUTORZY) {
 		if(akcja == Silnik::COFNIJ) {
 			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
@@ -736,10 +738,10 @@ void Menu::rysuj() const{
 		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.52, szerokoscEkranu, 100), "Michał Wolski", QTextOption(Qt::AlignHCenter));
 
 		painter.setFont(czcionkaTytulu);
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.61, szerokoscEkranu, 100), "Dodatkowe zadania:", QTextOption(Qt::AlignHCenter));
+		//Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.61, szerokoscEkranu, 100), "Dodatkowe zadania:", QTextOption(Qt::AlignHCenter));
 
 		painter.setFont(czcionkaNormalna);
-		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.68, szerokoscEkranu, 100), "Ewelina Kunikowska", QTextOption(Qt::AlignHCenter));
+		//Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.68, szerokoscEkranu, 100), "Ewelina Kunikowska", QTextOption(Qt::AlignHCenter));
 
 		Widzety::cieniowanyTekst(painter, QRectF(0, wysokoscEkranu * 0.90, szerokoscEkranu * 0.9, 100), "Wróć", QTextOption(Qt::AlignRight));
 

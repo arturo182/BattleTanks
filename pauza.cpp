@@ -25,11 +25,14 @@ tryb(MENU_GLOWNE)
 	this->muzyka->pause();
 	this->muzyka->setTransitionTime(-2000);
 
-	Phonon::Path sciezka = this->muzyka->outputPaths().first();
-	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-	wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
+	if(this->muzyka->outputPaths().count()) {
+		Phonon::Path sciezka = this->muzyka->outputPaths().first();
+		Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+		wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
 
-	connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
+		connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
+	}
+
 	this->zapetlMuzyke();
 }
 
@@ -56,6 +59,7 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 			} else if(this->pozycja == 2) {
 				this->pozycja = 1;
 				this->plansza->restartuj();
+				this->zapetlMuzyke();
 				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				this->muzyka->play();
 				return Silnik::ROZGRYWKA;
@@ -66,6 +70,7 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 			} else if(this->pozycja == 4) {
 				this->pozycja = 1;
 				this->plansza->czysc();
+				this->zapetlMuzyke();
 				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				return Silnik::MENU;
 			}
@@ -146,12 +151,14 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->tryb = MENU_GLOWNE;
 				this->pozycja = 1;
 				this->plansza->restartuj();
+				this->zapetlMuzyke();
 				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				this->muzyka->play();
 				return Silnik::ROZGRYWKA;
 			} else if(this->pozycja == 2) {
 				this->pozycja = 1;
 				this->plansza->czysc();
+				this->zapetlMuzyke();
 				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				return Silnik::MENU;
 			}

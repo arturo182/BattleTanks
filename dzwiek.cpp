@@ -9,10 +9,13 @@ Dzwiek::Dzwiek(const QString &nazwaPliku):
 	nazwaPliku(nazwaPliku)
 {
 	this->media = Phonon::createPlayer(Phonon::MusicCategory, nazwaPliku);
-	Phonon::Path sciezka = this->media->outputPaths().first();
-	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-	wyjscie->setVolume(this->glosnosc / 10.0);
-	connect(this->media, SIGNAL(finished()), SIGNAL(zakonczony()));
+
+	if(this->media->outputPaths().count()) {
+		Phonon::Path sciezka = this->media->outputPaths().first();
+		Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+		wyjscie->setVolume(this->glosnosc / 10.0);
+		connect(this->media, SIGNAL(finished()), SIGNAL(zakonczony()));
+	}
 }
 
 Dzwiek::~Dzwiek()
