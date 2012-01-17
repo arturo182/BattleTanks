@@ -30,6 +30,8 @@ QRectF Przeszkoda::boundingRect() const
 
 void Przeszkoda::setPolygon(const QPolygonF &polygon)
 {
+	//qDebug() << polygon;
+
 	QGraphicsPolygonItem::setPolygon(polygon);
 
 	if(this->czyWypukly()) {

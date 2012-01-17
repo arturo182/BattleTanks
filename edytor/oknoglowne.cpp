@@ -539,6 +539,9 @@ void OknoGlowne::ustawTryb(Scena::Tryb tryb)
 
 void OknoGlowne::on_treeWidget_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
+	if(current == previous)
+		return;
+
 	if(current) {
 		if(current->parent()) {
 			this->scena->clearSelection();
@@ -598,6 +601,9 @@ void OknoGlowne::trybDodawaniaWaypointow()
 
 void OknoGlowne::on_treeWidget2_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous)
 {
+	if(current == previous)
+		return;
+
 	if(current) {
 		if(current->parent()) {
 			this->scena->clearSelection();

@@ -110,9 +110,17 @@ void Scena::mouseMoveEvent(QGraphicsSceneMouseEvent *event)
 			this->linia->setLine(QLineF(this->linia->line().p1(), event->scenePos()));
 	} else if(this->trybSceny == Scena::DODAWANIE_PRZESZKODY) {
 		if(this->przeszkoda != 0) {
-			QPointF topLeft = this->przeszkoda->polygon().first();
+			QPointF start = this->przeszkoda->polygon().first();
+			QPointF stop = event->scenePos();
 
-			this->przeszkoda->setPolygon(QRectF(topLeft, event->scenePos()));
+			QPolygonF poly;
+
+			poly << QPointF(start.x(), start.y());
+			poly << QPointF(stop.x(),  start.y());
+			poly << QPointF(stop.x(),  stop.y());
+			poly << QPointF(start.x(), stop.y());
+
+			this->przeszkoda->setPolygon(poly);
 		}
 	}
 
