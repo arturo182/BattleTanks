@@ -1,17 +1,13 @@
 #ifndef URZADZENIEWEJSCIA_H
 #define URZADZENIEWEJSCIA_H
 
-#include <SDL/SDL.h>
-
-#undef main
-
 class UrzadzenieWejscia{
 	public:
 		enum Nawigator{
-			GORA = SDL_HAT_UP,
-			DOL = SDL_HAT_DOWN,
-			PRAWO = SDL_HAT_RIGHT,
-			LEWO = SDL_HAT_LEFT
+			GORA = 0x01,
+			PRAWO = 0x02,
+			DOL = 0x04,
+			LEWO = 0x08
 		};
 
 		enum Dzojstik{
@@ -48,6 +44,8 @@ class UrzadzenieWejscia{
 		virtual int statusNawigatorPolozenie() const = 0;
 		virtual int statusNawigatorWcisniecie() const = 0;
 		virtual float statusDzojstik(Dzojstik) const = 0;
+
+		class Silnik *silnik;
 };
 
 #endif // URZADZENIEWEJSCIA_H

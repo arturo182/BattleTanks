@@ -8,10 +8,10 @@
 #include <QPoint>
 #include <QMap>
 
-namespace Phonon
-{
-  class MediaObject;
-}
+//namespace Phonon
+//{
+//  class MediaObject;
+//}
 
 class BazaDanych;
 class Ladowanie;
@@ -50,7 +50,7 @@ class Menu: public QObject{
 	QPixmap tloPixmapa;
 	QPixmap logoPixmapa;
 	QPixmap trybyPixmapa[4];
-	Phonon::MediaObject *muzyka;
+	//Phonon::MediaObject *muzyka;
 	int glosnosc;
 	QString rozdzielczosc;
 	QString jakosc;

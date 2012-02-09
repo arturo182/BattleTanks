@@ -1,6 +1,7 @@
 #include "dzwiek.h"
 
-#include <Phonon/AudioOutput>
+//#include <Phonon/AudioOutput>
+#include <QSound>
 
 int Dzwiek::glosnosc = 5;
 
@@ -8,24 +9,25 @@ Dzwiek::Dzwiek(const QString &nazwaPliku):
 	QObject(),
 	nazwaPliku(nazwaPliku)
 {
-	this->media = Phonon::createPlayer(Phonon::MusicCategory, nazwaPliku);
+	//this->media = Phonon::createPlayer(Phonon::MusicCategory, nazwaPliku);
 
-	if(this->media->outputPaths().count()) {
-		Phonon::Path sciezka = this->media->outputPaths().first();
-		Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-		wyjscie->setVolume(this->glosnosc / 10.0);
-		connect(this->media, SIGNAL(finished()), SIGNAL(zakonczony()));
-	}
+	//if(this->media->outputPaths().count()) {
+	//	Phonon::Path sciezka = this->media->outputPaths().first();
+	//	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+	//	wyjscie->setVolume(this->glosnosc / 10.0);
+	//}
+
+	//connect(this->media, SIGNAL(finished()), SIGNAL(zakonczony()));
 }
 
 Dzwiek::~Dzwiek()
 {
-	delete this->media;
+	//delete this->media;
 }
 
 void Dzwiek::odtworz() const
 {
-	this->media->play();
+	//this->media->play();
 }
 
 void Dzwiek::odtworz(const QString &nazwaPliku)

@@ -3,7 +3,7 @@
 
 #include "silnik.h"
 
-#include <Phonon/MediaObject>
+//#include <Phonon/MediaObject>
 #include <QPixmap>
 
 class Pauza: public QObject
@@ -24,11 +24,14 @@ class Pauza: public QObject
 		QPixmap tlo;
 		int pozycja;
 		Tryb tryb;
-		Phonon::MediaObject *muzyka;
+		//Phonon::MediaObject *muzyka;
 		int glosnosc;
 		QString rozdzielczosc;
 		QString jakosc;
 		QString sterowanie;
+		QPixmap zdjecie;
+		class QCamera *m_camera;
+		class QCameraImageCapture *m_capture;
 
 	public:
 		Pauza(Ekran*, BazaDanych*, Plansza*);
@@ -41,6 +44,7 @@ class Pauza: public QObject
 
 	private slots:
 		void zapetlMuzyke();
+		void imageCaptured(int id, const QImage &preview);
 
 	private:
 		void wczytajUstawienia();

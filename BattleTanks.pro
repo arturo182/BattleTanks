@@ -1,74 +1,79 @@
-DESTDIR = bin
+symbian:TARGET.UID3 = 0xE29B9FE0
+symbian:TARGET.CAPABILITY = WriteUserData ReadUserData UserEnvironment
+symbian:TARGET.EPOCSTACKSIZE = 0x24000
+symbian:TARGET.EPOCHEAPSIZE = 0x6400000 0x10000000
 
-LIBS += \
-        -lSDL
+QT += sql #phonon
 
-QT += sql phonon
+symbian {
+baza.source = bin/baza.db
+pomoc.source = bin/pomoc
+grafika.source = bin/grafika
+plansze.source = bin/plansze
+DEPLOYMENTFOLDERS = baza pomoc grafika plansze
+}
 
-SOURCES += \
-        main.cpp \
-        silnik.cpp \
-        ekran.cpp \
-        plansza.cpp \
-        logika.cpp \
-        menu.cpp \
-        bazadanych.cpp \
-        obiekt.cpp \
-        pojazd.cpp \
-        animacja.cpp \
-        pocisk.cpp \
-        tekstura.cpp \
-        specyfikacjapojazdu.cpp \
-        specyfikacjaanimacji.cpp \
-        pojazdgracza.cpp \
-        pojazdobcy.cpp \
-        specyfikacjapocisku.cpp \
-    gamepad.cpp \
-    klawiatura.cpp \
-    dzwiek.cpp \
-    pauza.cpp \
-    widzety.cpp \
-    funkcje.cpp \
-    ladowanie.cpp \
-    graf.cpp \
+CONFIG += mobility
+MOBILITY += sensors multimedia
+
+SOURCES += main.cpp \
     wierzcholek.cpp \
-    porownajsciezki.cpp
+    widzety.cpp \
+    tekstura.cpp \
+    specyfikacjapojazdu.cpp \
+    specyfikacjapocisku.cpp \
+    specyfikacjaanimacji.cpp \
+    silnik.cpp \
+    porownajsciezki.cpp \
+    pojazdobcy.cpp \
+    pojazdgracza.cpp \
+    pojazd.cpp \
+    pocisk.cpp \
+    plansza.cpp \
+    pauza.cpp \
+    obiekt.cpp \
+    menu.cpp \
+    logika.cpp \
+    ladowanie.cpp \
+    klawiatura.cpp \
+    graf.cpp \
+    funkcje.cpp \
+    ekran.cpp \
+    dzwiek.cpp \
+    bazadanych.cpp \
+    animacja.cpp \
+    dotyk.cpp
 
 HEADERS += \
-        silnik.h \
-        ekran.h \
-        plansza.h \
-        logika.h \
-        menu.h \
-        bazadanych.h \
-        obiekt.h \
-        pojazd.h \
-        animacja.h \
-        pocisk.h \
-        urzadzeniewejscia.h \
-        tekstura.h \
-        specyfikacjapojazdu.h \
-        specyfikacjaanimacji.h \
-        pojazdgracza.h \
-        pojazdobcy.h \
-        specyfikacjapocisku.h \
-    gamepad.h \
-    klawiatura.h \
-    dzwiek.h \
-    pauza.h \
+    wierzcholek.h \
     widzety.h \
-    funkcje.h \
-    ladowanie.h \
-    graf.h \
+    urzadzeniewejscia.h \
+    tekstura.h \
+    specyfikacjapojazdu.h \
+    specyfikacjapocisku.h \
+    specyfikacjaanimacji.h \
+    silnik.h \
     porownajsciezki.h \
-    wierzcholek.h
+    pojazdobcy.h \
+    pojazdgracza.h \
+    pojazd.h \
+    pocisk.h \
+    plansza.h \
+    pauza.h \
+    obiekt.h \
+    menu.h \
+    logika.h \
+    ladowanie.h \
+    klawiatura.h \
+    graf.h \
+    funkcje.h \
+    ekran.h \
+    dzwiek.h \
+    bazadanych.h \
+    animacja.h \
+    dotyk.h
 
-RC_FILE     = res.rc
+FORMS +=
 
-
-
-
-
-
-
-
+include(deployment.pri)
+qtcAddDeployment()

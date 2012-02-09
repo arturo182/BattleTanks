@@ -45,7 +45,6 @@ class Silnik: public QObject{
 		Ladowanie *ladowanie;
 		Pauza* pauza;
 		Logika* logika;
-		Tryb tryb;
 		QTime czasOstatniegoOdswiezenia;
 		int ramki;
 		int milisekundy;
@@ -66,6 +65,7 @@ class Silnik: public QObject{
 		~Silnik();
 		void uruchom();
 		bool czyWyjsc() const;
+		Tryb tryb;
 };
 
 #endif // SILNIK_H

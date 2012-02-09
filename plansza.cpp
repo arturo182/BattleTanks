@@ -41,6 +41,8 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 
 	if(mapaTekstura.isNull())
 		return false;
+
+
 	this->mapa = new Tekstura(mapaTekstura);
 	this->widok = QPoint(0, 0);
 
@@ -49,6 +51,7 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		delete this->mapa;
 		return false;
 	}
+
 
 	this->idPlanszy = id;
 	this->nazwaPlanszy = nazwaPlanszy;
@@ -64,6 +67,7 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		this->wyjscie = punkt;
 	}
 
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> n;
@@ -75,12 +79,14 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		this->przeszkody.append(przeszkoda);
 	}
 
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	this->graf.utworz(iloscElementow);
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> punkt;
 		this->graf.ustawWierzcholek(i, punkt);
 	}
+
 
 	mapaSpecyfikacjaDane >> iloscElementow;
 	int v, w;
@@ -89,10 +95,13 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		this->graf.dodajKrawedz(v, w);
 	}
 
+
 	int nrSpecyfikacjiPojazdu, nrSpecyfikacjiPociskow;
 	float zwrot;
 
+
 	mapaSpecyfikacjaDane >> nrSpecyfikacjiPojazdu >> punkt >> zwrot;
+
 	this->pojazdGracza = new PojazdGracza(
 		this->specyfikacjePojazdow[nrSpecyfikacjiPojazdu],
 		punkt,
@@ -100,11 +109,13 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		this->specyfikacjePociskow.size()
 	);
 
+
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
 		mapaSpecyfikacjaDane >> nrSpecyfikacjiPociskow >> n;
 		this->pojazdGracza->dodajPociski(nrSpecyfikacjiPociskow, n);
 	}
+
 
 	mapaSpecyfikacjaDane >> iloscElementow;
 	for(int i = 0; i < iloscElementow; i++){
@@ -120,9 +131,12 @@ bool Plansza::zaladuj(int id, QString nazwaPlanszy){
 		);
 	}
 
+
 	this->status = NIEZAINICJALIZOWANA;
 
 	mapaSpecyfikacjaPlik.close();
+
+
 	return true;
 }
 
@@ -162,7 +176,7 @@ void Plansza::restartuj()
 	this->zaladuj(id, nazwa);
 }
 
-void Plansza::rysuj(){
+void Plansza::rysuj(bool przyciski){
 	if(this->status != ROZGRYWKA_TRWA && this->status != ROZGRYWKA_ZAKONCZONA)
 		return;
 
@@ -174,7 +188,7 @@ void Plansza::rysuj(){
 	//	DEBUG BEGIN
 	//	usunac przyjazn z klas: Graf, Wierzcholek, PojazdObcy
 
-	painter.setPen(Qt::NoPen);
+	/*painter.setPen(Qt::NoPen);
 	painter.setBrush(QColor(255, 0, 0, 128));
 	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++){
 		QPolygonF poligon;
@@ -201,7 +215,7 @@ void Plansza::rysuj(){
 	painter.setBrush(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		painter.drawEllipse(Obiekt::skala * QPointF(this->graf.pozycjaWierzcholka(i)) - widok, Obiekt::skala * 5, Obiekt::skala * 5);
-
+*/
 	//	DEBUG END
 
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)
@@ -216,7 +230,7 @@ void Plansza::rysuj(){
 		Obiekt::skala * QPointF(20.0, WYSOKOSC_WIDOKU - this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.height() - 20),
 		this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaPrzeskalowana
 	);
-	painter.setFont(QFont("Trebuchet MS", Obiekt::skala * 20, QFont::Bold));
+	painter.setFont(QFont("Trebuchet MS", Obiekt::skala * 4, QFont::Bold));
 	painter.setPen(Qt::white);
 	Widzety::cieniowanyTekst(painter, QRectF(
 		Obiekt::skala * QPointF(20.0 + this->specyfikacjePociskow[this->pojazdGracza->aktualnaBron]->tekstura.teksturaOryginalna.width(), WYSOKOSC_WIDOKU - 50),
@@ -236,11 +250,11 @@ void Plansza::rysuj(){
 	//minimapa
 	int szerokoscEkranu = this->ekran->buforObrazu.width();
 	int wysokoscEkranu = this->ekran->buforObrazu.height();
-	float skala = (szerokoscEkranu * 0.15) / this->mapa->teksturaOryginalna.width();
+	float skala = (szerokoscEkranu * 0.15) / float(this->mapa->teksturaOryginalna.width());
 
 	painter.setPen(QPen(Qt::black, 2.0));
 	painter.setBrush(QColor(255, 255, 255, 128));
-	painter.drawRect(QRectF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05, szerokoscEkranu * 0.15, szerokoscEkranu * 0.15));
+	painter.drawRect(QRectF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05, szerokoscEkranu * 0.15, this->mapa->teksturaOryginalna.height() * skala));
 
 	painter.setBrush(Qt::black);
 	painter.translate(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05);
@@ -259,6 +273,18 @@ void Plansza::rysuj(){
 	painter.setBrush(Qt::green);
 	painter.drawEllipse(QPointF(szerokoscEkranu * 0.85 - wysokoscEkranu * 0.05, wysokoscEkranu * 0.05) +  QPointF(this->pojazdGracza->pozycja.x() * skala, this->pojazdGracza->pozycja.y() * skala), szerokoscEkranu * 0.003, szerokoscEkranu * 0.003);
 
+	if(przyciski) {
+		painter.setOpacity(0.5);
+		Widzety::przyciskGamepada(painter, QRectF(5, 280, 75, 75), "←");
+		Widzety::przyciskGamepada(painter, QRectF(85, 280, 75, 75), "↑");
+
+		Widzety::przyciskGamepada(painter, QRectF(560, 280, 75, 75), "→");
+		Widzety::przyciskGamepada(painter, QRectF(480, 280, 75, 75), "↓");
+
+		Widzety::przyciskGamepada(painter, QRectF(5, 200, 75, 75), "B");
+		Widzety::przyciskGamepada(painter, QRectF(560, 200, 75, 75), "S");
+		painter.setOpacity(1.0);
+	}
 
 	painter.end();
 	this->ekran->update();

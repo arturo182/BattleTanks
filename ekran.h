@@ -1,9 +1,12 @@
 #ifndef EKRAN_H
 #define EKRAN_H
 
+#include "Dotyk.h"
+
 #include <QWidget>
 
-class Ekran: public QWidget{
+class Ekran: public QWidget
+{
 	Q_OBJECT
 
 	private:
@@ -11,10 +14,14 @@ class Ekran: public QWidget{
 
 	public:
 		QPixmap buforObrazu;
+		Dotyk* dotyk;
 
 		Ekran(const QSize &, const QString &);
 		void ustawRozdzielczosc(const QSize&);
 		void ustawJakosc(const QString &);
+
+	protected:
+		bool event(QEvent *event);
 
 	private:
 		void paintEvent(QPaintEvent*);

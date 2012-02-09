@@ -4,6 +4,7 @@
 
 #include <QApplication>
 #include <QPainter>
+#include <QDebug>
 
 Ladowanie::Ladowanie(Ekran *ekran) :
 QObject(),
@@ -32,13 +33,13 @@ void Ladowanie::rysuj() const
 
 	QFont czcionka = painter.font();
 	czcionka.setFamily("Trebuchet MS");
-	czcionka.setPixelSize(wysokoscEkranu * 0.03);
+	czcionka.setPixelSize(wysokoscEkranu * 0.05);
 
 	painter.drawPixmap((szerokoscEkranu - this->logoPixmapa.width()) * 0.5, (wysokoscEkranu - this->logoPixmapa.height()) * 0.5, this->logoPixmapa);
 
 	painter.setPen(Qt::white);
 	painter.setFont(czcionka);
-	painter.drawText(QRectF(0, wysokoscEkranu * 0.9, szerokoscEkranu, 100), "Ładowanie (" + this->opisPostepu + ")", QTextOption(Qt::AlignHCenter));
+	painter.drawText(QRectF(0, wysokoscEkranu * 0.85, szerokoscEkranu, 100), "Ładowanie (" + this->opisPostepu + ")", QTextOption(Qt::AlignHCenter));
 
 	QLinearGradient grad(0, 0, 20, 20);
 	grad.setSpread(QGradient::RepeatSpread);

@@ -16,8 +16,7 @@ BazaDanych::BazaDanych(){
 bool BazaDanych::polacz(){
 	//	nawiazanie polaczenia z baza
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-	db.setDatabaseName("baza.db");
-
+	db.setDatabaseName("E:\\Games\\BattleTanks\\baza.db");
 	if(!db.open()) {
 		qDebug() << "Nie udalo sie poalczyc z baza danych" << db.databaseName() << db.lastError().text();
 		return false;
@@ -56,8 +55,7 @@ bool BazaDanych::polacz(){
 
 	// baza ustawien
 	QSqlDatabase dbUstawienia = QSqlDatabase::addDatabase("QSQLITE", "dbUstawienia");
-	QDir(QDesktopServices::storageLocation(QDesktopServices::DataLocation)).mkpath(".");
-	dbUstawienia.setDatabaseName(QDesktopServices::storageLocation(QDesktopServices::DataLocation) + "/ustawienia.db");
+	dbUstawienia.setDatabaseName("ustawienia.db");
 	if(!dbUstawienia.open()) {
 		qDebug() << "Nie udalo sie poalczyc z baza danych" << dbUstawienia.databaseName() << dbUstawienia.lastError().text();
 		return false;

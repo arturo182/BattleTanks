@@ -39,7 +39,8 @@ void Logika::odswiez(int milisekundy, float predkoscGasienicyLewej, float predko
 			odleglosc = this->odleglosc(this->plansza->pojazdGracza->pozycja, this->plansza->pociski[i]->pozycja);
 			if(odleglosc < this->plansza->pociski[i]->specyfikacja->promienRazenia){
 				obrazenia = (1.0 - odleglosc / this->plansza->pociski[i]->specyfikacja->promienRazenia) * this->plansza->pociski[i]->specyfikacja->silaRazenia;
-				this->plansza->pojazdGracza->zdrowie -= obrazenia * 0.5;
+				//GOD
+				this->plansza->pojazdGracza->zdrowie -= obrazenia * 0.25;
 			}
 
 			for(QList<PojazdObcy*>::iterator j = this->plansza->pojazdyObce.begin(); j < this->plansza->pojazdyObce.end(); j++){

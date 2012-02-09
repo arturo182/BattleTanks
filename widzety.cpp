@@ -70,7 +70,7 @@ void Widzety::tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QSt
 	painter.drawRect(r);
 
 	int wysokosc = painter.fontMetrics().height();
-	const int na_strone = 16;
+	const int na_strone = 9;
 
 	QRectF kolumnaGracza(r.left(), r.top(), r.width() * 0.4, wysokosc);
 	painter.drawRect(kolumnaGracza);
@@ -100,9 +100,9 @@ void Widzety::tabelaRekordow(QPainter &painter, const QRectF &r, const QList<QSt
 
 void Widzety::lustrzanyObrazek(QPainter &painter, const QRectF &r, const QPixmap &obrazek)
 {
-	painter.drawPixmap(r.toRect(), obrazek);
+	painter.drawPixmap(r.translated(0, r.height() * 0.5).toRect(), obrazek);
 
-	QLinearGradient gradient(0, 0, 0, obrazek.height());
+	/*QLinearGradient gradient(0, 0, 0, obrazek.height());
 	gradient.setColorAt(0.5, Qt::black);
 	gradient.setColorAt(0, Qt::white);
 
@@ -116,7 +116,7 @@ void Widzety::lustrzanyObrazek(QPainter &painter, const QRectF &r, const QPixmap
 
 	painter.setOpacity(0.5);
 	painter.drawImage(r.translated(0, r.height()), reflection);
-	painter.setOpacity(1.0);
+	painter.setOpacity(1.0);*/
 }
 
 void Widzety::schodkiGlosnosci(QPainter &painter, const QRectF &r, int wartosc)

@@ -4,7 +4,7 @@
 #include <QVector2D>
 #include "obiekt.h"
 
-#define MINIMALNA_ODLEGLOSC_CELOWNIKA 200
+#define MINIMALNA_ODLEGLOSC_CELOWNIKA 50
 
 class SpecyfikacjaPojazdu;
 
@@ -19,7 +19,7 @@ class Pojazd: public Obiekt{
 		float celownikOdleglosc;
 		int zdrowie;
 		int aktualnaBron;
-		
+
 		Pojazd(const SpecyfikacjaPojazdu*, QPointF, float, int);
 		virtual ~Pojazd();
 		QPointF punktWylotuLufy() const;

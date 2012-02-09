@@ -1,10 +1,9 @@
 #include "silnik.h"
-#include "klawiatura.h"
+#include "dotyk.h"
 #include "bazadanych.h"
 #include "ladowanie.h"
 #include "funkcje.h"
 #include "plansza.h"
-#include "gamepad.h"
 #include "logika.h"
 #include "dzwiek.h"
 #include "ekran.h"
@@ -42,11 +41,10 @@ void Silnik::uruchom()
 	this->bazaDanych->polacz();
 
 	//ekran
-	QString rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
-	QString jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
+	QString rozdzielczosc = "640x360";
+	QString jakosc = "niska";
 
 	this->ekran = new Ekran(qStringToSize(rozdzielczosc), jakosc);
-//	this->ekran = new Ekran(QSize(1024, 768), jakosc);
 	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);
 
 	//ladowanie
@@ -55,10 +53,9 @@ void Silnik::uruchom()
 	this->odswiezLadowanie(0.0, "Ładowanie urządzenia wejścia");
 
 	//urzadzenie wejscia
-	if(this->bazaDanych->ustawienie("sterowanie", "gamepad").toString() == "gamepad")
-		this->urzadzenieWejscia = new Gamepad;
-	else
-		this->urzadzenieWejscia = new Klawiatura;
+	this->urzadzenieWejscia = new Dotyk;
+	this->urzadzenieWejscia->silnik = this;
+	this->ekran->dotyk = static_cast<Dotyk*>(this->urzadzenieWejscia);
 	this->odswiezLadowanie(0.05, "Tworzenie planszy");
 
 	//plansza
@@ -155,7 +152,7 @@ void Silnik::odswiezMenu(int milisekundy){
 
 void Silnik::odswiezRozgrywke(int milisekundy){
 	if(this->urzadzenieWejscia->statusPrzyciskWcisniecie(UrzadzenieWejscia::PAUZA)) {
-		this->plansza->rysuj();
+		this->plansza->rysuj(false);
 		this->pauza->ustawTlo();
 		this->tryb = PAUZA;
 		return;
@@ -193,7 +190,9 @@ void Silnik::odswiezRozgrywke(int milisekundy){
 	this->logika->odswiez(milisekundy, predkoscGasienicyLewej, predkoscGasienicyPrawej, rotacjaWiezy, zmianaBroni, zmianaZasiegu, wystrzal);
 
 	if(this->plansza->koniecGry()) {
-		this->bazaDanych->zapiszRekord(this->menu->idGracza(), this->plansza->id(), this->plansza->sprawdzPunkty());
+		if(this->plansza->sprawdzPunkty() > 0)
+			this->bazaDanych->zapiszRekord(this->menu->idGracza(), this->plansza->id(), this->plansza->sprawdzPunkty());
+
 		this->tryb = PAUZA;
 	}
 
@@ -246,6 +245,7 @@ void Silnik::odswiez(){
 		return;
 
 	this->urzadzenieWejscia->odswiez();
+
 	switch(this->tryb){
 		case MENU:
 			this->odswiezMenu(milisekundy);
@@ -260,6 +260,7 @@ void Silnik::odswiez(){
 			break;
 	}
 
+	/*
 	this->ramki++;
 	this->milisekundy += milisekundy;
 
@@ -276,6 +277,7 @@ void Silnik::odswiez(){
 	path.addText(10, painter.fontMetrics().ascent(), painter.font(), QString::number(this->fps));
 	painter.strokePath(path, QPen(Qt::black, 2));
 	painter.fillPath(path, QBrush(Qt::yellow));
+*/
 
 	this->czasOstatniegoOdswiezenia = czasAktualny;
 }

@@ -10,7 +10,7 @@
 #include "pojazdobcy.h"
 
 #define PREDKOSC_CELOWNIKA 300
-#define PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW 2000
+#define PROMIEN_AKTYWNOSCI_OBCYCH_POJAZDOW 1000
 #define WSPOLCZYNNIK_PREDKOSCI_OBCYCH_POJAZDOW 0.8
 #define CZAS_OCZEKIWANIA_OBCYCH_POJAZDOW 2000
 #define ODLEGLOSC_OD_PUNKTU_WYJSCIA 50
@@ -23,9 +23,9 @@ class Logika{
 			POJAZDY = 4,
 			POJAZDY_NA_SCIEZKACH = 8
 		};
-		
+
 		Plansza* plansza;
-		
+
 		inline float odleglosc(QPointF, QPointF) const;
 		inline float wyznacznikMacierzyWspolliniowosci(QPointF, QPointF, QPointF) const;
 		QPolygonF wyznaczOtoczke(const Pojazd&) const;
@@ -42,7 +42,7 @@ class Logika{
 		void ustawZwrotKorpusu(PojazdObcy&, float);
 		void przemiescKorpusNaSciezce(PojazdObcy&, float);
 		void odswiezObcePojazdy(int, float);
-		
+
 	public:
 		Logika(Plansza*);
 		void odswiez(int, float, float, int, int, int, bool);

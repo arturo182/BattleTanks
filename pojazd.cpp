@@ -23,14 +23,14 @@ QPointF Pojazd::punktWylotuLufy() const{
 
 void Pojazd::rysuj(QPainter& painter, QPoint widok) const{
 	QTransform transformacja;
-	
+
 	transformacja.rotateRadians(M_PI_2 - this->zwrotKorpusuKat);
 	QPixmap teksturaKorpus = this->specyfikacja->teksturaKorpus.teksturaPrzeskalowana.transformed(transformacja);
 	painter.drawPixmap(
 		Obiekt::skala * this->pozycja - widok - QPoint(teksturaKorpus.width() / 2, teksturaKorpus.height() / 2),
 		teksturaKorpus
 	);
-	
+
 	transformacja.rotateRadians(-this->zwrotWiezyWzgledemKorpusuKat);
 	QVector2D wektorPrzesuniecieOsiWiezy = this->zwrotWiezyWektor * this->specyfikacja->przesuniecieOsiDlaWiezy - this->zwrotKorpusuWektor * this->specyfikacja->przesuniecieOsiDlaKorpusu;
 	QPixmap teksturaWieza = this->specyfikacja->teksturaWieza.teksturaPrzeskalowana.transformed(transformacja);
@@ -38,7 +38,7 @@ void Pojazd::rysuj(QPainter& painter, QPoint widok) const{
 		Obiekt::skala * (this->pozycja + wektorPrzesuniecieOsiWiezy.toPointF()) - widok - QPoint(teksturaWieza.width() / 2, teksturaWieza.height() / 2),
 		teksturaWieza
 	);
-	
-	painter.fillRect(QRectF(Obiekt::skala * QPointF(this->pozycja.x() - 50, this->pozycja.y() - 40) - widok, Obiekt::skala * QSize(80, 4)), Qt::red);
-	painter.fillRect(QRectF(Obiekt::skala * QPointF(this->pozycja.x() - 50, this->pozycja.y() - 40) - widok, Obiekt::skala * QSize(80 * this->zdrowie / this->specyfikacja->wytrzymalosc, 4)), Qt::green);
+
+	painter.fillRect(QRectF(Obiekt::skala * QPointF(this->pozycja.x() - 22, this->pozycja.y() - 30) - widok, Obiekt::skala * QSize(40, 4)), Qt::red);
+	painter.fillRect(QRectF(Obiekt::skala * QPointF(this->pozycja.x() - 22, this->pozycja.y() - 30) - widok, Obiekt::skala * QSize(40 * this->zdrowie / this->specyfikacja->wytrzymalosc, 4)), Qt::green);
 }

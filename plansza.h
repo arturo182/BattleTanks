@@ -9,8 +9,8 @@
 #include "graf.h"
 #include "animacja.h"
 
-#define WYSOKOSC_WIDOKU 1080
-#define MARGINES 530
+#define WYSOKOSC_WIDOKU 360
+#define MARGINES 150
 
 class Ekran;
 class PojazdGracza;
@@ -68,7 +68,7 @@ class Plansza{
 		bool zaladuj(int, QString);
 		void czysc();
 		void restartuj();
-		void rysuj();
+		void rysuj(bool przyciski = true);
 		inline int id() const;
 		inline bool koniecGry() const;
 		inline bool sprawdzWygrana() const;
