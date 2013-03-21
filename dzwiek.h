@@ -1,8 +1,10 @@
 #ifndef DZWIEK_H
 #define DZWIEK_H
 
-#include <Phonon/MediaObject>
+#include <QObject>
 #include <QString>
+
+class QAudioOutput;
 
 class Dzwiek: public QObject
 {
@@ -24,7 +26,7 @@ class Dzwiek: public QObject
 
 	private:
 		QString nazwaPliku;
-		Phonon::MediaObject *media;
+		QAudioOutput *media;
 };
 
 #endif // DZWIEK_H

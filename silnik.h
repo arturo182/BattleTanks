@@ -39,7 +39,7 @@ class Silnik: public QObject{
 	private:
 		UrzadzenieWejscia* urzadzenieWejscia;
 		Ekran* ekran;
-		BazaDanych* bazaDanych;
+		BazaDanych * bazaDanych;
 		Plansza* plansza;
 		Menu* menu;
 		Ladowanie *ladowanie;

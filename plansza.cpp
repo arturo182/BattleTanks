@@ -171,10 +171,11 @@ void Plansza::rysuj(){
 	this->odswiezWidok();
 	this->rysujMape(painter);
 
-	//	DEBUG BEGIN
+	//
+	//DEBUG BEGIN
 	//	usunac przyjazn z klas: Graf, Wierzcholek, PojazdObcy
 
-	painter.setPen(Qt::NoPen);
+	/*painter.setPen(Qt::NoPen);
 	painter.setBrush(QColor(255, 0, 0, 128));
 	for(QList<QPolygonF>::iterator i = this->przeszkody.begin(); i != this->przeszkody.end(); i++){
 		QPolygonF poligon;
@@ -201,7 +202,7 @@ void Plansza::rysuj(){
 	painter.setBrush(Qt::darkGreen);
 	for(int i = 0; i < this->graf.iloscWierzcholkow; i++)
 		painter.drawEllipse(Obiekt::skala * QPointF(this->graf.pozycjaWierzcholka(i)) - widok, Obiekt::skala * 5, Obiekt::skala * 5);
-
+	*/
 	//	DEBUG END
 
 	for(QList<PojazdObcy*>::iterator i = this->pojazdyObce.begin(); i != this->pojazdyObce.end(); i++)

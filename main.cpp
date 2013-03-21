@@ -2,8 +2,8 @@
 #include <QTextCodec>
 #include "silnik.h"
 
-int main(int argc, char* argv[]){
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("UTF-8"));
+int main(int argc, char* argv[])
+{
 	QApplication app(argc, argv);
 	app.setApplicationName("BattleTanks");
 

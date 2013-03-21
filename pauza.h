@@ -3,8 +3,9 @@
 
 #include "silnik.h"
 
-#include <Phonon/MediaObject>
 #include <QPixmap>
+
+class QAudioOutput;
 
 class Pauza: public QObject
 {
@@ -24,14 +25,14 @@ class Pauza: public QObject
 		QPixmap tlo;
 		int pozycja;
 		Tryb tryb;
-		Phonon::MediaObject *muzyka;
+		QAudioOutput *muzyka;
 		int glosnosc;
 		QString rozdzielczosc;
 		QString jakosc;
 		QString sterowanie;
 
 	public:
-		Pauza(Ekran*, BazaDanych*, Plansza*);
+		Pauza(Ekran*, BazaDanych *, Plansza*);
 
 		Silnik::Tryb odswiez(int, Silnik::Akcja);
 		void rysuj() const;

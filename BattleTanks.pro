@@ -1,9 +1,8 @@
 DESTDIR = bin
 
-LIBS += \
-        -lSDL
+LIBS += -lSDL
 
-QT += sql phonon
+QT += widgets sql multimedia xml
 
 SOURCES += \
         main.cpp \
@@ -12,7 +11,6 @@ SOURCES += \
         plansza.cpp \
         logika.cpp \
         menu.cpp \
-        bazadanych.cpp \
         obiekt.cpp \
         pojazd.cpp \
         animacja.cpp \
@@ -32,7 +30,10 @@ SOURCES += \
     ladowanie.cpp \
     graf.cpp \
     wierzcholek.cpp \
-    porownajsciezki.cpp
+    porownajsciezki.cpp \
+    bazadanychsql.cpp \
+    bazadanychxml.cpp \
+    bazadanych.cpp
 
 HEADERS += \
         silnik.h \
@@ -40,7 +41,6 @@ HEADERS += \
         plansza.h \
         logika.h \
         menu.h \
-        bazadanych.h \
         obiekt.h \
         pojazd.h \
         animacja.h \
@@ -61,7 +61,10 @@ HEADERS += \
     ladowanie.h \
     graf.h \
     porownajsciezki.h \
-    wierzcholek.h
+    wierzcholek.h \
+    bazadanychsql.h \
+    bazadanych.h \
+    bazadanychxml.h
 
 RC_FILE     = res.rc
 

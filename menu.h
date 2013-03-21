@@ -5,14 +5,11 @@
 
 #include <QTextOption>
 #include <QPainter>
+#include <QAudio>
 #include <QPoint>
 #include <QMap>
 
-namespace Phonon
-{
-  class MediaObject;
-}
-
+class QAudioOutput;
 class BazaDanych;
 class Ladowanie;
 class Plansza;
@@ -37,7 +34,7 @@ class Menu: public QObject{
 
   private:
 	Ekran* ekran;
-	BazaDanych* bazaDanych;
+	BazaDanych * bazaDanych;
 	Plansza* plansza;
 	Ladowanie* ladowanie;
 	Tryb tryb;
@@ -50,14 +47,14 @@ class Menu: public QObject{
 	QPixmap tloPixmapa;
 	QPixmap logoPixmapa;
 	QPixmap trybyPixmapa[4];
-	Phonon::MediaObject *muzyka;
+	QAudioOutput *muzyka;
 	int glosnosc;
 	QString rozdzielczosc;
 	QString jakosc;
 	QString sterowanie;
 
   public:
-	Menu(Ekran*, BazaDanych*, Plansza*, Ladowanie*);
+	Menu(Ekran*, BazaDanych *, Plansza*, Ladowanie*);
 
 	Silnik::Tryb odswiez(int, Silnik::Akcja);
 	void rysuj() const;
@@ -65,7 +62,7 @@ class Menu: public QObject{
 	int idGracza() const;
 
   private slots:
-	void zapetlMuzyke();
+	void zapetlMuzyke(QAudio::State state);
 
   private:
 	void ustawTryb(Tryb tryb);

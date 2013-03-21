@@ -1,6 +1,6 @@
 #include "silnik.h"
 #include "klawiatura.h"
-#include "bazadanych.h"
+#include "bazadanychsql.h"
 #include "ladowanie.h"
 #include "funkcje.h"
 #include "plansza.h"
@@ -14,6 +14,7 @@
 #include <QSqlQuery>
 #include <QVariant>
 #include <QDebug>
+#include "bazadanychxml.h"
 
 Silnik::Silnik():
 	tryb(LADOWANIE),
@@ -38,7 +39,7 @@ void Silnik::uruchom()
 	this->czasOstatniegoOdswiezenia = QTime::currentTime();
 
 	//baza danych
-	this->bazaDanych = new BazaDanych;
+	this->bazaDanych = new BazaDanychXml;
 	this->bazaDanych->polacz();
 
 	//ekran
@@ -55,7 +56,7 @@ void Silnik::uruchom()
 	this->odswiezLadowanie(0.0, "Ładowanie urządzenia wejścia");
 
 	//urzadzenie wejscia
-	if(this->bazaDanych->ustawienie("sterowanie", "gamepad").toString() == "gamepad")
+	if(this->bazaDanych->ustawienie("sterowanie", "klawiatura").toString() == "gamepad")
 		this->urzadzenieWejscia = new Gamepad;
 	else
 		this->urzadzenieWejscia = new Klawiatura;

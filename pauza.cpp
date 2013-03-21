@@ -1,16 +1,17 @@
 #include "pauza.h"
-#include "bazadanych.h"
+#include "bazadanychsql.h"
 #include "funkcje.h"
 #include "widzety.h"
 #include "plansza.h"
 #include "dzwiek.h"
 #include "ekran.h"
 
-#include <Phonon/AudioOutput>
+#include <QAudioOutput>
 #include <QTextOption>
 #include <QSqlQuery>
 #include <QPainter>
 #include <ctime>
+#include <QFile>
 
 Pauza::Pauza(Ekran *ekran, BazaDanych *bazaDanych, Plansza *plansza):
 ekran(ekran),
@@ -21,17 +22,8 @@ tryb(MENU_GLOWNE)
 {
 	qsrand(time(NULL));
 
-	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, Phonon::MediaSource("dzwieki/muzyka/gra_" + QString::number(qrand() % 3 + 1) + ".mp3"));
-	this->muzyka->pause();
-	this->muzyka->setTransitionTime(-2000);
-
-	if(this->muzyka->outputPaths().count()) {
-		Phonon::Path sciezka = this->muzyka->outputPaths().first();
-		Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-		wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
-
-		connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
-	}
+	this->muzyka = new QAudioOutput();
+	this->muzyka->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
 
 	this->zapetlMuzyke();
 }
@@ -60,8 +52,8 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->pozycja = 1;
 				this->plansza->restartuj();
 				this->zapetlMuzyke();
-				this->muzyka->setCurrentSource(this->muzyka->queue().first());
-				this->muzyka->play();
+//				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+//				this->muzyka->play();
 				return Silnik::ROZGRYWKA;
 			} else if(this->pozycja == 3) {
 				this->pozycja = 1;
@@ -71,7 +63,7 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->pozycja = 1;
 				this->plansza->czysc();
 				this->zapetlMuzyke();
-				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+//				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				return Silnik::MENU;
 			}
 		} else if(akcja == Silnik::GORA) {
@@ -152,14 +144,14 @@ Silnik::Tryb Pauza::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->pozycja = 1;
 				this->plansza->restartuj();
 				this->zapetlMuzyke();
-				this->muzyka->setCurrentSource(this->muzyka->queue().first());
-				this->muzyka->play();
+//				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+//				this->muzyka->play();
 				return Silnik::ROZGRYWKA;
 			} else if(this->pozycja == 2) {
 				this->pozycja = 1;
 				this->plansza->czysc();
 				this->zapetlMuzyke();
-				this->muzyka->setCurrentSource(this->muzyka->queue().first());
+//				this->muzyka->setCurrentSource(this->muzyka->queue().first());
 				return Silnik::MENU;
 			}
 		} else if(akcja == Silnik::GORA) {
@@ -196,7 +188,7 @@ void Pauza::rysuj() const{
 	czcionkaNormalna.setFamily("Trebuchet MS");
 	czcionkaNormalna.setPixelSize(wysokoscEkranu * 0.03);
 
-	QString sterowanie = this->bazaDanych->ustawienie("sterowanie", "gamepad").toString();
+	QString sterowanie = this->bazaDanych->ustawienie("sterowanie", "klawiatura").toString();
 
 	painter.setPen(Qt::white);
 	if(this->tryb == MENU_GLOWNE) {
@@ -276,17 +268,19 @@ void Pauza::ustawTlo()
 
 void Pauza::grajMuzyke()
 {
-	this->muzyka->play();
+	this->muzyka->start();
 }
 
 void Pauza::zapetlMuzyke()
 {
-	int muz[3] = { 1, 2, 3};
+	int muz[] = { 1, 2, 3 };
 	for(int i = 0; i < 3; i++)
 		qSwap(muz[i], muz[qrand() % 3]);
 
-	for(int i = 0; i < 3; i++)
-		this->muzyka->enqueue("dzwieki/muzyka/gra_" + QString::number(muz[i]) + ".mp3");
+	QFile *source = new QFile("dzwieki/muzyka/gra_" + QString::number(muz[0]) + ".mp3");
+	source->open(QIODevice::ReadOnly);
+
+	this->muzyka->start(source);
 }
 
 void Pauza::wczytajUstawienia()
@@ -294,7 +288,7 @@ void Pauza::wczytajUstawienia()
 	this->glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
 	this->jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
 	this->rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
-	this->sterowanie = this->bazaDanych->ustawienie("sterowanie", "gamepad").toString();
+	this->sterowanie = this->bazaDanych->ustawienie("sterowanie", "klawiatura").toString();
 }
 
 void Pauza::zapiszUstawienia()
@@ -307,9 +301,9 @@ void Pauza::zapiszUstawienia()
 	this->bazaDanych->zapiszUstawienie("sterowanie", this->sterowanie);
 	QSqlQuery("END;", QSqlDatabase::database("dbUstawienia"));
 
-	Phonon::Path sciezka = this->muzyka->outputPaths().first();
-	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-	wyjscie->setVolume(this->glosnosc / 10.0);
+//	Phonon::Path sciezka = this->muzyka->outputPaths().first();
+//	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
+//	wyjscie->setVolume(this->glosnosc / 10.0);
 
 	this->ekran->ustawRozdzielczosc(qStringToSize(this->rozdzielczosc));
 	Obiekt::skala = float(this->ekran->buforObrazu.height()) / float(WYSOKOSC_WIDOKU);

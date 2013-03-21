@@ -1,5 +1,5 @@
 #include "menu.h"
-#include "bazadanych.h"
+#include "bazadanychsql.h"
 #include "ladowanie.h"
 #include "funkcje.h"
 #include "plansza.h"
@@ -7,16 +7,15 @@
 #include "dzwiek.h"
 #include "ekran.h"
 
-#include <Phonon/MediaObject>
-#include <Phonon/VideoWidget>
-#include <Phonon/AudioOutput>
+#include <QAudioOutput>
 #include <QApplication>
 #include <QSqlError>
 #include <QSqlQuery>
 #include <QDebug>
 #include <QStyle>
+#include <QFile>
 
-Menu::Menu(Ekran* ekran, BazaDanych* bazaDanych, Plansza* plansza, Ladowanie *ladowanie):
+Menu::Menu(Ekran* ekran, BazaDanych * bazaDanych, Plansza* plansza, Ladowanie *ladowanie):
 QObject(),
 ekran(ekran),
 bazaDanych(bazaDanych),
@@ -106,8 +105,8 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 				this->pozycja++;
 		}
 	} else if(this->tryb == MENU_GLOWNE) {
-		if(!this->muzyka->state() != Phonon::PlayingState)
-			this->muzyka->play();
+		if(!this->muzyka->state() != QAudio::ActiveState)
+			this->muzyka->start();
 
 		if(this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString() != this->rozdzielczosc) {
 			this->wczytajUstawienia();
@@ -243,11 +242,7 @@ Silnik::Tryb Menu::odswiez(int milisekundy, Silnik::Akcja akcja){
 		}
 
 		//aktualizacja glosnosci
-		if(this->muzyka->outputPaths().count()) {
-			Phonon::Path sciezka = this->muzyka->outputPaths().first();
-			Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-			wyjscie->setVolume(this->glosnosc / 10.0);
-		}
+		this->muzyka->setVolume(this->glosnosc / 10.0);
 	} else if(this->tryb == AUTORZY) {
 		if(akcja == Silnik::COFNIJ) {
 			Dzwiek::odtworz("dzwieki/menu_wybor.mp3");
@@ -446,7 +441,7 @@ void Menu::rysuj() const{
 	czcionkaSrednia.setFamily("Trebuchet MS");
 	czcionkaSrednia.setPixelSize(wysokoscEkranu * 0.035);
 
-	QString sterowanie = this->bazaDanych->ustawienie("sterowanie", "gamepad").toString();
+	QString sterowanie = this->bazaDanych->ustawienie("sterowanie", "klawiatura").toString();
 
 	if(this->tryb == TWORZENIE_PROFILU) {
 		painter.setFont(czcionkaTytulu);
@@ -766,9 +761,13 @@ int Menu::idGracza() const
 	return this->property("idGracza").toInt();
 }
 
-void Menu::zapetlMuzyke()
+void Menu::zapetlMuzyke(QAudio::State state)
 {
-	this->muzyka->enqueue(QString("dzwieki/muzyka/menu.mp3"));
+	if(state == QAudio::StoppedState) {
+		QFile *source = new QFile("dzwieki/muzyka/menu.mp3");
+		source->open(QIODevice::ReadOnly);
+		this->muzyka->start(source);
+	}
 }
 
 void Menu::ustawTryb(Menu::Tryb tryb)
@@ -791,15 +790,12 @@ void Menu::wczytajRekordy()
 
 void Menu::wczytajMuzyke()
 {
-	this->muzyka = Phonon::createPlayer(Phonon::MusicCategory, Phonon::MediaSource("dzwieki/muzyka/menu.mp3"));
-	this->muzyka->pause();
-	this->muzyka->setTransitionTime(-2000);
+	QFile *source = new QFile("dzwieki/muzyka/menu.mp3");
+	source->open(QIODevice::ReadOnly);
+	this->muzyka = new QAudioOutput();
+	this->muzyka->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
 
-	Phonon::Path sciezka = this->muzyka->outputPaths().first();
-	Phonon::AudioOutput *wyjscie = static_cast<Phonon::AudioOutput*>(sciezka.sink());
-	wyjscie->setVolume(this->bazaDanych->ustawienie("glosnosc", 5).toInt() / 10.0);
-
-	connect(this->muzyka, SIGNAL(aboutToFinish()), SLOT(zapetlMuzyke()));
+	connect(this->muzyka, SIGNAL(stateChanged(QAudio::State)), SLOT(zapetlMuzyke(QAudio::State)));
 }
 
 void Menu::wczytajGrafiki()
@@ -872,7 +868,7 @@ void Menu::wczytajUstawienia()
 	this->glosnosc = this->bazaDanych->ustawienie("glosnosc", 5).toInt();
 	this->jakosc = this->bazaDanych->ustawienie("jakosc", "niska").toString();
 	this->rozdzielczosc = this->bazaDanych->ustawienie("rozdzielczosc", "1280x720").toString();
-	this->sterowanie = this->bazaDanych->ustawienie("sterowanie", "gamepad").toString();
+	this->sterowanie = this->bazaDanych->ustawienie("sterowanie", "klawiatura").toString();
 }
 
 void Menu::zapiszUstawienia()
